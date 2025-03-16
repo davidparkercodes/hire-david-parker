@@ -40,7 +40,6 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                             }
                             lines.push(Line::from(Vec::new()));
                             current_line_idx += 1;
-                            current_column = 0;
                         }
                     },
                     Tag::Paragraph => {
@@ -89,7 +88,6 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                         current_line_idx += 1;
                         lines.push(Line::from(Vec::new())); // Add blank line after heading
                         current_line_idx += 1;
-                        current_column = 0;
                         active_styles.pop();
                     },
                     Tag::Paragraph => {
@@ -101,7 +99,6 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                         }
                         lines.push(Line::from(Vec::new())); // Add blank line after paragraph
                         current_line_idx += 1;
-                        current_column = 0;
                     },
                     Tag::List(_) => {
                         if !current_line.is_empty() {
@@ -112,7 +109,6 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                         }
                         lines.push(Line::from(Vec::new())); // Add blank line after list
                         current_line_idx += 1;
-                        current_column = 0;
                     },
                     Tag::Link(_, _, _) => {
                         active_styles.pop();
