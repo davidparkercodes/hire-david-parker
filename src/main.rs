@@ -1,4 +1,5 @@
 use clap::Parser;
+use hiredavidparker::{greeting, about};
 
 #[derive(Parser)]
 #[command(name = "hiredavidparker")]
@@ -10,8 +11,11 @@ struct Cli {
 
 #[derive(clap::Subcommand)]
 enum Commands {
-    /// Run the application
+    /// Run the application with a welcome message
     Run,
+    
+    /// Display information about me
+    About,
 }
 
 fn main() {
@@ -19,10 +23,13 @@ fn main() {
     
     match cli.command {
         Some(Commands::Run) => {
-            println!("Hello Warp, I am David Parker.");
+            println!("{}", greeting());
+        }
+        Some(Commands::About) => {
+            println!("{}", about());
         }
         None => {
-            println!("Hello Warp, I am David Parker.");
+            println!("{}", greeting());
         }
     }
 }
