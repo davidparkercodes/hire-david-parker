@@ -53,6 +53,11 @@ pub fn contact() -> String {
     load_content("contact.md")
 }
 
+/// Returns the timeline content
+pub fn timeline() -> String {
+    load_content("timeline.md")
+}
+
 /// Runs the interactive TUI application
 pub fn run_tui() -> Result<(), Box<dyn Error>> {
     tui::app::run()?;

@@ -1,4 +1,4 @@
-use crate::{about, skills, projects, why_warp, welcome, contact};
+use crate::{about, skills, projects, why_warp, welcome, contact, timeline};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
     execute,
@@ -36,6 +36,51 @@ pub struct SkillsData {
     pub categories: Vec<SkillCategory>,
 }
 
+/// Timeline entry category
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TimelineCategory {
+    /// Career events
+    Career,
+    /// Education history
+    Education,
+    /// Professional certifications
+    Certifications,
+}
+
+/// Timeline event structure
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TimelineEvent {
+    /// Year of event
+    pub year: u16,
+    /// Event title
+    pub title: String,
+    /// Company or organization
+    pub company: Option<String>,
+    /// Institution name for education
+    pub institution: Option<String>,
+    /// Degree name for education
+    pub degree: Option<String>,
+    /// Organization name for certifications
+    pub organization: Option<String>,
+    /// Event description
+    pub description: String,
+    /// Key achievements or highlights
+    pub highlights: Option<Vec<String>>,
+    /// Technologies used
+    pub technologies: Option<Vec<String>>,
+}
+
+/// Complete timeline data
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TimelineData {
+    /// Career history
+    pub events: Vec<TimelineEvent>,
+    /// Education history
+    pub education: Vec<TimelineEvent>,
+    /// Certifications
+    pub certifications: Vec<TimelineEvent>,
+}
+
 /// Hyperlink information
 #[derive(Debug, Clone)]
 pub struct Link {
@@ -61,6 +106,12 @@ pub struct App {
     pub skill_category_index: usize,
     /// Current display mode
     pub display_mode: DisplayMode,
+    /// Current timeline category
+    pub timeline_category: TimelineCategory,
+    /// Current selected timeline event index
+    pub timeline_event_index: usize,
+    /// View detailed event info
+    pub timeline_detail_view: bool,
     /// About content
     pub about_content: String,
     /// Skills content
@@ -75,6 +126,10 @@ pub struct App {
     pub welcome_content: String,
     /// Contact content
     pub contact_content: String,
+    /// Timeline content
+    pub timeline_content: String,
+    /// Timeline data
+    pub timeline_data: TimelineData,
     /// Hyperlinks in current view
     pub links: Vec<Link>,
     /// Should the application exit
@@ -100,6 +155,10 @@ pub enum DisplayMode {
     WhyWarp,
     /// Contact information
     Contact,
+    /// Timeline view
+    Timeline,
+    /// Timeline detail view
+    TimelineDetail,
 }
 
 impl App {
@@ -114,11 +173,31 @@ impl App {
             Err(_) => SkillsData { categories: Vec::new() },
         };
         
+        // Load timeline data from JSON file
+        let timeline_data = match fs::read_to_string("src/static/content/timeline.json") {
+            Ok(json_str) => match serde_json::from_str(&json_str) {
+                Ok(data) => data,
+                Err(_) => TimelineData { 
+                    events: Vec::new(),
+                    education: Vec::new(),
+                    certifications: Vec::new(),
+                },
+            },
+            Err(_) => TimelineData { 
+                events: Vec::new(),
+                education: Vec::new(),
+                certifications: Vec::new(),
+            },
+        };
+        
         Self {
             menu_index: 0,
             link_index: 0,
             skill_category_index: 0,
             display_mode: DisplayMode::Menu,
+            timeline_category: TimelineCategory::Career,
+            timeline_event_index: 0,
+            timeline_detail_view: false,
             about_content: about(),
             skills_content: skills(),
             skills_data,
@@ -126,6 +205,8 @@ impl App {
             why_warp_content: why_warp(),
             welcome_content: welcome(),
             contact_content: contact(),
+            timeline_content: timeline(),
+            timeline_data,
             links: Vec::new(),
             should_exit: false,
         }
@@ -141,7 +222,67 @@ impl App {
             DisplayMode::Menu => self.handle_menu_keys(key),
             DisplayMode::ProjectLinks => self.handle_project_links_keys(key),
             DisplayMode::SkillsVisual => self.handle_skills_visual_keys(key),
+            DisplayMode::Timeline => self.handle_timeline_keys(key),
+            DisplayMode::TimelineDetail => self.handle_timeline_detail_keys(key),
             _ => self.handle_content_keys(key),
+        }
+    }
+    
+    /// Handle keys in skills visualization mode
+    /// Handle keys in timeline detail view mode
+    fn handle_timeline_detail_keys(&mut self, key: event::KeyEvent) {
+        match key.code {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Backspace => {
+                self.timeline_detail_view = false;
+                self.display_mode = DisplayMode::Timeline;
+            }
+            _ => {}
+        }
+    }
+    
+    /// Handle keys in timeline mode
+    fn handle_timeline_keys(&mut self, key: event::KeyEvent) {
+        match key.code {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Backspace => {
+                self.display_mode = DisplayMode::Menu;
+            }
+            KeyCode::Tab => {
+                // Cycle through timeline categories
+                self.timeline_category = match self.timeline_category {
+                    TimelineCategory::Career => TimelineCategory::Education,
+                    TimelineCategory::Education => TimelineCategory::Certifications,
+                    TimelineCategory::Certifications => TimelineCategory::Career,
+                };
+                self.timeline_event_index = 0;
+            }
+            KeyCode::Left | KeyCode::Char('h') => {
+                if self.timeline_event_index > 0 {
+                    self.timeline_event_index -= 1;
+                }
+            }
+            KeyCode::Right | KeyCode::Char('l') => {
+                let max_index = match self.timeline_category {
+                    TimelineCategory::Career => self.timeline_data.events.len(),
+                    TimelineCategory::Education => self.timeline_data.education.len(),
+                    TimelineCategory::Certifications => self.timeline_data.certifications.len(),
+                };
+                
+                if max_index > 0 && self.timeline_event_index < max_index - 1 {
+                    self.timeline_event_index += 1;
+                }
+            }
+            KeyCode::Enter => {
+                // View detail of current timeline event
+                self.timeline_detail_view = true;
+                self.display_mode = DisplayMode::TimelineDetail;
+            }
+            _ => {}
         }
     }
     
@@ -231,7 +372,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                 }
             }
@@ -242,6 +383,7 @@ impl App {
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
                     4 => self.display_mode = DisplayMode::Contact,
+                    5 => self.display_mode = DisplayMode::Timeline,
                     _ => {}
                 }
             }
@@ -264,7 +406,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                 }
             }
@@ -287,6 +429,7 @@ impl App {
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
                     4 => self.display_mode = DisplayMode::Contact,
+                    5 => self.display_mode = DisplayMode::Timeline,
                     _ => {}
                 }
             }

@@ -1,0 +1,102 @@
+{
+  "events": [
+    {
+      "year": 2023,
+      "title": "Senior Rust Developer",
+      "company": "Terminal Technologies",
+      "description": "Led development of CLI and TUI applications for system monitoring and automation. Improved performance and user experience through Rust optimizations.",
+      "highlights": [
+        "Reduced memory usage by 40% through custom data structures",
+        "Implemented cross-platform terminal rendering with Ratatui",
+        "Mentored 4 junior developers in Rust best practices"
+      ],
+      "technologies": ["Rust", "Ratatui", "Crossterm", "Clap"]
+    },
+    {
+      "year": 2021,
+      "title": "Frontend Team Lead",
+      "company": "CloudScale Inc.",
+      "description": "Managed a team of 6 developers building modern web applications with TypeScript and React. Established coding standards and review processes.",
+      "highlights": [
+        "Delivered major dashboard redesign project ahead of schedule",
+        "Reduced bundle size by 35% through code splitting and lazy loading",
+        "Implemented comprehensive UI testing strategy"
+      ],
+      "technologies": ["TypeScript", "React", "Redux", "Jest"]
+    },
+    {
+      "year": 2019,
+      "title": "Full Stack Developer",
+      "company": "InnoTech Solutions",
+      "description": "Developed and maintained web applications using Node.js backend and React frontend. Implemented CI/CD pipelines and testing frameworks.",
+      "highlights": [
+        "Built RESTful API service that handled 500k+ daily requests",
+        "Improved application load time by 60% through optimizations",
+        "Introduced GraphQL for more efficient data fetching"
+      ],
+      "technologies": ["JavaScript", "Node.js", "React", "MongoDB"]
+    },
+    {
+      "year": 2017,
+      "title": "Software Engineer",
+      "company": "TechStart",
+      "description": "Worked on various projects including mobile apps and web services. Focused on responsive design and cross-platform compatibility.",
+      "highlights": [
+        "Developed iOS and Android apps using React Native",
+        "Implemented PWA features for offline functionality",
+        "Created API integrations with third-party services"
+      ],
+      "technologies": ["JavaScript", "React Native", "Express", "Firebase"]
+    },
+    {
+      "year": 2015,
+      "title": "Junior Developer",
+      "company": "Web Solutions Ltd.",
+      "description": "Started career building websites and small web applications. Gained experience with frontend and backend technologies.",
+      "highlights": [
+        "Built and maintained company website",
+        "Developed custom CMS solution for small businesses",
+        "Created responsive email templates"
+      ],
+      "technologies": ["HTML/CSS", "JavaScript", "PHP", "MySQL"]
+    }
+  ],
+  "education": [
+    {
+      "year": 2015,
+      "degree": "B.S. Computer Science",
+      "institution": "Tech University",
+      "description": "Graduated with honors. Focused on software engineering and web technologies.",
+      "highlights": [
+        "Senior project: Open-source code editor extension",
+        "Teaching assistant for Algorithms course",
+        "President of Coding Club"
+      ]
+    },
+    {
+      "year": 2018,
+      "degree": "M.S. Computer Science",
+      "institution": "Advanced Institute of Technology",
+      "description": "Part-time studies focusing on distributed systems and cloud computing.",
+      "highlights": [
+        "Thesis on efficient data synchronization in distributed systems",
+        "Research assistant in cloud computing lab",
+        "Published paper on cloud-native applications"
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "year": 2020,
+      "title": "AWS Certified Solutions Architect",
+      "organization": "Amazon Web Services",
+      "description": "Professional certification for designing distributed systems on AWS"
+    },
+    {
+      "year": 2022,
+      "title": "Rust Programming: Advanced Concepts",
+      "organization": "Rust Foundation",
+      "description": "In-depth course on advanced Rust programming techniques"
+    }
+  ]
+}
