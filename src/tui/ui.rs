@@ -88,21 +88,6 @@ fn render_menu_sidebar(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
 
     f.render_widget(menu, area);
 }
-
-/// Renders the menu with welcome information (home screen)
-fn render_menu(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let menu_layout = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
-        .split(area);
-
-    // Render menu on the left
-    render_menu_sidebar(f, app, menu_layout[0]);
-    
-    // Render welcome text on the right
-    render_welcome(f, menu_layout[1]);
-}
-
 /// Renders the welcome screen
 fn render_welcome(f: &mut Frame, area: ratatui::layout::Rect) {
     let instructions = Paragraph::new(
