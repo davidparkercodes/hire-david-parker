@@ -12,10 +12,10 @@ pub fn about() -> String {
         .join("src")
         .join("static")
         .join("about.txt");
-    
+
     match fs::read_to_string(&about_path) {
         Ok(content) => content,
-        Err(_) => String::from("Error: About information could not be loaded.")
+        Err(_) => String::from("Error: About information could not be loaded."),
     }
 }
 
@@ -27,7 +27,7 @@ mod tests {
     fn test_greeting() {
         assert_eq!(greeting(), "Hello Warp, I am David Parker.");
     }
-    
+
     #[test]
     fn test_about_content() {
         let about_content = about();
