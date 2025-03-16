@@ -138,17 +138,14 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                 
                 // If we're inside a link, store the link information
                 if let Some(url) = &active_link_url {
-                    // Skip links that are part of the main text (avoid duplicating links from hidden URLs)
-                    // This way we'll only get links from the markdown, not descriptive text
-                    if !url.contains("davidparker") {
-                        links.push(Link {
-                            text: text_str.clone(),
-                            url: url.clone(),
-                            line: current_line_idx,
-                            start_column,
-                            end_column,
-                        });
-                    }
+                    // Add all link URLs for processing
+                    links.push(Link {
+                        text: text_str.clone(),
+                        url: url.clone(),
+                        line: current_line_idx,
+                        start_column,
+                        end_column,
+                    });
                 }
                 
                 current_line.push(Span::styled(text_str, style));
