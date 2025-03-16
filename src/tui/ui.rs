@@ -386,9 +386,9 @@ fn render_timeline(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 }
 
 /// Renders a single timeline event card
-fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, event: &TimelineEvent, title: &str) {
-    // Create card layout
-    let inner_area = area.inner(Margin { vertical: 1, horizontal: 2 });
+fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, event: &TimelineEvent, _title: &str) {
+    // Create card layout with margins (kept for future use)
+    let _inner_area = area.inner(Margin { vertical: 1, horizontal: 2 });
     
     let card_title = match app.timeline_category {
         TimelineCategory::Career => {
@@ -495,8 +495,8 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     
     let event = &events[app.timeline_event_index];
     
-    // Create title based on event
-    let title = match app.timeline_category {
+    // Title based on event is created but not directly used (kept for future use)
+    let _title = match app.timeline_category {
         TimelineCategory::Career => {
             format!("{} - {} at {}", 
                     event.year, 
@@ -630,8 +630,8 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     f.render_widget(highlights_content, highlights_chunk[0]);
     
     // Render technologies with visual enhancement if available
-    let tech_content = match &event.technologies {
-        Some(technologies) if !technologies.is_empty() => {
+    let tech_content = if let Some(technologies) = &event.technologies {
+        if !technologies.is_empty() {
             // Create a list of technologies with styled badges
             let items: Vec<ListItem> = technologies
                 .iter()
@@ -652,12 +652,13 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
                     .borders(Borders::ALL)
                     .border_style(Style::default().fg(Color::Blue)))
                 .style(Style::default())
-        },
-        _ => {
-            Paragraph::new("No technology information available")
+        } else {
+            List::new(vec![ListItem::new("No technology information available")])
                 .block(Block::default().title("Technologies").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
-                .wrap(Wrap { trim: true })
         }
+    } else {
+        List::new(vec![ListItem::new("No technology information available")])
+            .block(Block::default().title("Technologies").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
     };
     
     f.render_widget(tech_content, highlights_chunk[1]);
