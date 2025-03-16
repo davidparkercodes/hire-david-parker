@@ -1,4 +1,4 @@
-use crate::about;
+use crate::{about, skills, projects, why_warp, welcome};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
     execute,
@@ -22,6 +22,14 @@ pub struct App {
     pub display_mode: DisplayMode,
     /// About content
     pub about_content: String,
+    /// Skills content
+    pub skills_content: String,
+    /// Projects content
+    pub projects_content: String,
+    /// Why Warp content
+    pub why_warp_content: String,
+    /// Welcome content
+    pub welcome_content: String,
     /// Should the application exit
     pub should_exit: bool,
 }
@@ -48,6 +56,10 @@ impl App {
             menu_index: 0,
             display_mode: DisplayMode::Menu,
             about_content: about(),
+            skills_content: skills(),
+            projects_content: projects(),
+            why_warp_content: why_warp(),
+            welcome_content: welcome(),
             should_exit: false,
         }
     }
