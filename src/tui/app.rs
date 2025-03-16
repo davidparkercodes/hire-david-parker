@@ -1,4 +1,4 @@
-use crate::{about, skills, projects, why_warp, welcome, contact};
+use crate::{about, skills, projects, why_warp, welcome, contact, timeline};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
     execute,
@@ -36,6 +36,55 @@ pub struct SkillsData {
     pub categories: Vec<SkillCategory>,
 }
 
+/// Timeline event type - kept for compatibility but no longer used for filtering
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TimelineType {
+    #[serde(rename = "career")]
+    Career,
+    #[serde(rename = "education")]
+    Education,
+    #[serde(rename = "certification")]
+    Certification,
+    #[serde(rename = "project")]
+    Project,
+    #[serde(other)]
+    Other,
+}
+
+/// Timeline event structure
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TimelineEvent {
+    /// Year of event
+    pub year: u16,
+    /// Type of timeline event
+    #[serde(rename = "type")]
+    pub event_type: TimelineType,
+    /// Event title
+    pub title: String,
+    /// Organization name (company, school, etc.)
+    pub organization: String,
+    /// Event description
+    pub description: String,
+    /// Key achievements or highlights
+    pub highlights: Option<Vec<String>>,
+    /// Technologies used
+    pub technologies: Option<Vec<String>>,
+}
+
+/// Timeline filter type - kept as a placeholder but now only has one option
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TimelineFilter {
+    /// Show all events
+    All,
+}
+
+/// Complete timeline data
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TimelineData {
+    /// All timeline events in chronological order
+    pub timeline: Vec<TimelineEvent>,
+}
+
 /// Hyperlink information
 #[derive(Debug, Clone)]
 pub struct Link {
@@ -61,6 +110,12 @@ pub struct App {
     pub skill_category_index: usize,
     /// Current display mode
     pub display_mode: DisplayMode,
+    /// Current timeline filter
+    pub timeline_filter: TimelineFilter,
+    /// Current selected timeline event index
+    pub timeline_event_index: usize,
+    /// View detailed event info
+    pub timeline_detail_view: bool,
     /// About content
     pub about_content: String,
     /// Skills content
@@ -75,6 +130,10 @@ pub struct App {
     pub welcome_content: String,
     /// Contact content
     pub contact_content: String,
+    /// Timeline content
+    pub timeline_content: String,
+    /// Timeline data
+    pub timeline_data: TimelineData,
     /// Hyperlinks in current view
     pub links: Vec<Link>,
     /// Should the application exit
@@ -100,6 +159,10 @@ pub enum DisplayMode {
     WhyWarp,
     /// Contact information
     Contact,
+    /// Timeline view
+    Timeline,
+    /// Timeline detail view
+    TimelineDetail,
 }
 
 impl App {
@@ -114,11 +177,33 @@ impl App {
             Err(_) => SkillsData { categories: Vec::new() },
         };
         
+        // Load timeline data from JSON file
+        let timeline_data = match fs::read_to_string("src/static/content/timeline.json") {
+            Ok(json_str) => match serde_json::from_str(&json_str) {
+                Ok(data) => data,
+                Err(e) => {
+                    eprintln!("Error parsing timeline.json: {}", e);
+                    TimelineData { 
+                        timeline: Vec::new(),
+                    }
+                },
+            },
+            Err(e) => {
+                eprintln!("Error reading timeline.json: {}", e);
+                TimelineData { 
+                    timeline: Vec::new(),
+                }
+            },
+        };
+        
         Self {
             menu_index: 0,
             link_index: 0,
             skill_category_index: 0,
             display_mode: DisplayMode::Menu,
+            timeline_filter: TimelineFilter::All,
+            timeline_event_index: 0,
+            timeline_detail_view: false,
             about_content: about(),
             skills_content: skills(),
             skills_data,
@@ -126,6 +211,8 @@ impl App {
             why_warp_content: why_warp(),
             welcome_content: welcome(),
             contact_content: contact(),
+            timeline_content: timeline(),
+            timeline_data,
             links: Vec::new(),
             should_exit: false,
         }
@@ -137,11 +224,88 @@ impl App {
             return;
         }
 
+        // Fix timeline event index if it's out of bounds
+        if self.display_mode == DisplayMode::Timeline || self.display_mode == DisplayMode::TimelineDetail {
+            let filtered_events = self.get_filtered_events();
+            if !filtered_events.is_empty() && self.timeline_event_index >= filtered_events.len() {
+                self.timeline_event_index = 0;
+            }
+        }
+
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
             DisplayMode::ProjectLinks => self.handle_project_links_keys(key),
             DisplayMode::SkillsVisual => self.handle_skills_visual_keys(key),
+            DisplayMode::Timeline => self.handle_timeline_keys(key),
+            DisplayMode::TimelineDetail => self.handle_timeline_detail_keys(key),
             _ => self.handle_content_keys(key),
+        }
+    }
+    
+    /// Get timeline events (no longer filtered)
+    pub fn get_filtered_events(&self) -> Vec<&TimelineEvent> {
+        // Return all timeline events 
+        self.timeline_data.timeline.iter().collect()
+    }
+
+    /// Handle keys in timeline detail view mode
+    fn handle_timeline_detail_keys(&mut self, key: event::KeyEvent) {
+        match key.code {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Backspace => {
+                self.timeline_detail_view = false;
+                self.display_mode = DisplayMode::Timeline;
+            }
+            KeyCode::Left | KeyCode::Char('h') => {
+                // Navigate to previous event while staying in detail view
+                if self.timeline_event_index > 0 {
+                    self.timeline_event_index -= 1;
+                }
+            }
+            KeyCode::Right | KeyCode::Char('l') => {
+                // Navigate to next event while staying in detail view
+                let filtered_events = self.get_filtered_events();
+                
+                if !filtered_events.is_empty() && self.timeline_event_index < filtered_events.len() - 1 {
+                    self.timeline_event_index += 1;
+                }
+            }
+            _ => {}
+        }
+    }
+    
+    /// Handle keys in timeline mode
+    fn handle_timeline_keys(&mut self, key: event::KeyEvent) {
+        match key.code {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Backspace => {
+                self.display_mode = DisplayMode::Menu;
+            }
+            KeyCode::Left | KeyCode::Char('h') => {
+                if self.timeline_event_index > 0 {
+                    self.timeline_event_index -= 1;
+                }
+            }
+            KeyCode::Right | KeyCode::Char('l') => {
+                let filtered_events = self.get_filtered_events();
+                
+                if !filtered_events.is_empty() && self.timeline_event_index < filtered_events.len() - 1 {
+                    self.timeline_event_index += 1;
+                }
+            }
+            KeyCode::Enter => {
+                // View detail of current timeline event if we have events
+                let filtered_events = self.get_filtered_events();
+                if !filtered_events.is_empty() {
+                    self.timeline_detail_view = true;
+                    self.display_mode = DisplayMode::TimelineDetail;
+                }
+            }
+            _ => {}
         }
     }
     
@@ -231,7 +395,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                 }
             }
@@ -242,6 +406,7 @@ impl App {
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
                     4 => self.display_mode = DisplayMode::Contact,
+                    5 => self.display_mode = DisplayMode::Timeline,
                     _ => {}
                 }
             }
@@ -264,7 +429,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                 }
             }
@@ -287,6 +452,7 @@ impl App {
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
                     4 => self.display_mode = DisplayMode::Contact,
+                    5 => self.display_mode = DisplayMode::Timeline,
                     _ => {}
                 }
             }
