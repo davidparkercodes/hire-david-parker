@@ -146,20 +146,31 @@ impl App {
             KeyCode::Char('q') => {
                 self.should_exit = true;
             }
-            KeyCode::Esc | KeyCode::Left | KeyCode::Char('h') => {
+            KeyCode::Esc => {
                 self.display_mode = DisplayMode::Skills;
                 self.skill_category_index = 0;
             }
-            KeyCode::Up | KeyCode::Char('k') => {
-                if self.skill_category_index > 0 {
+            KeyCode::Left | KeyCode::Char('h') => {
+                // If at first category, go back to Skills view
+                if self.skill_category_index == 0 {
+                    self.display_mode = DisplayMode::Skills;
+                } else {
+                    // Otherwise navigate to previous category
                     self.skill_category_index -= 1;
                 }
             }
-            KeyCode::Down | KeyCode::Char('j') => {
+            KeyCode::Right | KeyCode::Char('l') => {
                 if !self.skills_data.categories.is_empty() && 
                    self.skill_category_index < self.skills_data.categories.len() - 1 {
                     self.skill_category_index += 1;
                 }
+            }
+            // Keep up/down for compatibility, but they scroll through skills rather than categories
+            KeyCode::Up | KeyCode::Char('k') => {
+                // Reserved for future skill selection within a category
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                // Reserved for future skill selection within a category
             }
             _ => {}
         }

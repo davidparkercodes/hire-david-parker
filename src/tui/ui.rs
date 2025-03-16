@@ -37,7 +37,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::Projects => "q: Quit | ↑/k: Up | ↓/j: Down | →/l: Navigate Links | Esc: Return to Menu",
         DisplayMode::ProjectLinks => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Open Link | ←/h: Back to Projects",
         DisplayMode::Skills => "q: Quit | ↑/k: Up | ↓/j: Down | →/l: View Skill Meters | Esc: Return to Menu",
-        DisplayMode::SkillsVisual => "q: Quit | ↑/k: Up | ↓/j: Down | ←/h: Back to Skills | Esc: Return to Menu",
+        DisplayMode::SkillsVisual => "q: Quit | ←/h: Previous Category | →/l: Next Category | Esc: Back to Skills",
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
@@ -121,7 +121,7 @@ fn render_about(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let (text, links) = parse_markdown(&app.skills_content);
     let paragraph = Paragraph::new(text)
-        .block(Block::default().title("Skills").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+        .block(Block::default().title("Skills (→ for bar graphs)").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
     app.links = links;
@@ -132,7 +132,7 @@ fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let (text, links) = parse_markdown(&app.projects_content);
     
-    let title = "Projects";
+    let title = "Projects (→ for links)";
     
     let paragraph = Paragraph::new(text)
         .block(Block::default().title(title).borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
@@ -192,7 +192,7 @@ fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 fn render_skills_visual(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     // Create the block that will contain all the skills
     let block = Block::default()
-        .title("Skill Proficiency")
+        .title("Skill Proficiency (← → to navigate categories)")
         .borders(Borders::ALL)
         .border_style(Style::default().fg(Color::Blue));
     
@@ -229,8 +229,9 @@ fn render_skills_visual(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         .enumerate()
         .map(|(i, &name)| {
             if i == app.skill_category_index {
+                // Add left/right arrows to indicate navigation direction
                 Span::styled(
-                    format!("【{}】", name),
+                    format!("《 {} 》", name),
                     Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
                 )
             } else {
