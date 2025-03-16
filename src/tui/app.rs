@@ -5,14 +5,36 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use ratatui::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::{
     error::Error,
+    fs,
     io,
     time::Duration,
 };
 
 use super::ui;
 use super::event::{Event as AppEvent, EventHandler};
+
+/// Skill data structure for visualization
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Skill {
+    pub name: String,
+    pub level: u8,
+}
+
+/// Skill category structure
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillCategory {
+    pub name: String,
+    pub skills: Vec<Skill>,
+}
+
+/// Complete skills data
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillsData {
+    pub categories: Vec<SkillCategory>,
+}
 
 /// Hyperlink information
 #[derive(Debug, Clone)]
@@ -35,12 +57,16 @@ pub struct App {
     pub menu_index: usize,
     /// Current selected link index when in ProjectLinks mode
     pub link_index: usize,
+    /// Current selected skill category index when in SkillsVisual mode
+    pub skill_category_index: usize,
     /// Current display mode
     pub display_mode: DisplayMode,
     /// About content
     pub about_content: String,
     /// Skills content
     pub skills_content: String,
+    /// Skills data for visualization
+    pub skills_data: SkillsData,
     /// Projects content
     pub projects_content: String,
     /// Why Warp content
@@ -62,6 +88,8 @@ pub enum DisplayMode {
     About,
     /// Skills section
     Skills,
+    /// Interactive skills visualization
+    SkillsVisual,
     /// Projects section
     Projects,
     /// Project links navigation
@@ -73,12 +101,23 @@ pub enum DisplayMode {
 impl App {
     /// Creates a new app instance
     pub fn new() -> Self {
+        // Load skills data from JSON file
+        let skills_data = match fs::read_to_string("src/static/content/skills.json") {
+            Ok(json_str) => match serde_json::from_str(&json_str) {
+                Ok(data) => data,
+                Err(_) => SkillsData { categories: Vec::new() },
+            },
+            Err(_) => SkillsData { categories: Vec::new() },
+        };
+        
         Self {
             menu_index: 0,
             link_index: 0,
+            skill_category_index: 0,
             display_mode: DisplayMode::Menu,
             about_content: about(),
             skills_content: skills(),
+            skills_data,
             projects_content: projects(),
             why_warp_content: why_warp(),
             welcome_content: welcome(),
@@ -96,7 +135,33 @@ impl App {
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
             DisplayMode::ProjectLinks => self.handle_project_links_keys(key),
+            DisplayMode::SkillsVisual => self.handle_skills_visual_keys(key),
             _ => self.handle_content_keys(key),
+        }
+    }
+    
+    /// Handle keys in skills visualization mode
+    fn handle_skills_visual_keys(&mut self, key: event::KeyEvent) {
+        match key.code {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Left | KeyCode::Char('h') => {
+                self.display_mode = DisplayMode::Skills;
+                self.skill_category_index = 0;
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                if self.skill_category_index > 0 {
+                    self.skill_category_index -= 1;
+                }
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                if !self.skills_data.categories.is_empty() && 
+                   self.skill_category_index < self.skills_data.categories.len() - 1 {
+                    self.skill_category_index += 1;
+                }
+            }
+            _ => {}
         }
     }
     
@@ -191,6 +256,11 @@ impl App {
                 if self.display_mode == DisplayMode::Projects && !self.links.is_empty() {
                     self.display_mode = DisplayMode::ProjectLinks;
                     self.link_index = 0;
+                }
+                // For the skills section, allow moving right to see skill visualization
+                else if self.display_mode == DisplayMode::Skills {
+                    self.display_mode = DisplayMode::SkillsVisual;
+                    self.skill_category_index = 0;
                 }
             }
             KeyCode::Enter => {
