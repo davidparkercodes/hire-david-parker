@@ -228,7 +228,6 @@ impl App {
         }
     }
     
-    /// Handle keys in skills visualization mode
     /// Handle keys in timeline detail view mode
     fn handle_timeline_detail_keys(&mut self, key: event::KeyEvent) {
         match key.code {
@@ -238,6 +237,33 @@ impl App {
             KeyCode::Esc | KeyCode::Backspace => {
                 self.timeline_detail_view = false;
                 self.display_mode = DisplayMode::Timeline;
+            }
+            KeyCode::Left | KeyCode::Char('h') => {
+                // Navigate to previous event while staying in detail view
+                if self.timeline_event_index > 0 {
+                    self.timeline_event_index -= 1;
+                }
+            }
+            KeyCode::Right | KeyCode::Char('l') => {
+                // Navigate to next event while staying in detail view
+                let max_index = match self.timeline_category {
+                    TimelineCategory::Career => self.timeline_data.events.len(),
+                    TimelineCategory::Education => self.timeline_data.education.len(),
+                    TimelineCategory::Certifications => self.timeline_data.certifications.len(),
+                };
+                
+                if max_index > 0 && self.timeline_event_index < max_index - 1 {
+                    self.timeline_event_index += 1;
+                }
+            }
+            KeyCode::Tab => {
+                // Allow switching categories directly from detail view
+                self.timeline_category = match self.timeline_category {
+                    TimelineCategory::Career => TimelineCategory::Education,
+                    TimelineCategory::Education => TimelineCategory::Certifications,
+                    TimelineCategory::Certifications => TimelineCategory::Career,
+                };
+                self.timeline_event_index = 0;
             }
             _ => {}
         }

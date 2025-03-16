@@ -40,7 +40,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::SkillsVisual => "q: Quit | ←/h: Previous Category | →/l: Next Category | Esc: Back to Skills",
         DisplayMode::Contact => "q: Quit | Esc: Return to Menu",
         DisplayMode::Timeline => "q: Quit | Tab: Switch Category | ←/h: Previous | →/l: Next | Enter: View Details | Esc: Menu",
-        DisplayMode::TimelineDetail => "q: Quit | Esc: Back to Timeline",
+        DisplayMode::TimelineDetail => "q: Quit | ←/h: Previous Entry | →/l: Next Entry | Tab: Switch Category | Esc: Back to Timeline",
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
@@ -418,9 +418,21 @@ fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, e
         TimelineCategory::Certifications => &app.timeline_data.certifications,
     };
     
-    let position_text = format!("{} of {} (Tab to switch category, Enter for details)", 
-                                app.timeline_event_index + 1, 
-                                events.len());
+    // Add navigation arrows to indicate previous/next entry availability
+    let mut nav_arrows = String::new();
+    if app.timeline_event_index > 0 {
+        nav_arrows.push_str("◀ ");
+    } else {
+        nav_arrows.push_str("  ");
+    }
+    
+    nav_arrows.push_str(&format!("{} of {}", app.timeline_event_index + 1, events.len()));
+    
+    if app.timeline_event_index < events.len() - 1 {
+        nav_arrows.push_str(" ▶");
+    }
+    
+    let position_text = format!("{} (Tab to switch category, Enter for details)", nav_arrows);
     
     // Create card content
     let content = vec![
@@ -440,12 +452,15 @@ fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, e
         ]),
     ];
     
+    // Create a block with added visual cues for navigation in the title
+    let block = Block::default()
+        .title(Span::styled(card_title, Style::default().add_modifier(Modifier::BOLD)))
+        .title_alignment(Alignment::Center)
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(Color::Blue));
+    
     let card = Paragraph::new(content)
-        .block(Block::default()
-            .title(Span::styled(card_title, Style::default().add_modifier(Modifier::BOLD)))
-            .title_alignment(Alignment::Center)
-            .borders(Borders::ALL)
-            .border_style(Style::default().fg(Color::Blue)))
+        .block(block)
         .alignment(Alignment::Left)
         .wrap(Wrap { trim: true });
     
@@ -506,7 +521,7 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(3),  // Header
+            Constraint::Length(3),  // Header with navigation
             Constraint::Length(3),  // Year and title
             Constraint::Length(6),  // Description
             Constraint::Min(0),     // Highlights/technologies
@@ -514,29 +529,49 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
         .margin(1)
         .split(area);
     
-    // Render header with category
+    // Render header with category and navigation
     let category_name = match app.timeline_category {
         TimelineCategory::Career => "Career History",
         TimelineCategory::Education => "Education",
         TimelineCategory::Certifications => "Certifications",
     };
     
-    let header = Paragraph::new(category_name)
+    // Add navigation info to the header
+    let navigation_text = format!("{} ({} of {}) [Esc to go back]", 
+                                 category_name,
+                                 app.timeline_event_index + 1,
+                                 events.len());
+    
+    let header = Paragraph::new(navigation_text)
         .alignment(Alignment::Center)
         .style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
         .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)));
     
     f.render_widget(header, chunks[0]);
     
-    // Render title section
+    // Render title section with enhanced style
+    let place = match app.timeline_category {
+        TimelineCategory::Career => event.company.as_deref().unwrap_or("Unknown").to_string(),
+        TimelineCategory::Education => event.institution.as_deref().unwrap_or("Unknown").to_string(),
+        TimelineCategory::Certifications => event.organization.as_deref().unwrap_or("Unknown").to_string(),
+    };
+    
     let title_content = vec![
         Line::from(vec![
-            Span::styled("Year: ", Style::default().add_modifier(Modifier::BOLD)),
+            Span::styled("Year: ", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
             Span::raw(event.year.to_string()),
         ]),
         Line::from(vec![
-            Span::styled("Role: ", Style::default().add_modifier(Modifier::BOLD)),
+            Span::styled("Title: ", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
             Span::raw(&event.title),
+        ]),
+        Line::from(vec![
+            Span::styled(match app.timeline_category {
+                TimelineCategory::Career => "Company: ",
+                TimelineCategory::Education => "Institution: ",
+                TimelineCategory::Certifications => "Organization: ",
+            }, Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
+            Span::raw(&place),
         ]),
     ];
     
@@ -546,10 +581,14 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     
     f.render_widget(title_widget, chunks[1]);
     
-    // Render description
+    // Render description with scrollable option
     let desc_widget = Paragraph::new(event.description.clone())
-        .block(Block::default().title("Description").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
-        .wrap(Wrap { trim: true });
+        .block(Block::default()
+            .title("Description")
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::Blue)))
+        .wrap(Wrap { trim: true })
+        .style(Style::default());
     
     f.render_widget(desc_widget, chunks[2]);
     
@@ -562,21 +601,25 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
         ])
         .split(chunks[3]);
     
-    // Render highlights if available
+    // Render highlights with colored bullets if available
     let highlights_content = match &event.highlights {
         Some(highlights) if !highlights.is_empty() => {
             let items: Vec<ListItem> = highlights
                 .iter()
                 .map(|highlight| {
                     ListItem::new(Line::from(vec![
-                        Span::raw(" • "),
+                        Span::styled(" ► ", Style::default().fg(Color::Yellow)),
                         Span::raw(highlight),
                     ]))
                 })
                 .collect();
             
             List::new(items)
-                .block(Block::default().title("Highlights").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+                .block(Block::default()
+                    .title(Span::styled("Key Highlights", Style::default().add_modifier(Modifier::BOLD)))
+                    .borders(Borders::ALL)
+                    .border_style(Style::default().fg(Color::Blue)))
+                .highlight_style(Style::default().add_modifier(Modifier::BOLD))
         },
         _ => {
             List::new(vec![ListItem::new("No highlights available")])
@@ -586,13 +629,29 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     
     f.render_widget(highlights_content, highlights_chunk[0]);
     
-    // Render technologies if available
+    // Render technologies with visual enhancement if available
     let tech_content = match &event.technologies {
         Some(technologies) if !technologies.is_empty() => {
-            let tech_text = technologies.join(", ");
-            Paragraph::new(tech_text)
-                .block(Block::default().title("Technologies").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
-                .wrap(Wrap { trim: true })
+            // Create a list of technologies with styled badges
+            let items: Vec<ListItem> = technologies
+                .iter()
+                .map(|tech| {
+                    ListItem::new(Line::from(vec![
+                        Span::styled(format!(" [{}] ", tech), 
+                            Style::default()
+                                .fg(Color::Black)
+                                .bg(Color::Cyan)
+                                .add_modifier(Modifier::BOLD)),
+                    ]))
+                })
+                .collect();
+            
+            List::new(items)
+                .block(Block::default()
+                    .title(Span::styled("Technologies", Style::default().add_modifier(Modifier::BOLD)))
+                    .borders(Borders::ALL)
+                    .border_style(Style::default().fg(Color::Blue)))
+                .style(Style::default())
         },
         _ => {
             Paragraph::new("No technology information available")
