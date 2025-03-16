@@ -96,8 +96,30 @@ impl App {
     /// Handles keys in content display modes
     fn handle_content_keys(&mut self, key: event::KeyEvent) {
         match key.code {
-            KeyCode::Char('q') | KeyCode::Esc | KeyCode::Backspace => {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Backspace => {
                 self.display_mode = DisplayMode::Menu;
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                if self.menu_index > 0 {
+                    self.menu_index -= 1;
+                }
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                if self.menu_index < 3 {
+                    self.menu_index += 1;
+                }
+            }
+            KeyCode::Enter => {
+                match self.menu_index {
+                    0 => self.display_mode = DisplayMode::About,
+                    1 => self.display_mode = DisplayMode::Skills,
+                    2 => self.display_mode = DisplayMode::Projects,
+                    3 => self.display_mode = DisplayMode::WhyWarp,
+                    _ => {}
+                }
             }
             _ => {}
         }

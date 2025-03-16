@@ -33,7 +33,7 @@ pub fn render(f: &mut Frame, app: &App) {
     // Create footer
     let footer_text = match app.display_mode {
         DisplayMode::Menu => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select",
-        _ => "q/Esc/Backspace: Return to Menu",
+        _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
         .style(Style::default().fg(Color::DarkGray))
@@ -41,18 +41,27 @@ pub fn render(f: &mut Frame, app: &App) {
         .block(Block::default().borders(Borders::ALL));
     f.render_widget(footer, chunks[2]);
 
-    // Render the correct widget based on app state
+    // Create the main content area layout with menu always visible
+    let content_chunks = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(25), Constraint::Percentage(75)].as_ref())
+        .split(chunks[1]);
+    
+    // Always render the menu on the left side
+    render_menu_sidebar(f, app, content_chunks[0]);
+    
+    // Render the appropriate content on the right side
     match app.display_mode {
-        DisplayMode::Menu => render_menu(f, app, chunks[1]),
-        DisplayMode::About => render_about(f, app, chunks[1]),
-        DisplayMode::Skills => render_skills(f, app, chunks[1]),
-        DisplayMode::Projects => render_projects(f, app, chunks[1]),
-        DisplayMode::WhyWarp => render_why_warp(f, app, chunks[1]),
+        DisplayMode::Menu => render_welcome(f, content_chunks[1]),
+        DisplayMode::About => render_about(f, app, content_chunks[1]),
+        DisplayMode::Skills => render_skills(f, app, content_chunks[1]),
+        DisplayMode::Projects => render_projects(f, app, content_chunks[1]),
+        DisplayMode::WhyWarp => render_why_warp(f, app, content_chunks[1]),
     }
 }
 
-/// Renders the menu
-fn render_menu(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
+/// Renders the menu sidebar (always visible)
+fn render_menu_sidebar(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     let menu_items = vec![
         "About Me",
         "Skills",
@@ -77,11 +86,25 @@ fn render_menu(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         .block(Block::default().title("Menu").borders(Borders::ALL))
         .highlight_style(Style::default().add_modifier(Modifier::BOLD));
 
+    f.render_widget(menu, area);
+}
+
+/// Renders the menu with welcome information (home screen)
+fn render_menu(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     let menu_layout = Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(30), Constraint::Percentage(70)].as_ref())
         .split(area);
 
+    // Render menu on the left
+    render_menu_sidebar(f, app, menu_layout[0]);
+    
+    // Render welcome text on the right
+    render_welcome(f, menu_layout[1]);
+}
+
+/// Renders the welcome screen
+fn render_welcome(f: &mut Frame, area: ratatui::layout::Rect) {
     let instructions = Paragraph::new(
         "Welcome to my interactive resume!\n\n\
         Use the arrow keys to navigate the menu\n\
@@ -92,8 +115,7 @@ fn render_menu(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     .block(Block::default().title("Instructions").borders(Borders::ALL))
     .wrap(Wrap { trim: true });
 
-    f.render_widget(menu, menu_layout[0]);
-    f.render_widget(instructions, menu_layout[1]);
+    f.render_widget(instructions, area);
 }
 
 /// Renders the about section
