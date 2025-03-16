@@ -76,6 +76,13 @@ pub fn parse_markdown(content: &str) -> Text<'static> {
                         }
                         lines.push(Line::from(Vec::new())); // Add blank line after paragraph
                     },
+                    Tag::List(_) => {
+                        if !current_line.is_empty() {
+                            lines.push(Line::from(current_line.clone()));
+                            current_line.clear();
+                        }
+                        lines.push(Line::from(Vec::new())); // Add blank line after list
+                    },
                     Tag::Emphasis | Tag::Strong | Tag::Strikethrough => {
                         active_styles.pop();
                     },
