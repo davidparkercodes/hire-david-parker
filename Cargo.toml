@@ -3,7 +3,7 @@ name = "hiredavidparker"
 version = "0.1.0"
 edition = "2021"
 description = "Interactive resume/application CLI for Warp"
-author = "David Parker"
+authors = ["David Parker"]
 
 [dependencies]
 clap = { version = "4.4", features = ["derive"] }
