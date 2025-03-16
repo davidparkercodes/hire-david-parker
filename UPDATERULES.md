@@ -1,0 +1,41 @@
+# Development Rules for hiredavidparker
+
+## Workflow
+
+-   Always create feature branches for new work
+-   Make atomic, well-described, but single line commits
+-   Create pull requests for code review before merging to main
+-   Keep PRs focused on a single feature or fix
+-   Do no include authorship in commit messages or PR descriptions
+
+## Code Quality
+
+-   Follow Clean Code principles
+-   Write self-documenting code that expresses intent clearly
+-   Do not add any double forward slash // comments, except in test files
+-   Avoid unnecessary comments; use comments only to explain "why" not "what"
+-   Use descriptive variable and function names
+-   Keep functions small and focused on a single responsibility
+-   Maintain consistent code style across the codebase
+
+## Testing
+
+-   Follow Test-Driven Development (TDD) practices
+-   Write tests before implementing functionality
+-   Always add both unit and integration tests for new features
+-   Maintain high test coverage
+-   Ensure all tests pass before submitting PRs
+
+## Rust Best Practices
+
+-   Follow the Rust API Guidelines
+-   Use proper error handling (Result, Option) instead of panics
+-   Keep functions pure when possible
+-   Leverage Rust's type system for safety
+-   Use cargo fmt and cargo clippy to maintain code quality
+
+## Documentation
+
+-   Document public APIs using rustdoc comments
+-   Keep README and other documentation up to date
+-   Use examples in documentation when appropriate
