@@ -34,6 +34,7 @@ pub fn render(f: &mut Frame, app: &App) {
     // Create footer
     let footer_text = match app.display_mode {
         DisplayMode::Menu => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select",
+        DisplayMode::Timeline => "q: Quit | ←/h: Previous | →/l: Next | Esc: Return to Menu",
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
@@ -57,6 +58,7 @@ pub fn render(f: &mut Frame, app: &App) {
         DisplayMode::Skills => render_skills(f, app, content_chunks[1]),
         DisplayMode::Projects => render_projects(f, app, content_chunks[1]),
         DisplayMode::WhyWarp => render_why_warp(f, app, content_chunks[1]),
+        DisplayMode::Timeline => render_timeline(f, app, content_chunks[1]),
     }
 }
 
@@ -67,6 +69,7 @@ fn render_menu_sidebar(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         "Skills",
         "Projects",
         "Why Warp?",
+        "Timeline",
     ];
 
     let items: Vec<ListItem> = menu_items
@@ -133,4 +136,166 @@ fn render_why_warp(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     f.render_widget(paragraph, area);
+}
+
+/// Renders the Timeline section with a horizontal timeline visualization
+fn render_timeline(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
+    // Create a vertical layout for the timeline area
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Length(2),   // Instructions
+                Constraint::Length(5),   // Timeline visualization
+                Constraint::Min(0),      // Timeline details
+            ]
+            .as_ref(),
+        )
+        .split(area);
+    
+    // Render instructions at the top
+    let text = parse_markdown(&app.timeline_content);
+    let instructions = Paragraph::new(text)
+        .block(Block::default().title("Career Timeline").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+        .wrap(Wrap { trim: true });
+    f.render_widget(instructions, chunks[0]);
+    
+    // Create the timeline visualization area
+    let timeline_area = chunks[1];
+    
+    // Only render the timeline if we have events
+    if !app.timeline_events.is_empty() {
+        render_horizontal_timeline(f, app, timeline_area);
+        render_timeline_details(f, app, chunks[2]);
+    } else {
+        // Render empty message if no timeline events
+        let empty_msg = Paragraph::new("No timeline events found.")
+            .alignment(Alignment::Center)
+            .block(Block::default().borders(Borders::ALL));
+        f.render_widget(empty_msg, chunks[1]);
+    }
+}
+
+/// Renders the horizontal timeline with year markers and points
+fn render_horizontal_timeline(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
+    let block = Block::default()
+        .title("Navigate with ← →")
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(Color::Blue));
+    f.render_widget(block, area);
+    
+    // Calculate inner area for timeline
+    let inner_area = block.inner(area);
+    
+    // Find min and max years
+    let min_year = app.timeline_events.iter().map(|e| e.year).min().unwrap_or(2000);
+    let max_year = app.timeline_events.iter().map(|e| e.year).max().unwrap_or(2024);
+    
+    // Calculate the space needed for the timeline
+    let timeline_width = inner_area.width as usize;
+    let year_span = (max_year - min_year) as usize;
+    let pixels_per_year = if year_span > 0 {
+        timeline_width / year_span
+    } else {
+        timeline_width
+    };
+    
+    // Draw the horizontal line
+    let line_y = inner_area.y + inner_area.height / 2;
+    for x in inner_area.x..(inner_area.x + inner_area.width) {
+        f.get_mut(x, line_y).set_symbol("─");
+    }
+    
+    // Draw year markers and points for each event
+    let mut event_positions = Vec::new();
+    
+    for (i, event) in app.timeline_events.iter().enumerate() {
+        // Calculate position for this event on the timeline
+        let year_offset = (event.year - min_year) as usize;
+        let x_pos = inner_area.x + (year_offset * pixels_per_year) as u16;
+        
+        // Store the position for the event
+        event_positions.push(x_pos);
+        
+        // Draw the point/marker (highlight the selected one)
+        let symbol = if i == app.timeline_index { "●" } else { "○" };
+        let color = if i == app.timeline_index { Color::Yellow } else { Color::White };
+        
+        if x_pos < inner_area.x + inner_area.width {
+            f.get_mut(x_pos, line_y).set_symbol(symbol).set_fg(color);
+        }
+        
+        // Draw the year below the timeline
+        let year_text = event.year.to_string();
+        let year_x = x_pos.saturating_sub(1);
+        
+        if year_x + year_text.len() as u16 < inner_area.x + inner_area.width {
+            for (i, c) in year_text.chars().enumerate() {
+                let char_x = year_x + i as u16;
+                if char_x < inner_area.x + inner_area.width {
+                    f.get_mut(char_x, line_y + 1).set_symbol(&c.to_string()).set_style(Style::default().fg(color));
+                }
+            }
+        }
+    }
+}
+
+/// Renders the details for the selected timeline event
+fn render_timeline_details(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
+    if app.timeline_events.is_empty() {
+        return;
+    }
+    
+    let event = &app.timeline_events[app.timeline_index];
+    
+    // Create details layout with title and content
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Length(3),  // Title
+                Constraint::Min(3),     // Description
+                Constraint::Length(5),  // Highlights
+                Constraint::Length(3),  // Technologies
+            ]
+            .as_ref(),
+        )
+        .split(area);
+    
+    // Render the title with organization
+    let title = format!("{} | {}", event.title, event.organization);
+    let title_paragraph = Paragraph::new(Line::from(vec![
+        Span::styled(title, Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
+    ]))
+    .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+    .alignment(Alignment::Center);
+    f.render_widget(title_paragraph, chunks[0]);
+    
+    // Render the description
+    let desc_paragraph = Paragraph::new(Line::from(vec![
+        Span::raw(event.description.clone())
+    ]))
+    .block(Block::default().title("Description").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+    .wrap(Wrap { trim: true });
+    f.render_widget(desc_paragraph, chunks[1]);
+    
+    // Render the highlights as a list
+    let highlights: Vec<ListItem> = event.highlights
+        .iter()
+        .map(|h| ListItem::new(Line::from(Span::raw(format!("• {}", h)))))
+        .collect();
+    
+    let highlights_list = List::new(highlights)
+        .block(Block::default().title("Highlights").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+        .style(Style::default());
+    f.render_widget(highlights_list, chunks[2]);
+    
+    // Render the technologies as tags
+    let tech_text = event.technologies.join(" | ");
+    let tech_paragraph = Paragraph::new(Line::from(vec![
+        Span::styled(tech_text, Style::default().fg(Color::Green))
+    ]))
+    .block(Block::default().title("Technologies").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+    .alignment(Alignment::Center);
+    f.render_widget(tech_paragraph, chunks[3]);
 }
