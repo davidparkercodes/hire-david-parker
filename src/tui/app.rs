@@ -194,7 +194,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     // Main event loop
     loop {
         // Draw UI
-        terminal.draw(|f| ui::render(f, &app))?;
+        terminal.draw(|f| ui::render(f, &mut app))?;
         
         // Handle events
         if let Ok(event) = event_handler.receiver.recv() {
