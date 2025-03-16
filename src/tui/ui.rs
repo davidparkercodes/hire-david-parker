@@ -228,7 +228,9 @@ fn render_horizontal_timeline(f: &mut Frame, app: &App, area: ratatui::layout::R
     for (i, event) in app.timeline_events.iter().enumerate() {
         // Calculate position for this event on the timeline with padding
         let year_offset = (event.year - min_year) as usize;
-        let x_pos = inner_area.x + horizontal_padding + (year_offset * pixels_per_year * usable_width / timeline_width) as u16;
+        let width_ratio = usable_width as f32 / timeline_width as f32;
+        let adjusted_offset = (year_offset as f32 * pixels_per_year as f32 * width_ratio) as u16;
+        let x_pos = inner_area.x + horizontal_padding + adjusted_offset;
         
         // Store the position for the event
         event_positions.push(x_pos);
