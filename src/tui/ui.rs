@@ -7,6 +7,7 @@ use ratatui::{
 };
 
 use super::app::{App, DisplayMode};
+use super::markdown::parse_markdown;
 
 /// Renders the user interface widgets
 pub fn render(f: &mut Frame, app: &App) {
@@ -90,22 +91,24 @@ fn render_menu_sidebar(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
 }
 /// Renders the welcome screen
 fn render_welcome(f: &mut Frame, area: ratatui::layout::Rect) {
-    let instructions = Paragraph::new(
-        "Welcome to my interactive resume!\n\n\
+    let markdown_text = "# Welcome to my interactive resume!\n\n\
         Use the arrow keys to navigate the menu\n\
-        and press Enter to select an option.\n\n\
-        This TUI application demonstrates my Rust skills\n\
-        and interest in terminal applications like Warp."
-    )
-    .block(Block::default().title("Instructions").borders(Borders::ALL))
-    .wrap(Wrap { trim: true });
+        and press **Enter** to select an option.\n\n\
+        This TUI application demonstrates my **Rust skills**\n\
+        and interest in *terminal applications* like **Warp**.";
+
+    let text = parse_markdown(markdown_text);
+    let instructions = Paragraph::new(text)
+        .block(Block::default().title("Instructions").borders(Borders::ALL))
+        .wrap(Wrap { trim: true });
 
     f.render_widget(instructions, area);
 }
 
 /// Renders the about section
 fn render_about(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let paragraph = Paragraph::new(app.about_content.clone())
+    let text = parse_markdown(&app.about_content);
+    let paragraph = Paragraph::new(text)
         .block(Block::default().title("About Me").borders(Borders::ALL))
         .wrap(Wrap { trim: true });
     f.render_widget(paragraph, area);
@@ -113,20 +116,21 @@ fn render_about(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
 
 /// Renders the skills section
 fn render_skills(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
-    let text = "## Technical Skills\n\n\
-        • **Languages**: Rust, TypeScript, JavaScript, Python, Go\n\
-        • **Frontend**: React, Vue.js, Web Technologies\n\
-        • **Backend**: Node.js, Express, Actix Web, Tokio\n\
-        • **Systems**: Linux, macOS, Docker, Kubernetes\n\
-        • **Tools**: Git, GitHub, CI/CD, Terminal tools\n\
+    let markdown_text = "## Technical Skills\n\n\
+        * **Languages**: Rust, TypeScript, JavaScript, Python, Go\n\
+        * **Frontend**: React, Vue.js, Web Technologies\n\
+        * **Backend**: Node.js, Express, Actix Web, Tokio\n\
+        * **Systems**: Linux, macOS, Docker, Kubernetes\n\
+        * **Tools**: Git, GitHub, CI/CD, Terminal tools\n\
         \n\
         ## Terminal Expertise\n\n\
-        • **Shell**: Bash, Zsh, Fish shell scripting\n\
-        • **TUI Development**: Crossterm, Ratatui, ncurses\n\
-        • **CLI Tools**: Created multiple command-line tools\n\
-        • **Performance**: Optimizing terminal applications\n\
-        • **UX**: Designing intuitive terminal interfaces";
+        * **Shell**: Bash, Zsh, Fish shell scripting\n\
+        * **TUI Development**: Crossterm, Ratatui, ncurses\n\
+        * **CLI Tools**: Created multiple command-line tools\n\
+        * **Performance**: Optimizing terminal applications\n\
+        * **UX**: Designing intuitive terminal interfaces";
 
+    let text = parse_markdown(markdown_text);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Skills").borders(Borders::ALL))
         .wrap(Wrap { trim: true });
@@ -135,7 +139,7 @@ fn render_skills(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
 
 /// Renders the projects section
 fn render_projects(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
-    let text = "## Notable Projects\n\n\
+    let markdown_text = "## Notable Projects\n\n\
         ### Terminal Dashboard (Rust)\n\
         A system monitoring dashboard with real-time stats, built with Rust and Ratatui.\n\
         \n\
@@ -151,6 +155,7 @@ fn render_projects(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
         ### Weather CLI (Rust)\n\
         A simple weather app for the terminal with colorful output and forecast data.";
 
+    let text = parse_markdown(markdown_text);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Projects").borders(Borders::ALL))
         .wrap(Wrap { trim: true });
@@ -159,7 +164,7 @@ fn render_projects(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
 
 /// Renders the "Why Warp?" section
 fn render_why_warp(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
-    let text = "## Why I Want to Join Warp\n\n\
+    let markdown_text = "## Why I Want to Join Warp\n\n\
         I've been a terminal power user for years, but I've always felt that\n\
         terminal technology hasn't evolved with modern UX expectations. When I\n\
         discovered Warp, I was thrilled to see a team tackling this problem\n\
@@ -167,14 +172,15 @@ fn render_why_warp(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
         \n\
         **What excites me about Warp:**\n\
         \n\
-        • **Vision**: Reimagining the terminal for modern developers\n\
-        • **Technology**: Rust's performance and safety for terminal applications\n\
-        • **UX Focus**: Bringing modern interface design to the terminal\n\
-        • **Innovation**: Not just incremental improvements, but rethinking fundamentals\n\
+        * **Vision**: Reimagining the terminal for modern developers\n\
+        * **Technology**: Rust's performance and safety for terminal applications\n\
+        * **UX Focus**: Bringing modern interface design to the terminal\n\
+        * **Innovation**: Not just incremental improvements, but rethinking fundamentals\n\
         \n\
         I'm enthusiastic about contributing to this mission and helping build\n\
         the next generation of terminal experiences that developers love to use.";
 
+    let text = parse_markdown(markdown_text);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Why Warp?").borders(Borders::ALL))
         .wrap(Wrap { trim: true });
