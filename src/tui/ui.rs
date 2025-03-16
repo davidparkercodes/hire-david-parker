@@ -1,5 +1,5 @@
 use ratatui::{
-    layout::{Constraint, Direction, Layout, Alignment},
+    layout::{Constraint, Direction, Layout, Alignment, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::{Block, Borders, List, ListItem, Paragraph, Wrap},
@@ -182,7 +182,7 @@ fn render_horizontal_timeline(f: &mut Frame, app: &App, area: ratatui::layout::R
         .title("Navigate with ← →")
         .borders(Borders::ALL)
         .border_style(Style::default().fg(Color::Blue));
-    f.render_widget(block, area);
+    f.render_widget(block.clone(), area);
     
     // Calculate inner area for timeline
     let inner_area = block.inner(area);
@@ -200,11 +200,21 @@ fn render_horizontal_timeline(f: &mut Frame, app: &App, area: ratatui::layout::R
         timeline_width
     };
     
-    // Draw the horizontal line
+    // Create a horizontal line for the timeline
+    let timeline_text = "─".repeat(inner_area.width as usize);
     let line_y = inner_area.y + inner_area.height / 2;
-    for x in inner_area.x..(inner_area.x + inner_area.width) {
-        f.get_mut(x, line_y).set_symbol("─");
-    }
+    let timeline_line = Line::from(Span::styled(
+        timeline_text,
+        Style::default().fg(Color::Gray)
+    ));
+    let timeline_paragraph = Paragraph::new(timeline_line);
+    let timeline_area = Rect {
+        x: inner_area.x,
+        y: line_y,
+        width: inner_area.width,
+        height: 1,
+    };
+    f.render_widget(timeline_paragraph, timeline_area);
     
     // Draw year markers and points for each event
     let mut event_positions = Vec::new();
@@ -217,24 +227,43 @@ fn render_horizontal_timeline(f: &mut Frame, app: &App, area: ratatui::layout::R
         // Store the position for the event
         event_positions.push(x_pos);
         
-        // Draw the point/marker (highlight the selected one)
-        let symbol = if i == app.timeline_index { "●" } else { "○" };
-        let color = if i == app.timeline_index { Color::Yellow } else { Color::White };
-        
+        // Draw the point/marker for this event (if it fits within the area)
         if x_pos < inner_area.x + inner_area.width {
-            f.get_mut(x_pos, line_y).set_symbol(symbol).set_fg(color);
-        }
-        
-        // Draw the year below the timeline
-        let year_text = event.year.to_string();
-        let year_x = x_pos.saturating_sub(1);
-        
-        if year_x + year_text.len() as u16 < inner_area.x + inner_area.width {
-            for (i, c) in year_text.chars().enumerate() {
-                let char_x = year_x + i as u16;
-                if char_x < inner_area.x + inner_area.width {
-                    f.get_mut(char_x, line_y + 1).set_symbol(&c.to_string()).set_style(Style::default().fg(color));
-                }
+            // Draw the point (highlight the selected one)
+            let symbol = if i == app.timeline_index { "●" } else { "○" };
+            let color = if i == app.timeline_index { Color::Yellow } else { Color::White };
+            
+            let point_paragraph = Paragraph::new(Line::from(Span::styled(
+                symbol,
+                Style::default().fg(color)
+            )));
+            
+            let point_area = Rect {
+                x: x_pos,
+                y: line_y,
+                width: 1,
+                height: 1,
+            };
+            f.render_widget(point_paragraph, point_area);
+            
+            // Draw the year below the timeline
+            let year_text = event.year.to_string();
+            let year_x = x_pos.saturating_sub((year_text.len() / 2) as u16);
+            let year_len = year_text.len() as u16;
+            
+            if year_x + year_len < inner_area.x + inner_area.width {
+                let year_paragraph = Paragraph::new(Line::from(Span::styled(
+                    year_text,
+                    Style::default().fg(color)
+                )));
+                
+                let year_area = Rect {
+                    x: year_x,
+                    y: line_y + 1,
+                    width: year_len,
+                    height: 1,
+                };
+                f.render_widget(year_paragraph, year_area);
             }
         }
     }
