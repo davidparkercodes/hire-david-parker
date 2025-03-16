@@ -48,6 +48,11 @@ pub fn welcome() -> String {
     load_content("welcome.md")
 }
 
+/// Returns the contact content
+pub fn contact() -> String {
+    load_content("contact.md")
+}
+
 /// Runs the interactive TUI application
 pub fn run_tui() -> Result<(), Box<dyn Error>> {
     tui::app::run()?;
