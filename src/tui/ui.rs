@@ -6,7 +6,7 @@ use ratatui::{
     Frame,
 };
 
-use super::app::{App, DisplayMode, TimelineCategory, TimelineEvent};
+use super::app::{App, DisplayMode, TimelineFilter, TimelineType, TimelineEvent};
 use super::markdown::parse_markdown;
 
 /// Renders the user interface widgets
@@ -39,8 +39,8 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::Skills => "q: Quit | ↑/k: Up | ↓/j: Down | →/l: View Skill Meters | Esc: Return to Menu",
         DisplayMode::SkillsVisual => "q: Quit | ←/h: Previous Category | →/l: Next Category | Esc: Back to Skills",
         DisplayMode::Contact => "q: Quit | Esc: Return to Menu",
-        DisplayMode::Timeline => "q: Quit | Tab: Switch Category | ←/h: Previous | →/l: Next | Enter: View Details | Esc: Menu",
-        DisplayMode::TimelineDetail => "q: Quit | ←/h: Previous Entry | →/l: Next Entry | Tab: Switch Category | Esc: Back to Timeline",
+        DisplayMode::Timeline => "q: Quit | Tab: Switch Filter | ←/h: Previous | →/l: Next | Enter: View Details | Esc: Menu",
+        DisplayMode::TimelineDetail => "q: Quit | ←/h: Previous Entry | →/l: Next Entry | Tab: Switch Filter | Esc: Back to Timeline",
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
@@ -324,8 +324,6 @@ fn render_skills_visual(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     }
 }
 
-// We're now using ratatui's built-in Margin
-
 /// Renders the timeline section
 fn render_timeline(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     // First parse the markdown content for the timeline introduction
@@ -336,7 +334,7 @@ fn render_timeline(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(8),  // Intro section
+            Constraint::Length(10),  // Intro section
             Constraint::Min(0),     // Timeline cards
         ])
         .split(area);
@@ -347,76 +345,66 @@ fn render_timeline(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
         .wrap(Wrap { trim: true });
     f.render_widget(intro, chunks[0]);
     
-    // Create title based on current category
-    let title = match app.timeline_category {
-        TimelineCategory::Career => "Career History",
-        TimelineCategory::Education => "Education",
-        TimelineCategory::Certifications => "Certifications",
+    // Create title based on current filter
+    let title = match app.timeline_filter {
+        TimelineFilter::All => "Complete Timeline",
+        TimelineFilter::Career => "Career History",
+        TimelineFilter::Education => "Education History",
+        TimelineFilter::Certification => "Certifications",
     };
     
-    let events = match app.timeline_category {
-        TimelineCategory::Career => &app.timeline_data.events,
-        TimelineCategory::Education => &app.timeline_data.education,
-        TimelineCategory::Certifications => &app.timeline_data.certifications,
-    };
+    // Get filtered events
+    let filtered_events = app.get_filtered_events();
     
-    if events.is_empty() {
+    if filtered_events.is_empty() {
         // Show message if no events are available
-        let message = Paragraph::new("No timeline data available for this category")
+        let message = Paragraph::new("No timeline data available for this filter")
             .alignment(Alignment::Center)
             .block(Block::default().title(title).borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)));
         f.render_widget(message, chunks[1]);
         return;
     }
     
-    // If we have a valid event index
-    if app.timeline_event_index < events.len() {
-        let event = &events[app.timeline_event_index];
-        
-        // Render the timeline event card
-        render_timeline_card(f, app, chunks[1], event, title);
+    // Check if index is out of bounds and determine which index to use
+    let event_index = if app.timeline_event_index < filtered_events.len() {
+        app.timeline_event_index
     } else {
-        // Reset the index if it's out of bounds
-        app.timeline_event_index = 0;
-        if !events.is_empty() {
-            let event = &events[0];
-            render_timeline_card(f, app, chunks[1], event, title);
+        // When out of bounds, use index 0 and update the app state
+        if !filtered_events.is_empty() {
+            // We can't update the app's index here due to borrowing rules
+            // The main app loop will need to handle this
+            0
+        } else {
+            return;
         }
-    }
+    };
+    
+    // Get the event at the correct index
+    let event = filtered_events[event_index];
+    
+    // Render the timeline event card
+    render_timeline_card(f, app, chunks[1], event, title, &filtered_events);
 }
 
 /// Renders a single timeline event card
-fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, event: &TimelineEvent, _title: &str) {
+fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, event: &TimelineEvent, _title: &str, filtered_events: &[&TimelineEvent]) {
     // Create card layout with margins (kept for future use)
     let _inner_area = area.inner(Margin { vertical: 1, horizontal: 2 });
     
-    let card_title = match app.timeline_category {
-        TimelineCategory::Career => {
-            format!("{} - {} at {}", 
-                    event.year, 
-                    event.title, 
-                    event.company.as_deref().unwrap_or("Unknown"))
-        },
-        TimelineCategory::Education => {
-            format!("{} - {} from {}", 
-                    event.year, 
-                    event.degree.as_deref().unwrap_or("Degree"), 
-                    event.institution.as_deref().unwrap_or("Unknown"))
-        },
-        TimelineCategory::Certifications => {
-            format!("{} - {} by {}", 
-                    event.year, 
-                    event.title, 
-                    event.organization.as_deref().unwrap_or("Unknown"))
-        },
+    // Type-specific styling
+    let type_indicator = match event.event_type {
+        TimelineType::Career => "💼",
+        TimelineType::Education => "🎓",
+        TimelineType::Certification => "📜",
+        TimelineType::Project => "🔧",
+        TimelineType::Other => "📌",
     };
     
-    // Create navigation indicator showing position (e.g., "2 of 5")
-    let events = match app.timeline_category {
-        TimelineCategory::Career => &app.timeline_data.events,
-        TimelineCategory::Education => &app.timeline_data.education,
-        TimelineCategory::Certifications => &app.timeline_data.certifications,
-    };
+    let card_title = format!("{} {} - {} at {}", 
+        type_indicator,
+        event.year, 
+        event.title, 
+        event.organization);
     
     // Add navigation arrows to indicate previous/next entry availability
     let mut nav_arrows = String::new();
@@ -426,13 +414,13 @@ fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, e
         nav_arrows.push_str("  ");
     }
     
-    nav_arrows.push_str(&format!("{} of {}", app.timeline_event_index + 1, events.len()));
+    nav_arrows.push_str(&format!("{} of {}", app.timeline_event_index + 1, filtered_events.len()));
     
-    if app.timeline_event_index < events.len() - 1 {
+    if app.timeline_event_index < filtered_events.len() - 1 {
         nav_arrows.push_str(" ▶");
     }
     
-    let position_text = format!("{} (Tab to switch category, Enter for details)", nav_arrows);
+    let position_text = format!("{} (Tab to switch filter, Enter for details)", nav_arrows);
     
     // Create card content
     let content = vec![
@@ -444,6 +432,10 @@ fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, e
         Line::from(vec![
             Span::styled("Title: ", Style::default().add_modifier(Modifier::BOLD)),
             Span::raw(&event.title),
+        ]),
+        Line::from(vec![
+            Span::styled("Organization: ", Style::default().add_modifier(Modifier::BOLD)),
+            Span::raw(&event.organization),
         ]),
         Line::from(Span::raw("")), // Empty line
         Line::from(vec![
@@ -483,39 +475,21 @@ fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, e
 
 /// Renders detailed view of a timeline event
 fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let events = match app.timeline_category {
-        TimelineCategory::Career => &app.timeline_data.events,
-        TimelineCategory::Education => &app.timeline_data.education,
-        TimelineCategory::Certifications => &app.timeline_data.certifications,
-    };
+    // Get filtered events
+    let filtered_events = app.get_filtered_events();
     
-    if events.is_empty() || app.timeline_event_index >= events.len() {
+    if filtered_events.is_empty() {
         return;
     }
     
-    let event = &events[app.timeline_event_index];
+    // Make a copy of the timeline_event_index to avoid borrowing issues
+    let event_index = app.timeline_event_index;
     
-    // Title based on event is created but not directly used (kept for future use)
-    let _title = match app.timeline_category {
-        TimelineCategory::Career => {
-            format!("{} - {} at {}", 
-                    event.year, 
-                    event.title, 
-                    event.company.as_deref().unwrap_or("Unknown"))
-        },
-        TimelineCategory::Education => {
-            format!("{} - {} from {}", 
-                    event.year, 
-                    event.degree.as_deref().unwrap_or("Degree"), 
-                    event.institution.as_deref().unwrap_or("Unknown"))
-        },
-        TimelineCategory::Certifications => {
-            format!("{} - {} by {}", 
-                    event.year, 
-                    event.title, 
-                    event.organization.as_deref().unwrap_or("Unknown"))
-        },
-    };
+    if event_index >= filtered_events.len() {
+        return;
+    }
+    
+    let event = filtered_events[event_index];
     
     // Create layout with sections for different parts of the detail view
     let chunks = Layout::default()
@@ -530,17 +504,28 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
         .split(area);
     
     // Render header with category and navigation
-    let category_name = match app.timeline_category {
-        TimelineCategory::Career => "Career History",
-        TimelineCategory::Education => "Education",
-        TimelineCategory::Certifications => "Certifications",
+    let filter_name = match app.timeline_filter {
+        TimelineFilter::All => "Complete Timeline",
+        TimelineFilter::Career => "Career History",
+        TimelineFilter::Education => "Education History",
+        TimelineFilter::Certification => "Certifications",
+    };
+    
+    // Add event type emoji
+    let type_indicator = match event.event_type {
+        TimelineType::Career => "💼",
+        TimelineType::Education => "🎓",
+        TimelineType::Certification => "📜",
+        TimelineType::Project => "🔧",
+        TimelineType::Other => "📌",
     };
     
     // Add navigation info to the header
-    let navigation_text = format!("{} ({} of {}) [Esc to go back]", 
-                                 category_name,
-                                 app.timeline_event_index + 1,
-                                 events.len());
+    let navigation_text = format!("{} {} ({} of {}) [Esc to go back]", 
+                                 type_indicator,
+                                 filter_name,
+                                 event_index + 1,
+                                 filtered_events.len());
     
     let header = Paragraph::new(navigation_text)
         .alignment(Alignment::Center)
@@ -550,12 +535,6 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     f.render_widget(header, chunks[0]);
     
     // Render title section with enhanced style
-    let place = match app.timeline_category {
-        TimelineCategory::Career => event.company.as_deref().unwrap_or("Unknown").to_string(),
-        TimelineCategory::Education => event.institution.as_deref().unwrap_or("Unknown").to_string(),
-        TimelineCategory::Certifications => event.organization.as_deref().unwrap_or("Unknown").to_string(),
-    };
-    
     let title_content = vec![
         Line::from(vec![
             Span::styled("Year: ", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
@@ -566,12 +545,8 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
             Span::raw(&event.title),
         ]),
         Line::from(vec![
-            Span::styled(match app.timeline_category {
-                TimelineCategory::Career => "Company: ",
-                TimelineCategory::Education => "Institution: ",
-                TimelineCategory::Certifications => "Organization: ",
-            }, Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
-            Span::raw(&place),
+            Span::styled("Organization: ", Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)),
+            Span::raw(&event.organization),
         ]),
     ];
     

@@ -1,17 +1,16 @@
 # Professional Timeline
 
-Navigate through my career history using the left and right arrow keys.
-Press Tab to switch between Career, Education, and Certifications.
+Navigate through my professional journey using the left and right arrow keys.
+Press Tab to filter between All, Career, Education, and Certifications.
 Press Enter on any entry to see details.
 
-## Career Journey
+## My Journey
 
-My professional journey showcases a progression from web development to advanced systems programming, with a focus on performance optimization and user experience.
+My journey combines professional experience, education, and continuous learning. This timeline showcases my progression from web development to systems programming and terminal applications, with a focus on performance optimization and exceptional user experiences.
 
-## Education
+## Highlights
 
-My educational background includes formal computer science training with specializations in distributed systems and cloud computing.
-
-## Certifications
-
-I continuously pursue professional development through industry certifications and specialized training.
+- **Professional Growth**: Evolving from junior developer to senior Rust developer
+- **Education**: Formal computer science training with focus on distributed systems
+- **Continuous Learning**: Regular certifications and specialized training
+- **Terminal Expertise**: Experience with CLI and TUI applications

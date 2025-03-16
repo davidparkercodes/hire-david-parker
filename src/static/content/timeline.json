@@ -1,9 +1,23 @@
 {
-  "events": [
+  "timeline": [
+    {
+      "year": 2024,
+      "type": "career",
+      "title": "Terminal Developer",
+      "organization": "Warp",
+      "description": "Joined Warp to work on revolutionizing the terminal experience for developers. Focusing on performance, UX, and innovative features.",
+      "highlights": [
+        "Contributed to the Rust-based terminal core",
+        "Implemented new command-line features for improved productivity",
+        "Enhanced cross-platform compatibility and responsiveness"
+      ],
+      "technologies": ["Rust", "WebAssembly", "TypeScript", "Terminal"]
+    },
     {
       "year": 2023,
+      "type": "career",
       "title": "Senior Rust Developer",
-      "company": "Terminal Technologies",
+      "organization": "Terminal Technologies",
       "description": "Led development of CLI and TUI applications for system monitoring and automation. Improved performance and user experience through Rust optimizations.",
       "highlights": [
         "Reduced memory usage by 40% through custom data structures",
@@ -13,9 +27,23 @@
       "technologies": ["Rust", "Ratatui", "Crossterm", "Clap"]
     },
     {
+      "year": 2022,
+      "type": "certification",
+      "title": "Rust Programming: Advanced Concepts",
+      "organization": "Rust Foundation",
+      "description": "Completed in-depth course on advanced Rust programming techniques, focusing on performance optimization and systems programming.",
+      "highlights": [
+        "Mastered advanced concepts like lifetimes and borrowing",
+        "Built high-performance concurrent applications",
+        "Explored FFI and interop with other languages"
+      ],
+      "technologies": ["Rust", "Concurrency", "Systems Programming"]
+    },
+    {
       "year": 2021,
+      "type": "career",
       "title": "Frontend Team Lead",
-      "company": "CloudScale Inc.",
+      "organization": "CloudScale Inc.",
       "description": "Managed a team of 6 developers building modern web applications with TypeScript and React. Established coding standards and review processes.",
       "highlights": [
         "Delivered major dashboard redesign project ahead of schedule",
@@ -25,9 +53,23 @@
       "technologies": ["TypeScript", "React", "Redux", "Jest"]
     },
     {
+      "year": 2020,
+      "type": "certification",
+      "title": "AWS Certified Solutions Architect",
+      "organization": "Amazon Web Services",
+      "description": "Earned professional certification for designing distributed systems on AWS, focusing on scalability, security, and cost-effectiveness.",
+      "highlights": [
+        "Designed high-availability architectures",
+        "Implemented secure and compliant cloud solutions",
+        "Optimized infrastructure for performance and cost"
+      ],
+      "technologies": ["AWS", "Cloud Computing", "Infrastructure as Code"]
+    },
+    {
       "year": 2019,
+      "type": "career",
       "title": "Full Stack Developer",
-      "company": "InnoTech Solutions",
+      "organization": "InnoTech Solutions",
       "description": "Developed and maintained web applications using Node.js backend and React frontend. Implemented CI/CD pipelines and testing frameworks.",
       "highlights": [
         "Built RESTful API service that handled 500k+ daily requests",
@@ -37,9 +79,23 @@
       "technologies": ["JavaScript", "Node.js", "React", "MongoDB"]
     },
     {
+      "year": 2018,
+      "type": "education",
+      "title": "M.S. Computer Science",
+      "organization": "Advanced Institute of Technology",
+      "description": "Completed part-time Master's degree focusing on distributed systems and cloud computing while working full-time.",
+      "highlights": [
+        "Thesis on efficient data synchronization in distributed systems",
+        "Research assistant in cloud computing lab",
+        "Published paper on cloud-native applications"
+      ],
+      "technologies": ["Distributed Systems", "Cloud Computing", "Research Methodologies"]
+    },
+    {
       "year": 2017,
+      "type": "career",
       "title": "Software Engineer",
-      "company": "TechStart",
+      "organization": "TechStart",
       "description": "Worked on various projects including mobile apps and web services. Focused on responsive design and cross-platform compatibility.",
       "highlights": [
         "Developed iOS and Android apps using React Native",
@@ -50,8 +106,22 @@
     },
     {
       "year": 2015,
+      "type": "education",
+      "title": "B.S. Computer Science",
+      "organization": "Tech University",
+      "description": "Graduated with honors. Focused on software engineering and web technologies with a minor in Mathematics.",
+      "highlights": [
+        "Senior project: Open-source code editor extension",
+        "Teaching assistant for Algorithms course",
+        "President of Coding Club"
+      ],
+      "technologies": ["Algorithms", "Data Structures", "Software Engineering"]
+    },
+    {
+      "year": 2015,
+      "type": "career",
       "title": "Junior Developer",
-      "company": "Web Solutions Ltd.",
+      "organization": "Web Solutions Ltd.",
       "description": "Started career building websites and small web applications. Gained experience with frontend and backend technologies.",
       "highlights": [
         "Built and maintained company website",
@@ -59,44 +129,6 @@
         "Created responsive email templates"
       ],
       "technologies": ["HTML/CSS", "JavaScript", "PHP", "MySQL"]
-    }
-  ],
-  "education": [
-    {
-      "year": 2015,
-      "degree": "B.S. Computer Science",
-      "institution": "Tech University",
-      "description": "Graduated with honors. Focused on software engineering and web technologies.",
-      "highlights": [
-        "Senior project: Open-source code editor extension",
-        "Teaching assistant for Algorithms course",
-        "President of Coding Club"
-      ]
-    },
-    {
-      "year": 2018,
-      "degree": "M.S. Computer Science",
-      "institution": "Advanced Institute of Technology",
-      "description": "Part-time studies focusing on distributed systems and cloud computing.",
-      "highlights": [
-        "Thesis on efficient data synchronization in distributed systems",
-        "Research assistant in cloud computing lab",
-        "Published paper on cloud-native applications"
-      ]
-    }
-  ],
-  "certifications": [
-    {
-      "year": 2020,
-      "title": "AWS Certified Solutions Architect",
-      "organization": "Amazon Web Services",
-      "description": "Professional certification for designing distributed systems on AWS"
-    },
-    {
-      "year": 2022,
-      "title": "Rust Programming: Advanced Concepts",
-      "organization": "Rust Foundation",
-      "description": "In-depth course on advanced Rust programming techniques"
     }
   ]
 }
