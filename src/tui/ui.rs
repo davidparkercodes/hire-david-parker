@@ -1,5 +1,5 @@
 use ratatui::{
-    layout::{Constraint, Direction, Layout, Alignment, Margin},
+    layout::{Constraint, Direction, Layout, Alignment, Margin, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::{Block, Borders, List, ListItem, Paragraph, Wrap, Gauge},
@@ -547,7 +547,7 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     f.render_widget(title_widget, chunks[1]);
     
     // Render description
-    let desc_widget = Paragraph::new(&event.description)
+    let desc_widget = Paragraph::new(event.description.clone())
         .block(Block::default().title("Description").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
