@@ -33,6 +33,8 @@ pub struct Link {
 pub struct App {
     /// Current menu index
     pub menu_index: usize,
+    /// Current selected link index when in ProjectLinks mode
+    pub link_index: usize,
     /// Current display mode
     pub display_mode: DisplayMode,
     /// About content
@@ -62,6 +64,8 @@ pub enum DisplayMode {
     Skills,
     /// Projects section
     Projects,
+    /// Project links navigation
+    ProjectLinks,
     /// Why Warp section
     WhyWarp,
 }
@@ -71,6 +75,7 @@ impl App {
     pub fn new() -> Self {
         Self {
             menu_index: 0,
+            link_index: 0,
             display_mode: DisplayMode::Menu,
             about_content: about(),
             skills_content: skills(),
@@ -90,7 +95,40 @@ impl App {
 
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
+            DisplayMode::ProjectLinks => self.handle_project_links_keys(key),
             _ => self.handle_content_keys(key),
+        }
+    }
+    
+    /// Handle keys in project links mode
+    fn handle_project_links_keys(&mut self, key: event::KeyEvent) {
+        match key.code {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Left | KeyCode::Char('h') => {
+                self.display_mode = DisplayMode::Projects;
+                self.link_index = 0;
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                if self.link_index > 0 {
+                    self.link_index -= 1;
+                }
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                if !self.links.is_empty() && self.link_index < self.links.len() - 1 {
+                    self.link_index += 1;
+                }
+            }
+            KeyCode::Enter => {
+                if !self.links.is_empty() && self.link_index < self.links.len() {
+                    // Open the selected link
+                    if let Err(e) = open::that(&self.links[self.link_index].url) {
+                        eprintln!("Failed to open URL: {}", e);
+                    }
+                }
+            }
+            _ => {}
         }
     }
     
@@ -160,6 +198,13 @@ impl App {
             KeyCode::Down | KeyCode::Char('j') => {
                 if self.menu_index < 3 {
                     self.menu_index += 1;
+                }
+            }
+            KeyCode::Right | KeyCode::Char('l') => {
+                // For the projects section, allow moving right to see links
+                if self.display_mode == DisplayMode::Projects && !self.links.is_empty() {
+                    self.display_mode = DisplayMode::ProjectLinks;
+                    self.link_index = 0;
                 }
             }
             KeyCode::Enter => {

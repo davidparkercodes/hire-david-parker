@@ -34,7 +34,9 @@ pub fn render(f: &mut Frame, app: &mut App) {
     // Create footer
     let footer_text = match app.display_mode {
         DisplayMode::Menu => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select",
-        _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu | Click: Open Links",
+        DisplayMode::Projects => "q: Quit | ↑/k: Up | ↓/j: Down | →/l: Navigate Links | Esc: Return to Menu",
+        DisplayMode::ProjectLinks => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Open Link | ←/h: Back to Projects",
+        _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
         .alignment(Alignment::Center)
@@ -56,6 +58,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::About => render_about(f, app, content_chunks[1]),
         DisplayMode::Skills => render_skills(f, app, content_chunks[1]),
         DisplayMode::Projects => render_projects(f, app, content_chunks[1]),
+        DisplayMode::ProjectLinks => render_project_links(f, app, content_chunks[1]),
         DisplayMode::WhyWarp => render_why_warp(f, app, content_chunks[1]),
     }
 }
@@ -125,12 +128,54 @@ fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 /// Renders the projects section
 fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let (text, links) = parse_markdown(&app.projects_content);
+    
+    let title = if !links.is_empty() {
+        "Projects (→ to navigate links)"
+    } else {
+        "Projects"
+    };
+    
     let paragraph = Paragraph::new(text)
-        .block(Block::default().title("Projects").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+        .block(Block::default().title(title).borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
     app.links = links;
     f.render_widget(paragraph, area);
+}
+
+/// Renders the project links for navigation
+fn render_project_links(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    if app.links.is_empty() {
+        return;
+    }
+    
+    let items: Vec<ListItem> = app.links
+        .iter()
+        .enumerate()
+        .map(|(i, link)| {
+            let style = if i == app.link_index {
+                Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)
+            } else {
+                Style::default().fg(Color::Cyan).add_modifier(Modifier::UNDERLINED)
+            };
+            
+            ListItem::new(Line::from(vec![
+                Span::raw("  "),
+                Span::styled(&link.text, style),
+                Span::raw(" - "),
+                Span::styled(&link.url, Style::default().fg(Color::DarkGray)),
+            ]))
+        })
+        .collect();
+    
+    let links_list = List::new(items)
+        .block(Block::default()
+            .title("Project Links (Enter to open, ← to go back)")
+            .borders(Borders::ALL)
+            .border_style(Style::default().fg(Color::Blue)))
+        .highlight_style(Style::default().add_modifier(Modifier::BOLD));
+    
+    f.render_widget(links_list, area);
 }
 
 /// Renders the "Why Warp?" section
