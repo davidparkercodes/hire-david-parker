@@ -7,3 +7,5 @@ authors = ["David Parker"]
 
 [dependencies]
 clap = { version = "4.4", features = ["derive"] }
+crossterm = "0.28.1"
+ratatui = "0.29.0"

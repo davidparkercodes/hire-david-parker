@@ -12,6 +12,7 @@
 
 -   Follow Clean Code principles
 -   Write self-documenting code that expresses intent clearly
+-   Do not add any double forward slash // comments, except in test files
 -   Avoid unnecessary comments; use comments only to explain "why" not "what"
 -   Use descriptive variable and function names
 -   Keep functions small and focused on a single responsibility

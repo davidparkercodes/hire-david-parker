@@ -1,5 +1,8 @@
 use std::fs;
 use std::path::Path;
+use std::error::Error;
+
+pub mod tui;
 
 /// Returns a greeting message
 pub fn greeting() -> String {
@@ -17,6 +20,12 @@ pub fn about() -> String {
         Ok(content) => content,
         Err(_) => String::from("Error: About information could not be loaded."),
     }
+}
+
+/// Runs the interactive TUI application
+pub fn run_tui() -> Result<(), Box<dyn Error>> {
+    tui::app::run()?;
+    Ok(())
 }
 
 #[cfg(test)]
