@@ -143,7 +143,8 @@ impl App {
                     self.transition = TransitionState::None;
                 } else {
                     // Increment progress by a step amount
-                    const STEP: u8 = 10;
+                    // Use a smaller step size for smoother animations
+                    const STEP: u8 = 5;
                     let new_progress = (progress + STEP).min(100);
                     self.transition = TransitionState::Wipe {
                         progress: new_progress,
@@ -244,8 +245,8 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     // Create app instance
     let mut app = App::new();
     
-    // Create event handler
-    let event_handler = EventHandler::new(Duration::from_millis(100));
+    // Create event handler with faster tick rate for smoother animations
+    let event_handler = EventHandler::new(Duration::from_millis(50));
 
     // Main event loop
     loop {

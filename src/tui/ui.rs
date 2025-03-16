@@ -74,7 +74,7 @@ fn render_content(f: &mut Frame, app: &App, mode: DisplayMode, area: ratatui::la
     }
 }
 
-/// Renders a wipe transition between two content sections
+/// Renders a true wipe transition between two content sections
 fn render_wipe_transition(
     f: &mut Frame,
     app: &App,
@@ -82,54 +82,185 @@ fn render_wipe_transition(
     progress: u8,
     direction: WipeDirection,
 ) {
-    // Calculate the dividing point based on progress and direction
-    let dividing_point = match direction {
+    // First, let's get the new content and title
+    let current_mode = app.display_mode;
+    let previous_mode = app.previous_mode;
+    
+    // Get content for both states
+    let (new_title, new_content) = match current_mode {
+        DisplayMode::Menu => ("Instructions", parse_markdown(&app.welcome_content)),
+        DisplayMode::About => ("About Me", parse_markdown(&app.about_content)),
+        DisplayMode::Skills => ("Skills", parse_markdown(&app.skills_content)),
+        DisplayMode::Projects => ("Projects", parse_markdown(&app.projects_content)),
+        DisplayMode::WhyWarp => ("Why Warp?", parse_markdown(&app.why_warp_content)),
+    };
+    
+    let (old_title, old_content) = match previous_mode {
+        DisplayMode::Menu => ("Instructions", parse_markdown(&app.welcome_content)),
+        DisplayMode::About => ("About Me", parse_markdown(&app.about_content)),
+        DisplayMode::Skills => ("Skills", parse_markdown(&app.skills_content)),
+        DisplayMode::Projects => ("Projects", parse_markdown(&app.projects_content)),
+        DisplayMode::WhyWarp => ("Why Warp?", parse_markdown(&app.why_warp_content)),
+    };
+    
+    // Calculate how much of the wipe effect should be complete
+    let wipe_percent = progress as f32 / 100.0;
+    
+    // Create a block for content with the appropriate title
+    // During transition, we show the new title
+    let block = Block::default()
+        .title(new_title)
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(Color::Blue));
+    
+    // Render the block
+    f.render_widget(block.clone(), area);
+    
+    // Get the inner area for content
+    let inner_area = block.inner(area);
+    
+    // For a true wipe effect, we'll render line by line
+    // First get both old and new content as lines
+    let old_lines = old_content.lines;
+    let new_lines = new_content.lines;
+    
+    // Get maximum number of lines we can display
+    let max_lines = inner_area.height as usize;
+    
+    // Create a new set of lines for our wipe effect
+    let mut wipe_lines = Vec::new();
+    
+    // Determine how many characters to reveal based on direction and progress
+    let char_reveal_count = match direction {
         WipeDirection::LeftToRight => {
-            // Progress from 0 (left) to 100 (right)
-            (area.width as f32 * (progress as f32 / 100.0)) as u16
+            // Left to right wipe reveals characters from the left
+            (inner_area.width as f32 * wipe_percent) as usize
         }
         WipeDirection::RightToLeft => {
-            // Progress from 100 (right) to 0 (left)
-            (area.width as f32 * (1.0 - progress as f32 / 100.0)) as u16
+            // Right to left wipe reveals characters from the right
+            (inner_area.width as f32 * wipe_percent) as usize
         }
     };
-
-    // Create two sub-areas separated by the dividing line
-    let left_area = ratatui::layout::Rect {
-        x: area.x,
-        y: area.y,
-        width: dividing_point,
-        height: area.height,
-    };
-
-    let right_area = ratatui::layout::Rect {
-        x: area.x + dividing_point,
-        y: area.y,
-        width: area.width - dividing_point,
-        height: area.height,
-    };
-
-    // Determine which content to render in which section
-    match direction {
-        WipeDirection::LeftToRight => {
-            // Left area shows new content, right area shows old content
-            if left_area.width > 0 {
-                render_content(f, app, app.display_mode, left_area);
+    
+    // Loop through visible lines
+    for i in 0..max_lines {
+        // Get old line if available, otherwise use empty line
+        let old_line = old_lines.get(i).cloned().unwrap_or_else(|| Line::default());
+        // Get new line if available, otherwise use empty line
+        let new_line = new_lines.get(i).cloned().unwrap_or_else(|| Line::default());
+        
+        // For a wipe effect, we'll construct a hybrid line:
+        // - For LeftToRight: start with new content up to reveal point, then old content
+        // - For RightToLeft: start with old content, then switch to new content from reveal point
+        
+        match direction {
+            WipeDirection::LeftToRight => {
+                // For left to right, we determine how much of the content to show
+                // based on the progress
+                let line_width = inner_area.width as usize;
+                
+                // If we're at 0% progress, show all old content
+                // If we're at 100% progress, show all new content
+                if char_reveal_count == 0 || progress == 0 {
+                    // Just show old content
+                    wipe_lines.push(old_line);
+                } else if char_reveal_count >= line_width || progress == 100 {
+                    // Just show new content
+                    wipe_lines.push(new_line);
+                } else {
+                    // Combine content - create a new line with a mix of old and new
+                    // For simplicity, we'll convert both to strings and do character-based combining
+                    
+                    // Get the text content of the lines
+                    let old_text = old_line.spans.iter()
+                        .map(|span| span.content.as_ref())
+                        .collect::<String>();
+                        
+                    let new_text = new_line.spans.iter()
+                        .map(|span| span.content.as_ref())
+                        .collect::<String>();
+                    
+                    // Create a combined text where the left part comes from new text
+                    // and the right part comes from old text
+                    let mut combined_text = String::new();
+                    
+                    // Add characters from new text (up to char_reveal_count)
+                    let new_chars = new_text.chars().take(char_reveal_count).collect::<String>();
+                    combined_text.push_str(&new_chars);
+                    
+                    // Fill the rest from old text
+                    if new_chars.len() < line_width {
+                        let remaining = line_width - new_chars.len();
+                        if old_text.len() >= char_reveal_count {
+                            let old_chars = old_text.chars().skip(char_reveal_count).take(remaining).collect::<String>();
+                            combined_text.push_str(&old_chars);
+                        }
+                    }
+                    
+                    // Create a new line from the combined text
+                    wipe_lines.push(Line::from(combined_text));
+                }
             }
-            if right_area.width > 0 {
-                render_content(f, app, app.previous_mode, right_area);
-            }
-        }
-        WipeDirection::RightToLeft => {
-            // Left area shows old content, right area shows new content
-            if left_area.width > 0 {
-                render_content(f, app, app.previous_mode, left_area);
-            }
-            if right_area.width > 0 {
-                render_content(f, app, app.display_mode, right_area);
+            WipeDirection::RightToLeft => {
+                // For right to left, we determine how much of the content to show
+                // based on the inverse of progress (100 - progress)
+                let line_width = inner_area.width as usize;
+                
+                // Create a new line based on the old line, but with spaces
+                // in the revealed area (which will be filled in later)
+                let mut visible_chars = line_width - char_reveal_count;
+                
+                // If we're at 0% progress, show all old content
+                // If we're at 100% progress, show all new content
+                if visible_chars >= line_width || progress == 0 {
+                    // Just show old content
+                    wipe_lines.push(old_line);
+                } else if visible_chars == 0 || progress == 100 {
+                    // Just show new content
+                    wipe_lines.push(new_line);
+                } else {
+                    // Combine content - create a new line with a mix of old and new
+                    // For simplicity, we'll convert both to strings and do character-based combining
+                    
+                    // Get the text content of the lines
+                    let old_text = old_line.spans.iter()
+                        .map(|span| span.content.as_ref())
+                        .collect::<String>();
+                        
+                    let new_text = new_line.spans.iter()
+                        .map(|span| span.content.as_ref())
+                        .collect::<String>();
+                    
+                    // Create a combined text where the left part comes from old text
+                    // and the right part comes from new text
+                    let mut combined_text = String::new();
+                    
+                    // Add characters from old text (up to visible_chars)
+                    let old_chars = old_text.chars().take(visible_chars).collect::<String>();
+                    combined_text.push_str(&old_chars);
+                    
+                    // Fill the rest from new text
+                    if old_chars.len() < line_width {
+                        let remaining = line_width - old_chars.len();
+                        if remaining <= new_text.len() {
+                            let new_chars = new_text.chars().take(remaining).collect::<String>();
+                            combined_text.push_str(&new_chars);
+                        }
+                    }
+                    
+                    // Create a new line from the combined text
+                    wipe_lines.push(Line::from(combined_text));
+                }
             }
         }
     }
+    
+    // Create a paragraph with our wipe effect lines
+    let wipe_para = Paragraph::new(wipe_lines)
+        .wrap(Wrap { trim: true });
+    
+    // Render the wipe effect
+    f.render_widget(wipe_para, inner_area);
 }
 
 /// Renders the menu sidebar (always visible)
