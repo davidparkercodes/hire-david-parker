@@ -7,9 +7,9 @@
       "organization": "Warp",
       "description": "Joined Warp to work on revolutionizing the terminal experience for developers. Focusing on performance, UX, and innovative features.",
       "highlights": [
-        "Contributed to the Rust-based terminal core",
-        "Implemented new command-line features for improved productivity",
-        "Enhanced cross-platform compatibility and responsiveness"
+        "Contributing to the Rust-based terminal core",
+        "Implementing new command-line features for improved productivity",
+        "Enhancing cross-platform compatibility and responsiveness"
       ],
       "technologies": ["Rust", "WebAssembly", "TypeScript", "Terminal"]
     },
@@ -28,16 +28,16 @@
     },
     {
       "year": 2022,
-      "type": "certification",
-      "title": "Rust Programming: Advanced Concepts",
-      "organization": "Rust Foundation",
-      "description": "Completed in-depth course on advanced Rust programming techniques, focusing on performance optimization and systems programming.",
+      "type": "career",
+      "title": "Rust Systems Engineer",
+      "organization": "DistSys Inc.",
+      "description": "Developed high-performance distributed systems components using Rust, focusing on reliability and efficiency.",
       "highlights": [
-        "Mastered advanced concepts like lifetimes and borrowing",
-        "Built high-performance concurrent applications",
-        "Explored FFI and interop with other languages"
+        "Built real-time data processing pipeline handling 100K+ messages per second",
+        "Implemented custom async runtime for specific workload optimizations",
+        "Reduced infrastructure costs by 35% through performance optimizations"
       ],
-      "technologies": ["Rust", "Concurrency", "Systems Programming"]
+      "technologies": ["Rust", "Tokio", "gRPC", "Kubernetes"]
     },
     {
       "year": 2021,
@@ -54,16 +54,16 @@
     },
     {
       "year": 2020,
-      "type": "certification",
-      "title": "AWS Certified Solutions Architect",
-      "organization": "Amazon Web Services",
-      "description": "Earned professional certification for designing distributed systems on AWS, focusing on scalability, security, and cost-effectiveness.",
+      "type": "career",
+      "title": "DevOps Specialist",
+      "organization": "InfraStack",
+      "description": "Led cloud migration efforts and implemented CI/CD pipelines for multiple development teams. Focused on automation and infrastructure as code.",
       "highlights": [
-        "Designed high-availability architectures",
-        "Implemented secure and compliant cloud solutions",
-        "Optimized infrastructure for performance and cost"
+        "Reduced deployment times from days to minutes using infrastructure as code",
+        "Implemented security-focused CI pipeline reducing vulnerabilities by 80%",
+        "Built developer CLI tools to simplify common workflow operations"
       ],
-      "technologies": ["AWS", "Cloud Computing", "Infrastructure as Code"]
+      "technologies": ["AWS", "Terraform", "GitHub Actions", "Go", "Bash"]
     },
     {
       "year": 2019,
@@ -79,19 +79,6 @@
       "technologies": ["JavaScript", "Node.js", "React", "MongoDB"]
     },
     {
-      "year": 2018,
-      "type": "education",
-      "title": "M.S. Computer Science",
-      "organization": "Advanced Institute of Technology",
-      "description": "Completed part-time Master's degree focusing on distributed systems and cloud computing while working full-time.",
-      "highlights": [
-        "Thesis on efficient data synchronization in distributed systems",
-        "Research assistant in cloud computing lab",
-        "Published paper on cloud-native applications"
-      ],
-      "technologies": ["Distributed Systems", "Cloud Computing", "Research Methodologies"]
-    },
-    {
       "year": 2017,
       "type": "career",
       "title": "Software Engineer",
@@ -103,19 +90,6 @@
         "Created API integrations with third-party services"
       ],
       "technologies": ["JavaScript", "React Native", "Express", "Firebase"]
-    },
-    {
-      "year": 2015,
-      "type": "education",
-      "title": "B.S. Computer Science",
-      "organization": "Tech University",
-      "description": "Graduated with honors. Focused on software engineering and web technologies with a minor in Mathematics.",
-      "highlights": [
-        "Senior project: Open-source code editor extension",
-        "Teaching assistant for Algorithms course",
-        "President of Coding Club"
-      ],
-      "technologies": ["Algorithms", "Data Structures", "Software Engineering"]
     },
     {
       "year": 2015,

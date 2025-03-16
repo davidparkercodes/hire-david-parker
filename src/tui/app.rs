@@ -36,7 +36,7 @@ pub struct SkillsData {
     pub categories: Vec<SkillCategory>,
 }
 
-/// Timeline event type
+/// Timeline event type - kept for compatibility but no longer used for filtering
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TimelineType {
     #[serde(rename = "career")]
@@ -71,17 +71,11 @@ pub struct TimelineEvent {
     pub technologies: Option<Vec<String>>,
 }
 
-/// Timeline filter type for UI
+/// Timeline filter type - kept as a placeholder but now only has one option
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TimelineFilter {
     /// Show all events
     All,
-    /// Show only career events
-    Career,
-    /// Show only education events
-    Education,
-    /// Show only certification events
-    Certification,
 }
 
 /// Complete timeline data
@@ -248,18 +242,10 @@ impl App {
         }
     }
     
-    /// Get filtered timeline events based on current filter
+    /// Get timeline events (no longer filtered)
     pub fn get_filtered_events(&self) -> Vec<&TimelineEvent> {
-        self.timeline_data.timeline.iter()
-            .filter(|event| {
-                match self.timeline_filter {
-                    TimelineFilter::All => true,
-                    TimelineFilter::Career => event.event_type == TimelineType::Career,
-                    TimelineFilter::Education => event.event_type == TimelineType::Education,
-                    TimelineFilter::Certification => event.event_type == TimelineType::Certification,
-                }
-            })
-            .collect()
+        // Return all timeline events 
+        self.timeline_data.timeline.iter().collect()
     }
 
     /// Handle keys in timeline detail view mode
@@ -286,16 +272,6 @@ impl App {
                     self.timeline_event_index += 1;
                 }
             }
-            KeyCode::Tab => {
-                // Allow switching filters directly from detail view
-                self.timeline_filter = match self.timeline_filter {
-                    TimelineFilter::All => TimelineFilter::Career,
-                    TimelineFilter::Career => TimelineFilter::Education,
-                    TimelineFilter::Education => TimelineFilter::Certification,
-                    TimelineFilter::Certification => TimelineFilter::All,
-                };
-                self.timeline_event_index = 0;
-            }
             _ => {}
         }
     }
@@ -308,16 +284,6 @@ impl App {
             }
             KeyCode::Esc | KeyCode::Backspace => {
                 self.display_mode = DisplayMode::Menu;
-            }
-            KeyCode::Tab => {
-                // Cycle through timeline filters
-                self.timeline_filter = match self.timeline_filter {
-                    TimelineFilter::All => TimelineFilter::Career,
-                    TimelineFilter::Career => TimelineFilter::Education,
-                    TimelineFilter::Education => TimelineFilter::Certification,
-                    TimelineFilter::Certification => TimelineFilter::All,
-                };
-                self.timeline_event_index = 0;
             }
             KeyCode::Left | KeyCode::Char('h') => {
                 if self.timeline_event_index > 0 {

@@ -6,7 +6,7 @@ use ratatui::{
     Frame,
 };
 
-use super::app::{App, DisplayMode, TimelineFilter, TimelineType, TimelineEvent};
+use super::app::{App, DisplayMode, TimelineType, TimelineEvent};
 use super::markdown::parse_markdown;
 
 /// Renders the user interface widgets
@@ -39,8 +39,8 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::Skills => "q: Quit | ↑/k: Up | ↓/j: Down | →/l: View Skill Meters | Esc: Return to Menu",
         DisplayMode::SkillsVisual => "q: Quit | ←/h: Previous Category | →/l: Next Category | Esc: Back to Skills",
         DisplayMode::Contact => "q: Quit | Esc: Return to Menu",
-        DisplayMode::Timeline => "q: Quit | Tab: Switch Filter | ←/h: Previous | →/l: Next | Enter: View Details | Esc: Menu",
-        DisplayMode::TimelineDetail => "q: Quit | ←/h: Previous Entry | →/l: Next Entry | Tab: Switch Filter | Esc: Back to Timeline",
+        DisplayMode::Timeline => "q: Quit | ←/h: Previous | →/l: Next | Enter: View Details | Esc: Menu",
+        DisplayMode::TimelineDetail => "q: Quit | ←/h: Previous Entry | →/l: Next Entry | Esc: Back to Timeline",
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
@@ -345,13 +345,8 @@ fn render_timeline(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
         .wrap(Wrap { trim: true });
     f.render_widget(intro, chunks[0]);
     
-    // Create title based on current filter
-    let title = match app.timeline_filter {
-        TimelineFilter::All => "Complete Timeline",
-        TimelineFilter::Career => "Career History",
-        TimelineFilter::Education => "Education History",
-        TimelineFilter::Certification => "Certifications",
-    };
+    // Create title 
+    let title = "Professional Timeline";
     
     // Get filtered events
     let filtered_events = app.get_filtered_events();
@@ -420,7 +415,7 @@ fn render_timeline_card(f: &mut Frame, app: &App, area: ratatui::layout::Rect, e
         nav_arrows.push_str(" ▶");
     }
     
-    let position_text = format!("{} (Tab to switch filter, Enter for details)", nav_arrows);
+    let position_text = format!("{} (Enter for details)", nav_arrows);
     
     // Create card content
     let content = vec![
@@ -503,13 +498,8 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
         .margin(1)
         .split(area);
     
-    // Render header with category and navigation
-    let filter_name = match app.timeline_filter {
-        TimelineFilter::All => "Complete Timeline",
-        TimelineFilter::Career => "Career History",
-        TimelineFilter::Education => "Education History",
-        TimelineFilter::Certification => "Certifications",
-    };
+    // Render header with navigation
+    let title_name = "Professional Timeline";
     
     // Add event type emoji
     let type_indicator = match event.event_type {
@@ -523,7 +513,7 @@ fn render_timeline_detail(f: &mut Frame, app: &App, area: ratatui::layout::Rect)
     // Add navigation info to the header
     let navigation_text = format!("{} {} ({} of {}) [Esc to go back]", 
                                  type_indicator,
-                                 filter_name,
+                                 title_name,
                                  event_index + 1,
                                  filtered_events.len());
     
