@@ -1,6 +1,6 @@
 use crate::{about, skills, projects, why_warp, welcome};
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
+    event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind, MouseEventKind, MouseButton},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -13,6 +13,21 @@ use std::{
 
 use super::ui;
 use super::event::{Event as AppEvent, EventHandler};
+
+/// Hyperlink information
+#[derive(Debug, Clone)]
+pub struct Link {
+    /// Text of the link
+    pub text: String,
+    /// URL to open
+    pub url: String,
+    /// Line position
+    pub line: usize,
+    /// Start column position
+    pub start_column: usize,
+    /// End column position
+    pub end_column: usize,
+}
 
 /// Application state
 pub struct App {
@@ -30,6 +45,8 @@ pub struct App {
     pub why_warp_content: String,
     /// Welcome content
     pub welcome_content: String,
+    /// Hyperlinks in current view
+    pub links: Vec<Link>,
     /// Should the application exit
     pub should_exit: bool,
 }
@@ -60,6 +77,7 @@ impl App {
             projects_content: projects(),
             why_warp_content: why_warp(),
             welcome_content: welcome(),
+            links: Vec::new(),
             should_exit: false,
         }
     }
@@ -73,6 +91,26 @@ impl App {
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
             _ => self.handle_content_keys(key),
+        }
+    }
+    
+    /// Handles mouse events
+    pub fn handle_mouse_event(&mut self, mouse: event::MouseEvent) {
+        if let MouseEventKind::Down(MouseButton::Left) = mouse.kind {
+            // Check if click is on a hyperlink
+            for link in &self.links {
+                // Calculate approximate position based on text layout
+                // This is simplified - actual implementation would need to consider text wrapping
+                if mouse.row as usize == link.line &&
+                   mouse.column as usize >= link.start_column &&
+                   mouse.column as usize <= link.end_column {
+                    // Open the URL in default browser
+                    if let Err(e) = open::that(&link.url) {
+                        eprintln!("Failed to open URL: {}", e);
+                    }
+                    break;
+                }
+            }
         }
     }
 
@@ -163,6 +201,9 @@ pub fn run() -> Result<(), Box<dyn Error>> {
             match event {
                 AppEvent::Key(key) => {
                     app.handle_key_event(key);
+                }
+                AppEvent::Mouse(mouse) => {
+                    app.handle_mouse_event(mouse);
                 }
                 AppEvent::Tick => {
                     // Update app state if needed

@@ -10,7 +10,7 @@ use super::app::{App, DisplayMode};
 use super::markdown::parse_markdown;
 
 /// Renders the user interface widgets
-pub fn render(f: &mut Frame, app: &App) {
+pub fn render(f: &mut Frame, app: &mut App) {
     // Create the layout
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -34,7 +34,7 @@ pub fn render(f: &mut Frame, app: &App) {
     // Create footer
     let footer_text = match app.display_mode {
         DisplayMode::Menu => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select",
-        _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
+        _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu | Click: Open Links",
     };
     let footer = Paragraph::new(footer_text)
         .alignment(Alignment::Center)
@@ -61,7 +61,7 @@ pub fn render(f: &mut Frame, app: &App) {
 }
 
 /// Renders the menu sidebar (always visible)
-fn render_menu_sidebar(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
+fn render_menu_sidebar(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let menu_items = vec![
         "About Me",
         "Skills",
@@ -90,47 +90,56 @@ fn render_menu_sidebar(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     f.render_widget(menu, area);
 }
 /// Renders the welcome screen
-fn render_welcome(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let text = parse_markdown(&app.welcome_content);
+fn render_welcome(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    let (text, links) = parse_markdown(&app.welcome_content);
     let instructions = Paragraph::new(text)
         .block(Block::default().title("Instructions").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
 
+    app.links = links;
     f.render_widget(instructions, area);
 }
 
 /// Renders the about section
-fn render_about(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let text = parse_markdown(&app.about_content);
+fn render_about(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    let (text, links) = parse_markdown(&app.about_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("About Me").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
+    
+    app.links = links;
     f.render_widget(paragraph, area);
 }
 
 /// Renders the skills section
-fn render_skills(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let text = parse_markdown(&app.skills_content);
+fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    let (text, links) = parse_markdown(&app.skills_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Skills").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
+    
+    app.links = links;
     f.render_widget(paragraph, area);
 }
 
 /// Renders the projects section
-fn render_projects(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let text = parse_markdown(&app.projects_content);
+fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    let (text, links) = parse_markdown(&app.projects_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Projects").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
+    
+    app.links = links;
     f.render_widget(paragraph, area);
 }
 
 /// Renders the "Why Warp?" section
-fn render_why_warp(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let text = parse_markdown(&app.why_warp_content);
+fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    let (text, links) = parse_markdown(&app.why_warp_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
+    
+    app.links = links;
     f.render_widget(paragraph, area);
 }
