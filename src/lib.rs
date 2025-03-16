@@ -1,22 +1,57 @@
 use std::fs;
 use std::path::Path;
+use std::error::Error;
+
+pub mod tui;
 
 /// Returns a greeting message
 pub fn greeting() -> String {
     String::from("Hello Warp, I am David Parker.")
 }
 
-/// Returns the about content from a static file
-pub fn about() -> String {
-    let about_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+/// Load content from markdown files
+pub fn load_content(filename: &str) -> String {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("src")
         .join("static")
-        .join("about.txt");
+        .join("content")
+        .join(filename);
 
-    match fs::read_to_string(&about_path) {
+    match fs::read_to_string(&path) {
         Ok(content) => content,
-        Err(_) => String::from("Error: About information could not be loaded."),
+        Err(_) => format!("Error: Failed to load content from '{}'", filename),
     }
+}
+
+/// Returns the about content
+pub fn about() -> String {
+    load_content("about.md")
+}
+
+/// Returns the skills content
+pub fn skills() -> String {
+    load_content("skills.md")
+}
+
+/// Returns the projects content
+pub fn projects() -> String {
+    load_content("projects.md")
+}
+
+/// Returns the why Warp content
+pub fn why_warp() -> String {
+    load_content("why_warp.md")
+}
+
+/// Returns the welcome content
+pub fn welcome() -> String {
+    load_content("welcome.md")
+}
+
+/// Runs the interactive TUI application
+pub fn run_tui() -> Result<(), Box<dyn Error>> {
+    tui::app::run()?;
+    Ok(())
 }
 
 #[cfg(test)]

@@ -1,5 +1,6 @@
 use clap::Parser;
-use hiredavidparker::{about, greeting};
+use hiredavidparker::{about, run_tui};
+use std::error::Error;
 
 #[derive(Parser, Debug, PartialEq)]
 #[command(name = "hiredavidparker")]
@@ -11,7 +12,7 @@ struct Cli {
 
 #[derive(clap::Subcommand, Debug, PartialEq)]
 enum Commands {
-    /// Run the application with a welcome message
+    /// Run the interactive TUI application
     Run,
 
     /// Display information about me
@@ -19,19 +20,29 @@ enum Commands {
 }
 
 /// Process CLI arguments and return the resulting output message
-pub fn process_args(args: &[String]) -> String {
+pub fn process_args(args: &[String]) -> Result<String, Box<dyn Error>> {
     let cli = Cli::parse_from(args);
 
     match cli.command {
-        Some(Commands::Run) => greeting(),
-        Some(Commands::About) => about(),
-        None => greeting(),
+        Some(Commands::Run) => {
+            run_tui()?;
+            Ok(String::new())  // TUI handles its own output
+        },
+        Some(Commands::About) => Ok(about()),
+        None => {
+            run_tui()?;
+            Ok(String::new())  // TUI handles its own output
+        },
     }
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = std::env::args().collect();
-    println!("{}", process_args(&args));
+    let result = process_args(&args)?;
+    if !result.is_empty() {
+        println!("{}", result);
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -39,22 +50,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_cli_with_run_command() {
-        let args = vec!["hiredavidparker".to_string(), "run".to_string()];
-        assert_eq!(process_args(&args), "Hello Warp, I am David Parker.");
-    }
-
-    #[test]
-    fn test_cli_with_no_command() {
-        let args = vec!["hiredavidparker".to_string()];
-        assert_eq!(process_args(&args), "Hello Warp, I am David Parker.");
-    }
-
-    #[test]
     fn test_cli_parser() {
         // Test the parser with "run" command
         let cli = Cli::parse_from(vec!["app", "run"]);
         assert_eq!(cli.command, Some(Commands::Run));
+
+        // Test the parser with "about" command
+        let cli = Cli::parse_from(vec!["app", "about"]);
+        assert_eq!(cli.command, Some(Commands::About));
 
         // Test the parser with no command
         let cli = Cli::parse_from(vec!["app"]);
