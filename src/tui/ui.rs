@@ -26,9 +26,9 @@ pub fn render(f: &mut Frame, app: &App) {
 
     // Create title
     let title = Paragraph::new("David Parker - Interactive Resume")
-        .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD))
+        .style(Style::default().add_modifier(Modifier::BOLD))
         .alignment(Alignment::Center)
-        .block(Block::default().borders(Borders::ALL));
+        .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::Cyan)));
     f.render_widget(title, chunks[0]);
 
     // Create footer
@@ -37,9 +37,8 @@ pub fn render(f: &mut Frame, app: &App) {
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
-        .style(Style::default().fg(Color::DarkGray))
         .alignment(Alignment::Center)
-        .block(Block::default().borders(Borders::ALL));
+        .block(Block::default().borders(Borders::ALL).border_style(Style::default().fg(Color::DarkGray)));
     f.render_widget(footer, chunks[2]);
 
     // Create the main content area layout with menu always visible
@@ -75,16 +74,17 @@ fn render_menu_sidebar(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         .enumerate()
         .map(|(i, item)| {
             let style = if i == app.menu_index {
+                // Keep highlight color for selected item only
                 Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)
             } else {
-                Style::default().fg(Color::White)
+                Style::default()
             };
             ListItem::new(Line::from(Span::styled(*item, style)))
         })
         .collect();
 
     let menu = List::new(items)
-        .block(Block::default().title("Menu").borders(Borders::ALL))
+        .block(Block::default().title("Menu").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .highlight_style(Style::default().add_modifier(Modifier::BOLD));
 
     f.render_widget(menu, area);
@@ -99,7 +99,7 @@ fn render_welcome(f: &mut Frame, area: ratatui::layout::Rect) {
 
     let text = parse_markdown(markdown_text);
     let instructions = Paragraph::new(text)
-        .block(Block::default().title("Instructions").borders(Borders::ALL))
+        .block(Block::default().title("Instructions").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
 
     f.render_widget(instructions, area);
@@ -109,7 +109,7 @@ fn render_welcome(f: &mut Frame, area: ratatui::layout::Rect) {
 fn render_about(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     let text = parse_markdown(&app.about_content);
     let paragraph = Paragraph::new(text)
-        .block(Block::default().title("About Me").borders(Borders::ALL))
+        .block(Block::default().title("About Me").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     f.render_widget(paragraph, area);
 }
@@ -132,7 +132,7 @@ fn render_skills(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
 
     let text = parse_markdown(markdown_text);
     let paragraph = Paragraph::new(text)
-        .block(Block::default().title("Skills").borders(Borders::ALL))
+        .block(Block::default().title("Skills").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     f.render_widget(paragraph, area);
 }
@@ -157,7 +157,7 @@ fn render_projects(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
 
     let text = parse_markdown(markdown_text);
     let paragraph = Paragraph::new(text)
-        .block(Block::default().title("Projects").borders(Borders::ALL))
+        .block(Block::default().title("Projects").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     f.render_widget(paragraph, area);
 }
@@ -182,7 +182,7 @@ fn render_why_warp(f: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
 
     let text = parse_markdown(markdown_text);
     let paragraph = Paragraph::new(text)
-        .block(Block::default().title("Why Warp?").borders(Borders::ALL))
+        .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     f.render_widget(paragraph, area);
 }

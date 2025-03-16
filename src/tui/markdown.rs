@@ -1,6 +1,6 @@
 use pulldown_cmark::{Event, Options, Parser, Tag};
 use ratatui::{
-    style::{Color, Modifier, Style},
+    style::{Modifier, Style},
     text::{Line, Span, Text},
 };
 
@@ -20,17 +20,9 @@ pub fn parse_markdown(content: &str) -> Text<'static> {
         match event {
             Event::Start(tag) => {
                 match tag {
-                    Tag::Heading(level, ..) => {
-                        // Set styles based on heading level
-                        let level_num = level as u8;
-                        // Use level_num to potentially set different colors per level
-                        let heading_color = match level_num {
-                            1 => Color::Cyan,
-                            2 => Color::LightCyan,
-                            _ => Color::Blue,
-                        };
+                    Tag::Heading(_level, ..) => {
+                        // Only apply bold modifier without color for maximum theme compatibility
                         active_styles.push(Style::default()
-                            .fg(heading_color)
                             .add_modifier(Modifier::BOLD));
                             
                         // Add a blank line before headings (except at the very start)
@@ -109,8 +101,8 @@ pub fn parse_markdown(content: &str) -> Text<'static> {
                 current_line.clear();
             },
             Event::Code(text) => {
+                // Use only styling without color for inline code
                 let style = Style::default()
-                    .fg(Color::Yellow)
                     .add_modifier(Modifier::BOLD);
                 current_line.push(Span::styled(text.to_string(), style));
             },
