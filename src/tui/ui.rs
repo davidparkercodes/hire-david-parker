@@ -6,7 +6,7 @@ use ratatui::{
     Frame,
 };
 
-use super::app::{App, DisplayMode};
+use super::app::{App, DisplayMode, TransitionState, WipeDirection};
 use super::markdown::parse_markdown;
 
 /// Renders the user interface widgets
@@ -50,13 +50,85 @@ pub fn render(f: &mut Frame, app: &App) {
     // Always render the menu on the left side
     render_menu_sidebar(f, app, content_chunks[0]);
     
-    // Render the appropriate content on the right side
-    match app.display_mode {
-        DisplayMode::Menu => render_welcome(f, app, content_chunks[1]),
-        DisplayMode::About => render_about(f, app, content_chunks[1]),
-        DisplayMode::Skills => render_skills(f, app, content_chunks[1]),
-        DisplayMode::Projects => render_projects(f, app, content_chunks[1]),
-        DisplayMode::WhyWarp => render_why_warp(f, app, content_chunks[1]),
+    // Handle rendering based on transition state
+    match app.transition {
+        TransitionState::None => {
+            // Normal rendering when no transition is active
+            render_content(f, app, app.display_mode, content_chunks[1]);
+        }
+        TransitionState::Wipe { progress, direction } => {
+            // Render wipe transition
+            render_wipe_transition(f, app, content_chunks[1], progress, direction);
+        }
+    }
+}
+
+/// Renders the appropriate content based on display mode
+fn render_content(f: &mut Frame, app: &App, mode: DisplayMode, area: ratatui::layout::Rect) {
+    match mode {
+        DisplayMode::Menu => render_welcome(f, app, area),
+        DisplayMode::About => render_about(f, app, area),
+        DisplayMode::Skills => render_skills(f, app, area),
+        DisplayMode::Projects => render_projects(f, app, area),
+        DisplayMode::WhyWarp => render_why_warp(f, app, area),
+    }
+}
+
+/// Renders a wipe transition between two content sections
+fn render_wipe_transition(
+    f: &mut Frame,
+    app: &App,
+    area: ratatui::layout::Rect,
+    progress: u8,
+    direction: WipeDirection,
+) {
+    // Calculate the dividing point based on progress and direction
+    let dividing_point = match direction {
+        WipeDirection::LeftToRight => {
+            // Progress from 0 (left) to 100 (right)
+            (area.width as f32 * (progress as f32 / 100.0)) as u16
+        }
+        WipeDirection::RightToLeft => {
+            // Progress from 100 (right) to 0 (left)
+            (area.width as f32 * (1.0 - progress as f32 / 100.0)) as u16
+        }
+    };
+
+    // Create two sub-areas separated by the dividing line
+    let left_area = ratatui::layout::Rect {
+        x: area.x,
+        y: area.y,
+        width: dividing_point,
+        height: area.height,
+    };
+
+    let right_area = ratatui::layout::Rect {
+        x: area.x + dividing_point,
+        y: area.y,
+        width: area.width - dividing_point,
+        height: area.height,
+    };
+
+    // Determine which content to render in which section
+    match direction {
+        WipeDirection::LeftToRight => {
+            // Left area shows new content, right area shows old content
+            if left_area.width > 0 {
+                render_content(f, app, app.display_mode, left_area);
+            }
+            if right_area.width > 0 {
+                render_content(f, app, app.previous_mode, right_area);
+            }
+        }
+        WipeDirection::RightToLeft => {
+            // Left area shows old content, right area shows new content
+            if left_area.width > 0 {
+                render_content(f, app, app.previous_mode, left_area);
+            }
+            if right_area.width > 0 {
+                render_content(f, app, app.display_mode, right_area);
+            }
+        }
     }
 }
 

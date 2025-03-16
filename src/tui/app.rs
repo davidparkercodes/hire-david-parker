@@ -20,6 +20,8 @@ pub struct App {
     pub menu_index: usize,
     /// Current display mode
     pub display_mode: DisplayMode,
+    /// Previous display mode (for transitions)
+    pub previous_mode: DisplayMode,
     /// About content
     pub about_content: String,
     /// Skills content
@@ -32,6 +34,8 @@ pub struct App {
     pub welcome_content: String,
     /// Should the application exit
     pub should_exit: bool,
+    /// Transition state
+    pub transition: TransitionState,
 }
 
 /// Display modes for the application
@@ -49,18 +53,105 @@ pub enum DisplayMode {
     WhyWarp,
 }
 
+/// Transition states for animations
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TransitionState {
+    /// No transition is occurring
+    None,
+    /// Wipe transition is in progress
+    Wipe { 
+        /// Progress from 0-100
+        progress: u8, 
+        /// Direction of the wipe
+        direction: WipeDirection,
+    },
+}
+
+/// Direction for wipe transitions
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum WipeDirection {
+    /// Wipe from left to right
+    LeftToRight,
+    /// Wipe from right to left
+    RightToLeft,
+}
+
 impl App {
     /// Creates a new app instance
     pub fn new() -> Self {
         Self {
             menu_index: 0,
             display_mode: DisplayMode::Menu,
+            previous_mode: DisplayMode::Menu,
             about_content: about(),
             skills_content: skills(),
             projects_content: projects(),
             why_warp_content: why_warp(),
             welcome_content: welcome(),
             should_exit: false,
+            transition: TransitionState::None,
+        }
+    }
+    
+    /// Starts a transition to a new display mode
+    pub fn transition_to(&mut self, mode: DisplayMode) {
+        // Only start a transition if we're not already in one
+        if matches!(self.transition, TransitionState::None) {
+            // Set the direction based on menu position
+            let direction = match (self.display_mode, mode) {
+                (DisplayMode::Menu, _) => WipeDirection::LeftToRight,
+                (_, DisplayMode::Menu) => WipeDirection::RightToLeft,
+                (_, _) => {
+                    // When transitioning between content pages, use the menu index to determine direction
+                    let current_index = self.mode_to_index(self.display_mode);
+                    let target_index = self.mode_to_index(mode);
+                    
+                    if target_index > current_index {
+                        WipeDirection::LeftToRight
+                    } else {
+                        WipeDirection::RightToLeft
+                    }
+                }
+            };
+            
+            self.previous_mode = self.display_mode;
+            self.display_mode = mode;
+            self.transition = TransitionState::Wipe {
+                progress: 0,
+                direction,
+            };
+        }
+    }
+    
+    /// Convert DisplayMode to menu index
+    fn mode_to_index(&self, mode: DisplayMode) -> usize {
+        match mode {
+            DisplayMode::Menu => 0,
+            DisplayMode::About => 0,
+            DisplayMode::Skills => 1,
+            DisplayMode::Projects => 2,
+            DisplayMode::WhyWarp => 3,
+        }
+    }
+    
+    /// Updates the transition state
+    pub fn update_transition(&mut self) {
+        match self.transition {
+            TransitionState::Wipe { progress, direction } => {
+                if progress >= 100 {
+                    // Transition complete
+                    self.transition = TransitionState::None;
+                } else {
+                    // Increment progress by a step amount
+                    const STEP: u8 = 10;
+                    let new_progress = (progress + STEP).min(100);
+                    self.transition = TransitionState::Wipe {
+                        progress: new_progress,
+                        direction,
+                    };
+                }
+            }
+            TransitionState::None => {}
         }
     }
 
@@ -70,9 +161,12 @@ impl App {
             return;
         }
 
-        match self.display_mode {
-            DisplayMode::Menu => self.handle_menu_keys(key),
-            _ => self.handle_content_keys(key),
+        // Only handle key events if not in a transition
+        if matches!(self.transition, TransitionState::None) {
+            match self.display_mode {
+                DisplayMode::Menu => self.handle_menu_keys(key),
+                _ => self.handle_content_keys(key),
+            }
         }
     }
 
@@ -94,10 +188,10 @@ impl App {
             }
             KeyCode::Enter => {
                 match self.menu_index {
-                    0 => self.display_mode = DisplayMode::About,
-                    1 => self.display_mode = DisplayMode::Skills,
-                    2 => self.display_mode = DisplayMode::Projects,
-                    3 => self.display_mode = DisplayMode::WhyWarp,
+                    0 => self.transition_to(DisplayMode::About),
+                    1 => self.transition_to(DisplayMode::Skills),
+                    2 => self.transition_to(DisplayMode::Projects),
+                    3 => self.transition_to(DisplayMode::WhyWarp),
                     _ => {}
                 }
             }
@@ -112,7 +206,7 @@ impl App {
                 self.should_exit = true;
             }
             KeyCode::Esc | KeyCode::Backspace => {
-                self.display_mode = DisplayMode::Menu;
+                self.transition_to(DisplayMode::Menu);
             }
             KeyCode::Up | KeyCode::Char('k') => {
                 if self.menu_index > 0 {
@@ -126,10 +220,10 @@ impl App {
             }
             KeyCode::Enter => {
                 match self.menu_index {
-                    0 => self.display_mode = DisplayMode::About,
-                    1 => self.display_mode = DisplayMode::Skills,
-                    2 => self.display_mode = DisplayMode::Projects,
-                    3 => self.display_mode = DisplayMode::WhyWarp,
+                    0 => self.transition_to(DisplayMode::About),
+                    1 => self.transition_to(DisplayMode::Skills),
+                    2 => self.transition_to(DisplayMode::Projects),
+                    3 => self.transition_to(DisplayMode::WhyWarp),
                     _ => {}
                 }
             }
@@ -165,7 +259,10 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                     app.handle_key_event(key);
                 }
                 AppEvent::Tick => {
-                    // Update app state if needed
+                    // Update transition animation if active
+                    if !matches!(app.transition, TransitionState::None) {
+                        app.update_transition();
+                    }
                 }
                 _ => {}
             }
