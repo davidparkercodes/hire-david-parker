@@ -1,0 +1,14 @@
+## About David Parker
+
+Hi Warp team! I'm David Parker, a software engineer with a passion for developer tools and CLI applications.
+
+I bring solid experience in:
+
+-   Rust, TypeScript, and other modern languages
+-   Building intuitive CLI interfaces
+-   Performance optimization and systems programming
+-   User-centric design principles
+
+Why Warp? I believe terminal experiences should be modern, intuitive, and powerful. I'm excited about Warp's vision to reinvent the terminal for modern developers, and I'd love to contribute to this mission.
+
+I built this interactive CLI resume to showcase my skills and approach to developer tools. Feel free to explore the other commands to learn more about me, my projects, and why I'm a great fit for the Warp team.
