@@ -1,5 +1,5 @@
 use clap::Parser;
-use hiredavidparker::greeting;
+use hiredavidparker::{about, greeting};
 
 #[derive(Parser, Debug, PartialEq)]
 #[command(name = "hiredavidparker")]
@@ -11,16 +11,20 @@ struct Cli {
 
 #[derive(clap::Subcommand, Debug, PartialEq)]
 enum Commands {
-    /// Run the application
+    /// Run the application with a welcome message
     Run,
+
+    /// Display information about me
+    About,
 }
 
 /// Process CLI arguments and return the resulting output message
 pub fn process_args(args: &[String]) -> String {
     let cli = Cli::parse_from(args);
-    
+
     match cli.command {
         Some(Commands::Run) => greeting(),
+        Some(Commands::About) => about(),
         None => greeting(),
     }
 }
@@ -36,10 +40,7 @@ mod tests {
 
     #[test]
     fn test_cli_with_run_command() {
-        let args = vec![
-            "hiredavidparker".to_string(),
-            "run".to_string(),
-        ];
+        let args = vec!["hiredavidparker".to_string(), "run".to_string()];
         assert_eq!(process_args(&args), "Hello Warp, I am David Parker.");
     }
 

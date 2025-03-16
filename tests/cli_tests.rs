@@ -7,6 +7,13 @@ fn test_cli_run_command() {
 }
 
 #[test]
+fn test_cli_about_command() {
+    let stdout = common::run_cli_with_args(&["about"]);
+    assert!(stdout.contains("About David Parker"));
+    assert!(stdout.contains("Warp team"));
+}
+
+#[test]
 fn test_cli_no_command() {
     // For testing with no command, we need to use std::process::Command directly
     let output = std::process::Command::new("cargo")
