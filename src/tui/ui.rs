@@ -38,6 +38,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::ProjectLinks => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Open Link | ←/h: Back to Projects",
         DisplayMode::Skills => "q: Quit | ↑/k: Up | ↓/j: Down | →/l: View Skill Meters | Esc: Return to Menu",
         DisplayMode::SkillsVisual => "q: Quit | ←/h: Previous Category | →/l: Next Category | Esc: Back to Skills",
+        DisplayMode::Contact => "q: Quit | Esc: Return to Menu",
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
@@ -63,6 +64,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::Projects => render_projects(f, app, content_chunks[1]),
         DisplayMode::ProjectLinks => render_project_links(f, app, content_chunks[1]),
         DisplayMode::WhyWarp => render_why_warp(f, app, content_chunks[1]),
+        DisplayMode::Contact => render_contact(f, app, content_chunks[1]),
     }
 }
 
@@ -73,6 +75,7 @@ fn render_menu_sidebar(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect
         "Skills",
         "Projects",
         "Why Warp?",
+        "Contact",
     ];
 
     let items: Vec<ListItem> = menu_items
@@ -182,6 +185,17 @@ fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let (text, links) = parse_markdown(&app.why_warp_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+        .wrap(Wrap { trim: true });
+    
+    app.links = links;
+    f.render_widget(paragraph, area);
+}
+
+/// Renders the Contact section
+fn render_contact(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    let (text, links) = parse_markdown(&app.contact_content);
+    let paragraph = Paragraph::new(text)
+        .block(Block::default().title("Contact").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
     app.links = links;

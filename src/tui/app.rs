@@ -1,4 +1,4 @@
-use crate::{about, skills, projects, why_warp, welcome};
+use crate::{about, skills, projects, why_warp, welcome, contact};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
     execute,
@@ -73,6 +73,8 @@ pub struct App {
     pub why_warp_content: String,
     /// Welcome content
     pub welcome_content: String,
+    /// Contact content
+    pub contact_content: String,
     /// Hyperlinks in current view
     pub links: Vec<Link>,
     /// Should the application exit
@@ -96,6 +98,8 @@ pub enum DisplayMode {
     ProjectLinks,
     /// Why Warp section
     WhyWarp,
+    /// Contact information
+    Contact,
 }
 
 impl App {
@@ -121,6 +125,7 @@ impl App {
             projects_content: projects(),
             why_warp_content: why_warp(),
             welcome_content: welcome(),
+            contact_content: contact(),
             links: Vec::new(),
             should_exit: false,
         }
@@ -226,7 +231,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 3 {
+                if self.menu_index < 4 {
                     self.menu_index += 1;
                 }
             }
@@ -236,6 +241,7 @@ impl App {
                     1 => self.display_mode = DisplayMode::Skills,
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
+                    4 => self.display_mode = DisplayMode::Contact,
                     _ => {}
                 }
             }
@@ -258,7 +264,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 3 {
+                if self.menu_index < 4 {
                     self.menu_index += 1;
                 }
             }
@@ -280,6 +286,7 @@ impl App {
                     1 => self.display_mode = DisplayMode::Skills,
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
+                    4 => self.display_mode = DisplayMode::Contact,
                     _ => {}
                 }
             }
