@@ -1,6 +1,6 @@
 use crate::{about, skills, projects, why_warp, welcome};
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind, MouseEventKind, MouseButton},
+    event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -132,24 +132,10 @@ impl App {
         }
     }
     
-    /// Handles mouse events
-    pub fn handle_mouse_event(&mut self, mouse: event::MouseEvent) {
-        if let MouseEventKind::Down(MouseButton::Left) = mouse.kind {
-            // Check if click is on a hyperlink
-            for link in &self.links {
-                // Calculate approximate position based on text layout
-                // This is simplified - actual implementation would need to consider text wrapping
-                if mouse.row as usize == link.line &&
-                   mouse.column as usize >= link.start_column &&
-                   mouse.column as usize <= link.end_column {
-                    // Open the URL in default browser
-                    if let Err(e) = open::that(&link.url) {
-                        eprintln!("Failed to open URL: {}", e);
-                    }
-                    break;
-                }
-            }
-        }
+    /// Handles mouse events - no longer used for hyperlinks
+    pub fn handle_mouse_event(&mut self, _mouse: event::MouseEvent) {
+        // Mouse events are no longer used for hyperlinks
+        // We've switched to keyboard navigation for better accessibility
     }
 
     /// Handles keys in menu mode

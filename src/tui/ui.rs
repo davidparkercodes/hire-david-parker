@@ -129,11 +129,7 @@ fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let (text, links) = parse_markdown(&app.projects_content);
     
-    let title = if !links.is_empty() {
-        "Projects (→ to navigate links)"
-    } else {
-        "Projects"
-    };
+    let title = "Projects";
     
     let paragraph = Paragraph::new(text)
         .block(Block::default().title(title).borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
