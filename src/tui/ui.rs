@@ -200,18 +200,24 @@ fn render_horizontal_timeline(f: &mut Frame, app: &App, area: ratatui::layout::R
         timeline_width
     };
     
-    // Create a horizontal line for the timeline
-    let timeline_text = "─".repeat(inner_area.width as usize);
+    // Add horizontal padding for the timeline
+    let horizontal_padding = 4; // Adjust padding as needed
+    let usable_width = inner_area.width.saturating_sub(horizontal_padding * 2);
+    
+    // Create a horizontal line for the timeline with padding
     let line_y = inner_area.y + inner_area.height / 2;
+    
+    // Create the timeline line with padding
+    let timeline_text = "─".repeat(usable_width as usize);
     let timeline_line = Line::from(Span::styled(
         timeline_text,
         Style::default().fg(Color::Gray)
     ));
     let timeline_paragraph = Paragraph::new(timeline_line);
     let timeline_area = Rect {
-        x: inner_area.x,
+        x: inner_area.x + horizontal_padding,
         y: line_y,
-        width: inner_area.width,
+        width: usable_width,
         height: 1,
     };
     f.render_widget(timeline_paragraph, timeline_area);
@@ -220,9 +226,9 @@ fn render_horizontal_timeline(f: &mut Frame, app: &App, area: ratatui::layout::R
     let mut event_positions = Vec::new();
     
     for (i, event) in app.timeline_events.iter().enumerate() {
-        // Calculate position for this event on the timeline
+        // Calculate position for this event on the timeline with padding
         let year_offset = (event.year - min_year) as usize;
-        let x_pos = inner_area.x + (year_offset * pixels_per_year) as u16;
+        let x_pos = inner_area.x + horizontal_padding + (year_offset * pixels_per_year * usable_width / timeline_width) as u16;
         
         // Store the position for the event
         event_positions.push(x_pos);

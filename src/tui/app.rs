@@ -61,7 +61,17 @@ impl App {
     /// Creates a new app instance
     pub fn new() -> Self {
         // Load timeline events
-        let timeline_events = load_timeline_data().unwrap_or_default();
+        let mut timeline_events = load_timeline_data().unwrap_or_default();
+        
+        // Sort events in chronological order (oldest to newest)
+        timeline_events.sort_by_key(|event| event.year);
+        
+        // Initialize with the most recent event (last in chronological order)
+        let timeline_index = if !timeline_events.is_empty() {
+            timeline_events.len() - 1
+        } else {
+            0
+        };
         
         Self {
             menu_index: 0,
@@ -73,7 +83,7 @@ impl App {
             welcome_content: welcome(),
             timeline_content: timeline(),
             timeline_events,
-            timeline_index: 0,
+            timeline_index,
             should_exit: false,
         }
     }
@@ -163,14 +173,17 @@ impl App {
             KeyCode::Esc | KeyCode::Backspace => {
                 self.display_mode = DisplayMode::Menu;
             }
+            // Swap left/right arrow keys for chronological navigation
+            // Left arrow goes back in time (earlier events)
             KeyCode::Left | KeyCode::Char('h') => {
-                if self.timeline_index > 0 {
-                    self.timeline_index -= 1;
-                }
-            }
-            KeyCode::Right | KeyCode::Char('l') => {
                 if !self.timeline_events.is_empty() && self.timeline_index < self.timeline_events.len() - 1 {
                     self.timeline_index += 1;
+                }
+            }
+            // Right arrow goes forward in time (later events)
+            KeyCode::Right | KeyCode::Char('l') => {
+                if self.timeline_index > 0 {
+                    self.timeline_index -= 1;
                 }
             }
             KeyCode::Up | KeyCode::Char('k') => {
