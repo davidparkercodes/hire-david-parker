@@ -66,12 +66,8 @@ impl App {
         // Sort events in chronological order (oldest to newest)
         timeline_events.sort_by_key(|event| event.year);
         
-        // Initialize with the most recent event (last in chronological order)
-        let timeline_index = if !timeline_events.is_empty() {
-            timeline_events.len() - 1
-        } else {
-            0
-        };
+        // Initialize with the oldest event (first in chronological order)
+        let timeline_index = 0;
         
         Self {
             menu_index: 0,
@@ -173,17 +169,16 @@ impl App {
             KeyCode::Esc | KeyCode::Backspace => {
                 self.display_mode = DisplayMode::Menu;
             }
-            // Swap left/right arrow keys for chronological navigation
-            // Left arrow goes back in time (earlier events)
+            // Left arrow goes back in time (previous events)
             KeyCode::Left | KeyCode::Char('h') => {
-                if !self.timeline_events.is_empty() && self.timeline_index < self.timeline_events.len() - 1 {
-                    self.timeline_index += 1;
+                if self.timeline_index > 0 {
+                    self.timeline_index -= 1;
                 }
             }
             // Right arrow goes forward in time (later events)
             KeyCode::Right | KeyCode::Char('l') => {
-                if self.timeline_index > 0 {
-                    self.timeline_index -= 1;
+                if !self.timeline_events.is_empty() && self.timeline_index < self.timeline_events.len() - 1 {
+                    self.timeline_index += 1;
                 }
             }
             KeyCode::Up | KeyCode::Char('k') => {
