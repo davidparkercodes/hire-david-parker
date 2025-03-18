@@ -1,4 +1,5 @@
 ## Technical Skills
+Press the right arrow (→) to view interactive skill meters!
 
 * **Languages**: Rust, TypeScript, JavaScript, Python, Go
 * **Frontend**: React, Vue.js, Web Technologies

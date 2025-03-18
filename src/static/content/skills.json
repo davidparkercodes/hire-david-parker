@@ -1,0 +1,50 @@
+{
+  "categories": [
+    {
+      "name": "Languages",
+      "skills": [
+        { "name": "Rust", "level": 85 },
+        { "name": "TypeScript", "level": 90 },
+        { "name": "JavaScript", "level": 95 },
+        { "name": "Python", "level": 80 },
+        { "name": "Go", "level": 75 }
+      ]
+    },
+    {
+      "name": "Frontend",
+      "skills": [
+        { "name": "React", "level": 90 },
+        { "name": "Vue.js", "level": 85 },
+        { "name": "HTML/CSS", "level": 95 },
+        { "name": "Web Technologies", "level": 90 }
+      ]
+    },
+    {
+      "name": "Backend",
+      "skills": [
+        { "name": "Node.js", "level": 85 },
+        { "name": "Express", "level": 80 },
+        { "name": "Actix Web", "level": 75 },
+        { "name": "Tokio", "level": 80 }
+      ]
+    },
+    {
+      "name": "Terminal",
+      "skills": [
+        { "name": "Bash/Zsh", "level": 85 },
+        { "name": "TUI Development", "level": 80 },
+        { "name": "CLI Tools", "level": 90 },
+        { "name": "Terminal UX", "level": 85 }
+      ]
+    },
+    {
+      "name": "DevOps",
+      "skills": [
+        { "name": "Docker", "level": 80 },
+        { "name": "Kubernetes", "level": 70 },
+        { "name": "CI/CD", "level": 85 },
+        { "name": "Git", "level": 95 }
+      ]
+    }
+  ]
+}
