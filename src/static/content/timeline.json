@@ -1,108 +1,50 @@
-{
-  "timeline": [
-    {
-      "year": 2024,
-      "type": "career",
-      "title": "Terminal Developer",
-      "organization": "Warp",
-      "description": "Joined Warp to work on revolutionizing the terminal experience for developers. Focusing on performance, UX, and innovative features.",
-      "highlights": [
-        "Contributing to the Rust-based terminal core",
-        "Implementing new command-line features for improved productivity",
-        "Enhancing cross-platform compatibility and responsiveness"
-      ],
-      "technologies": ["Rust", "WebAssembly", "TypeScript", "Terminal"]
-    },
-    {
-      "year": 2023,
-      "type": "career",
-      "title": "Senior Rust Developer",
-      "organization": "Terminal Technologies",
-      "description": "Led development of CLI and TUI applications for system monitoring and automation. Improved performance and user experience through Rust optimizations.",
-      "highlights": [
-        "Reduced memory usage by 40% through custom data structures",
-        "Implemented cross-platform terminal rendering with Ratatui",
-        "Mentored 4 junior developers in Rust best practices"
-      ],
-      "technologies": ["Rust", "Ratatui", "Crossterm", "Clap"]
-    },
-    {
-      "year": 2022,
-      "type": "career",
-      "title": "Rust Systems Engineer",
-      "organization": "DistSys Inc.",
-      "description": "Developed high-performance distributed systems components using Rust, focusing on reliability and efficiency.",
-      "highlights": [
-        "Built real-time data processing pipeline handling 100K+ messages per second",
-        "Implemented custom async runtime for specific workload optimizations",
-        "Reduced infrastructure costs by 35% through performance optimizations"
-      ],
-      "technologies": ["Rust", "Tokio", "gRPC", "Kubernetes"]
-    },
-    {
-      "year": 2021,
-      "type": "career",
-      "title": "Frontend Team Lead",
-      "organization": "CloudScale Inc.",
-      "description": "Managed a team of 6 developers building modern web applications with TypeScript and React. Established coding standards and review processes.",
-      "highlights": [
-        "Delivered major dashboard redesign project ahead of schedule",
-        "Reduced bundle size by 35% through code splitting and lazy loading",
-        "Implemented comprehensive UI testing strategy"
-      ],
-      "technologies": ["TypeScript", "React", "Redux", "Jest"]
-    },
-    {
-      "year": 2020,
-      "type": "career",
-      "title": "DevOps Specialist",
-      "organization": "InfraStack",
-      "description": "Led cloud migration efforts and implemented CI/CD pipelines for multiple development teams. Focused on automation and infrastructure as code.",
-      "highlights": [
-        "Reduced deployment times from days to minutes using infrastructure as code",
-        "Implemented security-focused CI pipeline reducing vulnerabilities by 80%",
-        "Built developer CLI tools to simplify common workflow operations"
-      ],
-      "technologies": ["AWS", "Terraform", "GitHub Actions", "Go", "Bash"]
-    },
-    {
-      "year": 2019,
-      "type": "career",
-      "title": "Full Stack Developer",
-      "organization": "InnoTech Solutions",
-      "description": "Developed and maintained web applications using Node.js backend and React frontend. Implemented CI/CD pipelines and testing frameworks.",
-      "highlights": [
-        "Built RESTful API service that handled 500k+ daily requests",
-        "Improved application load time by 60% through optimizations",
-        "Introduced GraphQL for more efficient data fetching"
-      ],
-      "technologies": ["JavaScript", "Node.js", "React", "MongoDB"]
-    },
-    {
-      "year": 2017,
-      "type": "career",
-      "title": "Software Engineer",
-      "organization": "TechStart",
-      "description": "Worked on various projects including mobile apps and web services. Focused on responsive design and cross-platform compatibility.",
-      "highlights": [
-        "Developed iOS and Android apps using React Native",
-        "Implemented PWA features for offline functionality",
-        "Created API integrations with third-party services"
-      ],
-      "technologies": ["JavaScript", "React Native", "Express", "Firebase"]
-    },
-    {
-      "year": 2015,
-      "type": "career",
-      "title": "Junior Developer",
-      "organization": "Web Solutions Ltd.",
-      "description": "Started career building websites and small web applications. Gained experience with frontend and backend technologies.",
-      "highlights": [
-        "Built and maintained company website",
-        "Developed custom CMS solution for small businesses",
-        "Created responsive email templates"
-      ],
-      "technologies": ["HTML/CSS", "JavaScript", "PHP", "MySQL"]
-    }
-  ]
-}
+[
+  {
+    "year": 2023,
+    "title": "Senior Software Engineer",
+    "organization": "Acme Corp",
+    "description": "Led development of cloud-native microservices architecture",
+    "highlights": [
+      "Architected and implemented a distributed system using Rust and gRPC",
+      "Reduced infrastructure costs by 35% through optimization",
+      "Mentored junior engineers on Rust best practices and design patterns"
+    ],
+    "technologies": ["Rust", "AWS", "Kubernetes", "gRPC", "CI/CD"]
+  },
+  {
+    "year": 2021,
+    "title": "Software Engineer",
+    "organization": "Tech Innovators Inc",
+    "description": "Developed backend services for high-throughput data processing",
+    "highlights": [
+      "Built robust APIs handling 10M+ daily requests",
+      "Implemented real-time analytics pipeline",
+      "Contributed to open-source Rust libraries"
+    ],
+    "technologies": ["Rust", "TypeScript", "PostgreSQL", "Redis", "Docker"]
+  },
+  {
+    "year": 2019,
+    "title": "Software Developer",
+    "organization": "StartupXYZ",
+    "description": "Full-stack engineer for early-stage startup",
+    "highlights": [
+      "Designed and implemented user authentication system",
+      "Built responsive web application with React",
+      "Developed RESTful backend services"
+    ],
+    "technologies": ["JavaScript", "Node.js", "React", "MongoDB", "Git"]
+  },
+  {
+    "year": 2017,
+    "title": "Junior Developer",
+    "organization": "CodeCrafters LLC",
+    "description": "Entry-level position focused on web development",
+    "highlights": [
+      "Contributed to frontend components using React",
+      "Fixed bugs and improved performance of legacy systems",
+      "Participated in agile development process"
+    ],
+    "technologies": ["HTML/CSS", "JavaScript", "Python", "SQL"]
+  }
+]

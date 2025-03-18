@@ -1,4 +1,4 @@
-use crate::{about, skills, projects, why_warp, welcome, contact, timeline};
+use crate::{about, skills, projects, why_warp, welcome, timeline, load_timeline_data, TimelineEvent};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
     execute,
@@ -128,14 +128,12 @@ pub struct App {
     pub why_warp_content: String,
     /// Welcome content
     pub welcome_content: String,
-    /// Contact content
-    pub contact_content: String,
     /// Timeline content
     pub timeline_content: String,
-    /// Timeline data
-    pub timeline_data: TimelineData,
-    /// Hyperlinks in current view
-    pub links: Vec<Link>,
+    /// Timeline events data
+    pub timeline_events: Vec<TimelineEvent>,
+    /// Currently selected timeline event index
+    pub timeline_index: usize,
     /// Should the application exit
     pub should_exit: bool,
 }
@@ -157,44 +155,21 @@ pub enum DisplayMode {
     ProjectLinks,
     /// Why Warp section
     WhyWarp,
-    /// Contact information
-    Contact,
-    /// Timeline view
+    /// Timeline section
     Timeline,
-    /// Timeline detail view
-    TimelineDetail,
 }
 
 impl App {
     /// Creates a new app instance
     pub fn new() -> Self {
-        // Load skills data from JSON file
-        let skills_data = match fs::read_to_string("src/static/content/skills.json") {
-            Ok(json_str) => match serde_json::from_str(&json_str) {
-                Ok(data) => data,
-                Err(_) => SkillsData { categories: Vec::new() },
-            },
-            Err(_) => SkillsData { categories: Vec::new() },
-        };
+        // Load timeline events
+        let mut timeline_events = load_timeline_data().unwrap_or_default();
         
-        // Load timeline data from JSON file
-        let timeline_data = match fs::read_to_string("src/static/content/timeline.json") {
-            Ok(json_str) => match serde_json::from_str(&json_str) {
-                Ok(data) => data,
-                Err(e) => {
-                    eprintln!("Error parsing timeline.json: {}", e);
-                    TimelineData { 
-                        timeline: Vec::new(),
-                    }
-                },
-            },
-            Err(e) => {
-                eprintln!("Error reading timeline.json: {}", e);
-                TimelineData { 
-                    timeline: Vec::new(),
-                }
-            },
-        };
+        // Sort events in chronological order (oldest to newest)
+        timeline_events.sort_by_key(|event| event.year);
+        
+        // Initialize with the oldest event (first in chronological order)
+        let timeline_index = 0;
         
         Self {
             menu_index: 0,
@@ -210,10 +185,9 @@ impl App {
             projects_content: projects(),
             why_warp_content: why_warp(),
             welcome_content: welcome(),
-            contact_content: contact(),
             timeline_content: timeline(),
-            timeline_data,
-            links: Vec::new(),
+            timeline_events,
+            timeline_index,
             should_exit: false,
         }
     }
@@ -234,10 +208,7 @@ impl App {
 
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
-            DisplayMode::ProjectLinks => self.handle_project_links_keys(key),
-            DisplayMode::SkillsVisual => self.handle_skills_visual_keys(key),
             DisplayMode::Timeline => self.handle_timeline_keys(key),
-            DisplayMode::TimelineDetail => self.handle_timeline_detail_keys(key),
             _ => self.handle_content_keys(key),
         }
     }
@@ -395,7 +366,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 5 {
+                if self.menu_index < 4 { // Updated to include Timeline
                     self.menu_index += 1;
                 }
             }
@@ -405,8 +376,7 @@ impl App {
                     1 => self.display_mode = DisplayMode::Skills,
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
-                    4 => self.display_mode = DisplayMode::Contact,
-                    5 => self.display_mode = DisplayMode::Timeline,
+                    4 => self.display_mode = DisplayMode::Timeline,
                     _ => {}
                 }
             }
@@ -429,7 +399,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 5 {
+                if self.menu_index < 4 { // Updated to include Timeline
                     self.menu_index += 1;
                 }
             }
@@ -451,8 +421,52 @@ impl App {
                     1 => self.display_mode = DisplayMode::Skills,
                     2 => self.display_mode = DisplayMode::Projects,
                     3 => self.display_mode = DisplayMode::WhyWarp,
-                    4 => self.display_mode = DisplayMode::Contact,
-                    5 => self.display_mode = DisplayMode::Timeline,
+                    4 => self.display_mode = DisplayMode::Timeline,
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
+    }
+    
+    /// Handles keys in timeline display mode
+    fn handle_timeline_keys(&mut self, key: event::KeyEvent) {
+        match key.code {
+            KeyCode::Char('q') => {
+                self.should_exit = true;
+            }
+            KeyCode::Esc | KeyCode::Backspace => {
+                self.display_mode = DisplayMode::Menu;
+            }
+            // Left arrow goes back in time (previous events)
+            KeyCode::Left | KeyCode::Char('h') => {
+                if self.timeline_index > 0 {
+                    self.timeline_index -= 1;
+                }
+            }
+            // Right arrow goes forward in time (later events)
+            KeyCode::Right | KeyCode::Char('l') => {
+                if !self.timeline_events.is_empty() && self.timeline_index < self.timeline_events.len() - 1 {
+                    self.timeline_index += 1;
+                }
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                if self.menu_index > 0 {
+                    self.menu_index -= 1;
+                }
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                if self.menu_index < 4 {
+                    self.menu_index += 1;
+                }
+            }
+            KeyCode::Enter => {
+                match self.menu_index {
+                    0 => self.display_mode = DisplayMode::About,
+                    1 => self.display_mode = DisplayMode::Skills,
+                    2 => self.display_mode = DisplayMode::Projects,
+                    3 => self.display_mode = DisplayMode::WhyWarp,
+                    4 => self.display_mode = DisplayMode::Timeline,
                     _ => {}
                 }
             }
