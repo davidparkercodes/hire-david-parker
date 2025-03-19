@@ -101,6 +101,22 @@ impl App {
                 self.display_mode = DisplayMode::Menu;
                 self.timeline_detail_view = false;
             }
+            KeyCode::Up | KeyCode::Char('k') => {
+                if self.menu_index > 0 {
+                    self.menu_index -= 1;
+                    self.previous_mode = DisplayMode::Timeline;
+                    self.display_mode = DisplayMode::Menu;
+                    self.switch_to_selected_screen();
+                }
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                if self.menu_index < 5 {
+                    self.menu_index += 1;
+                    self.previous_mode = DisplayMode::Timeline;
+                    self.display_mode = DisplayMode::Menu;
+                    self.switch_to_selected_screen();
+                }
+            }
             KeyCode::Left | KeyCode::Char('h') => {
                 if self.timeline_index > 0 {
                     self.timeline_index -= 1;
