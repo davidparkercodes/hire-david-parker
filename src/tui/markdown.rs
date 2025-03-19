@@ -1,4 +1,4 @@
-use crate::tui::app::Link;
+use crate::tui::models::Link;
 use pulldown_cmark::{Event, Options, Parser, Tag};
 use ratatui::{
     style::{Color, Modifier, Style},
