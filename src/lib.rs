@@ -53,6 +53,11 @@ pub fn timeline() -> String {
     load_content("timeline.md")
 }
 
+/// Returns the contact content
+pub fn contact() -> String {
+    load_content("contact.md")
+}
+
 /// Loads timeline data from JSON file
 pub fn load_timeline_data() -> Result<Vec<TimelineEvent>, Box<dyn Error>> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -150,6 +155,13 @@ mod tests {
         let timeline_content = timeline();
         assert!(!timeline_content.is_empty());
         assert!(!timeline_content.contains("Error: Failed to load content from 'timeline.md'"));
+    }
+    
+    #[test]
+    fn test_contact_content() {
+        let contact_content = contact();
+        assert!(!contact_content.is_empty());
+        assert!(!contact_content.contains("Error: Failed to load content from 'contact.md'"));
     }
 
     #[test]

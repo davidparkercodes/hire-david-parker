@@ -56,6 +56,10 @@ impl App {
                 self.timeline_index = 0;
                 self.timeline_event_index = self.timeline_index;
             },
+            5 => {
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::Contact;
+            },
             _ => {}
         }
     }
@@ -188,7 +192,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                     self.switch_to_selected_screen();
                 }
@@ -216,7 +220,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                     self.switch_to_selected_screen();
                 }

@@ -1,5 +1,5 @@
 use super::models::{DisplayMode, SkillsData, TimelineEvent, TimelineFilter, TimelineType};
-use crate::{about, skills, projects, why_warp, welcome, timeline, load_timeline_data};
+use crate::{about, skills, projects, why_warp, welcome, timeline, contact, load_timeline_data};
 use std::error::Error;
 use std::path::Path;
 
@@ -19,6 +19,7 @@ pub struct App {
     pub why_warp_content: String,
     pub welcome_content: String,
     pub timeline_content: String,
+    pub contact_content: String,
     pub timeline_events: Vec<TimelineEvent>,
     pub timeline_index: usize,
     pub should_exit: bool,
@@ -48,6 +49,7 @@ impl App {
             why_warp_content: why_warp(),
             welcome_content: welcome(),
             timeline_content: timeline(),
+            contact_content: contact(),
             timeline_events: timeline_events.into_iter().map(|e| TimelineEvent {
                 year: e.year as u16,
                 event_type: match e.year % 5 {

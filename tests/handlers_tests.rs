@@ -68,9 +68,9 @@ fn test_menu_key_handling() {
     app.display_mode = DisplayMode::Menu;
     
     app.display_mode = DisplayMode::Menu;
-    app.menu_index = 4;
-    app.handle_key_event(create_key_event(KeyCode::Down)); // Should not go above 4
-    assert_eq!(app.menu_index, 4);
+    app.menu_index = 5;
+    app.handle_key_event(create_key_event(KeyCode::Down)); // Should not go above 5
+    assert_eq!(app.menu_index, 5);
     
     // Test all menu selection options
     app.display_mode = DisplayMode::Menu;
@@ -93,6 +93,11 @@ fn test_menu_key_handling() {
     app.handle_key_event(create_key_event(KeyCode::Enter));
     assert_eq!(app.display_mode, DisplayMode::Timeline);
     assert_eq!(app.timeline_index, 0);
+    
+    app.display_mode = DisplayMode::Menu;
+    app.menu_index = 5;
+    app.handle_key_event(create_key_event(KeyCode::Enter));
+    assert_eq!(app.display_mode, DisplayMode::Contact);
 }
 
 #[test]
@@ -175,6 +180,11 @@ fn test_content_navigation() {
     app.menu_index = 4;
     app.handle_key_event(create_key_event(KeyCode::Enter));
     assert_eq!(app.display_mode, DisplayMode::Timeline);
+    
+    app.display_mode = DisplayMode::About;
+    app.menu_index = 5;
+    app.handle_key_event(create_key_event(KeyCode::Enter));
+    assert_eq!(app.display_mode, DisplayMode::Contact);
 }
 
 #[test]
