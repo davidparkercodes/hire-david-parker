@@ -6,7 +6,8 @@ use ratatui::{
     Frame,
 };
 
-use super::app::{App, DisplayMode};
+use super::state::App;
+use super::models::DisplayMode;
 use super::markdown::parse_markdown;
 
 /// Renders the user interface widgets

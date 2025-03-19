@@ -85,7 +85,7 @@ pub fn run_tui() -> Result<(), Box<dyn Error>> {
     std::io::stdin().read_line(&mut input)?;
     
     if input.trim().to_lowercase() == "y" {
-        tui::app::run()?;
+        tui::run()?;
         Ok(())
     } else {
         println!("Aborting TUI application launch.");
