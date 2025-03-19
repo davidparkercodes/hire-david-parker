@@ -79,6 +79,41 @@ mod tests {
     }
     
     #[test]
+    fn test_process_args_run() -> Result<(), Box<dyn Error>> {
+        // When using the "run" command, process_args should return empty string
+        let args = vec![String::from("app"), String::from("run")];
+        let result = process_args(&args)?;
+        
+        // Result should be empty (TUI handles output)
+        assert!(result.is_empty());
+        
+        Ok(())
+    }
+    
+    #[test]
+    fn test_process_args_no_command() -> Result<(), Box<dyn Error>> {
+        // When no command is provided, it defaults to running the TUI
+        let args = vec![String::from("app")];
+        let result = process_args(&args)?;
+        
+        // Result should be empty (TUI handles output)
+        assert!(result.is_empty());
+        
+        Ok(())
+    }
+    
+    #[test]
+    fn test_main_function() -> Result<(), Box<dyn Error>> {
+        // Test main function
+        let result = main();
+        
+        // Should complete without error
+        assert!(result.is_ok());
+        
+        Ok(())
+    }
+    
+    #[test]
     fn test_debug_for_commands() {
         // Test that Commands enum implements Debug
         let run_cmd = Commands::Run;
