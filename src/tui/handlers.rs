@@ -146,8 +146,6 @@ impl App {
         }
     }
     
-    pub fn handle_mouse_event(&mut self, _mouse: event::MouseEvent) {
-    }
 
     fn handle_menu_keys(&mut self, key: event::KeyEvent) {
         match key.code {
