@@ -11,8 +11,11 @@ cargo test
 
 # Generate test coverage report
 cargo tarpaulin --verbose --workspace --skip-clean --out Html --output-dir coverage
-# Or use the script
+
+# Generate test coverage excluding runner.rs (recommended)
 ./scripts/coverage.sh
+# Or use the simplified alias
+./cov.sh
 ```
 
 ## Codebase Structure

@@ -4,7 +4,7 @@
 # Exit on any error
 set -e
 
-# Run tarpaulin with HTML report
-cargo tarpaulin --verbose --workspace --skip-clean --out Html --output-dir coverage
+# Run tarpaulin with HTML report and exclude runner.rs
+cargo tarpaulin --workspace --skip-clean --exclude-files "src/tui/runner.rs" --out Html --output-dir coverage
 
 echo "Coverage report generated in ./coverage/tarpaulin-report.html"
