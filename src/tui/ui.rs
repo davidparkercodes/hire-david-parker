@@ -6,7 +6,7 @@ use ratatui::{
     Frame,
 };
 
-use super::app::{App, DisplayMode, TimelineType, TimelineEvent};
+use super::app::{App, DisplayMode};
 use super::markdown::parse_markdown;
 
 /// Renders the user interface widgets
@@ -53,7 +53,16 @@ pub fn render(f: &mut Frame, app: &mut App) {
     
     // Render the appropriate content on the right side
     match app.display_mode {
-        DisplayMode::Menu => render_welcome(f, app, content_chunks[1]),
+        DisplayMode::Menu => {
+            // Show different content based on where the user came from
+            if app.menu_index == 4 && app.previous_mode == DisplayMode::Timeline {
+                // If we just came from Timeline view, continue showing the Timeline content
+                render_timeline(f, app, content_chunks[1])
+            } else {
+                // Otherwise show the welcome content
+                render_welcome(f, app, content_chunks[1])
+            }
+        },
         DisplayMode::About => render_about(f, app, content_chunks[1]),
         DisplayMode::Skills => render_skills(f, app, content_chunks[1]),
         DisplayMode::SkillsVisual => render_skills_visual(f, app, content_chunks[1]),
@@ -96,40 +105,37 @@ fn render_menu_sidebar(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect
 }
 /// Renders the welcome screen
 fn render_welcome(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, links) = parse_markdown(&app.welcome_content);
+    let (text, _links) = parse_markdown(&app.welcome_content);
     let instructions = Paragraph::new(text)
         .block(Block::default().title("Instructions").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
 
-    app.links = links;
     f.render_widget(instructions, area);
 }
 
 /// Renders the about section
 fn render_about(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, links) = parse_markdown(&app.about_content);
+    let (text, _links) = parse_markdown(&app.about_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("About Me").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
-    app.links = links;
     f.render_widget(paragraph, area);
 }
 
 /// Renders the skills section
 fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, links) = parse_markdown(&app.skills_content);
+    let (text, _links) = parse_markdown(&app.skills_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Skills (→ for bar graphs)").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
-    app.links = links;
     f.render_widget(paragraph, area);
 }
 
 /// Renders the projects section
 fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, links) = parse_markdown(&app.projects_content);
+    let (text, _links) = parse_markdown(&app.projects_content);
     
     let title = "Projects (→ for links)";
     
@@ -137,17 +143,19 @@ fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
         .block(Block::default().title(title).borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
-    app.links = links;
     f.render_widget(paragraph, area);
 }
 
 /// Renders the project links for navigation
 fn render_project_links(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    if app.links.is_empty() {
+    // Get links from projects content
+    let (_, links) = parse_markdown(&app.projects_content);
+    
+    if links.is_empty() {
         return;
     }
     
-    let items: Vec<ListItem> = app.links
+    let items: Vec<ListItem> = links
         .iter()
         .enumerate()
         .map(|(i, link)| {
@@ -176,14 +184,65 @@ fn render_project_links(f: &mut Frame, app: &mut App, area: ratatui::layout::Rec
     f.render_widget(links_list, area);
 }
 
+/// Renders the skills visualization with bar graphs
+fn render_skills_visual(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+    // Only proceed if we have skill categories
+    if app.skills_data.categories.is_empty() {
+        return;
+    }
+    
+    // Get the currently selected category
+    let category_index = app.skill_category_index.min(app.skills_data.categories.len() - 1);
+    let category = &app.skills_data.categories[category_index];
+    
+    // Create a title block
+    let title = format!("Skills: {} (←/→ to navigate categories)", category.name);
+    let block = Block::default()
+        .title(title)
+        .borders(Borders::ALL)
+        .border_style(Style::default().fg(Color::Blue));
+    
+    f.render_widget(block.clone(), area);
+    
+    // Calculate inner area
+    let inner_area = block.inner(area);
+    
+    // Create a layout for skill bars
+    let mut constraints = Vec::new();
+    for _ in 0..category.skills.len() {
+        constraints.push(Constraint::Length(2));
+    }
+    constraints.push(Constraint::Min(1)); // Add extra space at bottom
+    
+    let skill_chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(constraints)
+        .margin(1)
+        .split(inner_area);
+    
+    // Render each skill as a gauge
+    for (i, skill) in category.skills.iter().enumerate() {
+        // Calculate percentage (0-100)
+        let percentage = skill.level;
+        
+        // Create a gauge for this skill
+        let gauge = Gauge::default()
+            .block(Block::default().title(format!("{}", skill.name)))
+            .gauge_style(Style::default().fg(Color::Yellow))
+            .ratio(percentage as f64 / 100.0)
+            .label(format!("{}%", percentage));
+        
+        f.render_widget(gauge, skill_chunks[i]);
+    }
+}
+
 /// Renders the "Why Warp?" section
 fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, links) = parse_markdown(&app.why_warp_content);
+    let (text, _links) = parse_markdown(&app.why_warp_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
-    app.links = links;
     f.render_widget(paragraph, area);
 }
 
@@ -203,7 +262,7 @@ fn render_timeline(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         .split(area);
     
     // Render instructions at the top
-    let text = parse_markdown(&app.timeline_content);
+    let (text, _) = parse_markdown(&app.timeline_content);
     let instructions = Paragraph::new(text)
         .block(Block::default().title("Career Timeline").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
@@ -214,6 +273,9 @@ fn render_timeline(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     
     // Only render the timeline if we have events
     if !app.timeline_events.is_empty() {
+        // Make sure app has a valid timeline index - not used directly but useful for debugging
+        let _ = app.timeline_index.min(app.timeline_events.len() - 1);
+        
         render_horizontal_timeline(f, app, timeline_area);
         render_timeline_details(f, app, chunks[2]);
     } else {
@@ -367,9 +429,10 @@ fn render_timeline_details(f: &mut Frame, app: &App, area: ratatui::layout::Rect
     
     // Render the highlights as a list
     let highlights: Vec<ListItem> = event.highlights
-        .iter()
-        .map(|h| ListItem::new(Line::from(Span::raw(format!("• {}", h)))))
-        .collect();
+        .as_ref()
+        .map(|highlights| highlights.iter().map(|h| ListItem::new(Line::from(Span::raw(format!("• {}", h)))))
+            .collect())
+        .unwrap_or_default();
     
     let highlights_list = List::new(highlights)
         .block(Block::default().title("Highlights").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
@@ -377,7 +440,7 @@ fn render_timeline_details(f: &mut Frame, app: &App, area: ratatui::layout::Rect
     f.render_widget(highlights_list, chunks[2]);
     
     // Render the technologies as tags
-    let tech_text = event.technologies.join(" | ");
+    let tech_text = event.technologies.as_ref().map_or(String::new(), |techs| techs.join(" | "));
     let tech_paragraph = Paragraph::new(Line::from(vec![
         Span::styled(tech_text, Style::default().fg(Color::Green))
     ]))

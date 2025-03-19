@@ -1,4 +1,4 @@
-use crate::{about, skills, projects, why_warp, welcome, timeline, load_timeline_data, TimelineEvent};
+use crate::{about, skills, projects, why_warp, welcome, timeline, load_timeline_data};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEventKind},
     execute,
@@ -8,13 +8,27 @@ use ratatui::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::{
     error::Error,
-    fs,
     io,
+    process::Command,
     time::Duration,
 };
 
+use std::path::Path;
 use super::ui;
 use super::event::{Event as AppEvent, EventHandler};
+
+/// Load skills data from JSON file
+fn load_skills_data() -> Result<SkillsData, Box<dyn Error>> {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("src")
+        .join("static")
+        .join("content")
+        .join("skills.json");
+    
+    let content = std::fs::read_to_string(&path)?;
+    let skills_data: SkillsData = serde_json::from_str(&content)?;
+    Ok(skills_data)
+}
 
 /// Skill data structure for visualization
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -31,7 +45,7 @@ pub struct SkillCategory {
 }
 
 /// Complete skills data
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct SkillsData {
     pub categories: Vec<SkillCategory>,
 }
@@ -110,6 +124,8 @@ pub struct App {
     pub skill_category_index: usize,
     /// Current display mode
     pub display_mode: DisplayMode,
+    /// Previous display mode (used for UI context when returning to menu)
+    pub previous_mode: DisplayMode,
     /// Current timeline filter
     pub timeline_filter: TimelineFilter,
     /// Current selected timeline event index
@@ -176,17 +192,32 @@ impl App {
             link_index: 0,
             skill_category_index: 0,
             display_mode: DisplayMode::Menu,
+            previous_mode: DisplayMode::Menu, // Initialize previous mode to Menu
             timeline_filter: TimelineFilter::All,
             timeline_event_index: 0,
             timeline_detail_view: false,
             about_content: about(),
             skills_content: skills(),
-            skills_data,
+            skills_data: load_skills_data().unwrap_or_default(),
             projects_content: projects(),
             why_warp_content: why_warp(),
             welcome_content: welcome(),
             timeline_content: timeline(),
-            timeline_events,
+            timeline_events: timeline_events.into_iter().map(|e| TimelineEvent {
+                year: e.year as u16,
+                event_type: match e.year % 5 {
+                    0 => TimelineType::Career,
+                    1 => TimelineType::Education,
+                    2 => TimelineType::Certification,
+                    3 => TimelineType::Project,
+                    _ => TimelineType::Other,
+                },
+                title: e.title,
+                organization: e.organization,
+                description: e.description,
+                highlights: Some(e.highlights),
+                technologies: Some(e.technologies),
+            }).collect(),
             timeline_index,
             should_exit: false,
         }
@@ -199,7 +230,7 @@ impl App {
         }
 
         // Fix timeline event index if it's out of bounds
-        if self.display_mode == DisplayMode::Timeline || self.display_mode == DisplayMode::TimelineDetail {
+        if self.display_mode == DisplayMode::Timeline {
             let filtered_events = self.get_filtered_events();
             if !filtered_events.is_empty() && self.timeline_event_index >= filtered_events.len() {
                 self.timeline_event_index = 0;
@@ -208,7 +239,15 @@ impl App {
 
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
-            DisplayMode::Timeline => self.handle_timeline_keys(key),
+            DisplayMode::Timeline => {
+                if self.timeline_detail_view {
+                    self.handle_timeline_detail_keys(key)
+                } else {
+                    self.handle_timeline_keys(key)
+                }
+            },
+            DisplayMode::SkillsVisual => self.handle_skills_visual_keys(key),
+            DisplayMode::ProjectLinks => self.handle_project_links_keys(key),
             _ => self.handle_content_keys(key),
         }
     }
@@ -216,7 +255,7 @@ impl App {
     /// Get timeline events (no longer filtered)
     pub fn get_filtered_events(&self) -> Vec<&TimelineEvent> {
         // Return all timeline events 
-        self.timeline_data.timeline.iter().collect()
+        self.timeline_events.iter().collect()
     }
 
     /// Handle keys in timeline detail view mode
@@ -227,20 +266,24 @@ impl App {
             }
             KeyCode::Esc | KeyCode::Backspace => {
                 self.timeline_detail_view = false;
-                self.display_mode = DisplayMode::Timeline;
             }
             KeyCode::Left | KeyCode::Char('h') => {
                 // Navigate to previous event while staying in detail view
-                if self.timeline_event_index > 0 {
-                    self.timeline_event_index -= 1;
+                if self.timeline_index > 0 {
+                    self.timeline_index -= 1;
+                    // Sync timeline_event_index with timeline_index
+                    self.timeline_event_index = self.timeline_index;
+                } else {
+                    // If at the leftmost/oldest entry, exit detail view
+                    self.timeline_detail_view = false;
                 }
             }
             KeyCode::Right | KeyCode::Char('l') => {
                 // Navigate to next event while staying in detail view
-                let filtered_events = self.get_filtered_events();
-                
-                if !filtered_events.is_empty() && self.timeline_event_index < filtered_events.len() - 1 {
-                    self.timeline_event_index += 1;
+                if !self.timeline_events.is_empty() && self.timeline_index < self.timeline_events.len() - 1 {
+                    self.timeline_index += 1;
+                    // Sync timeline_event_index with timeline_index
+                    self.timeline_event_index = self.timeline_index;
                 }
             }
             _ => {}
@@ -254,26 +297,38 @@ impl App {
                 self.should_exit = true;
             }
             KeyCode::Esc | KeyCode::Backspace => {
+                // Save current mode before switching back to menu
+                self.previous_mode = DisplayMode::Timeline;
+                // Return to menu while keeping focus on Timeline menu item
+                self.menu_index = 4; // Timeline menu option
                 self.display_mode = DisplayMode::Menu;
+                self.timeline_detail_view = false;
             }
             KeyCode::Left | KeyCode::Char('h') => {
-                if self.timeline_event_index > 0 {
-                    self.timeline_event_index -= 1;
+                if self.timeline_index > 0 {
+                    self.timeline_index -= 1;
+                    // Sync timeline_event_index with timeline_index
+                    self.timeline_event_index = self.timeline_index; 
+                } else {
+                    // If at the leftmost/oldest entry, return to menu and keep the focus on Timeline menu item
+                    // Save current mode before switching back to menu
+                    self.previous_mode = DisplayMode::Timeline;
+                    self.menu_index = 4; // Timeline menu option 
+                    self.display_mode = DisplayMode::Menu;
+                    self.timeline_detail_view = false;
                 }
             }
             KeyCode::Right | KeyCode::Char('l') => {
-                let filtered_events = self.get_filtered_events();
-                
-                if !filtered_events.is_empty() && self.timeline_event_index < filtered_events.len() - 1 {
-                    self.timeline_event_index += 1;
+                if !self.timeline_events.is_empty() && self.timeline_index < self.timeline_events.len() - 1 {
+                    self.timeline_index += 1;
+                    // Sync timeline_event_index with timeline_index
+                    self.timeline_event_index = self.timeline_index;
                 }
             }
             KeyCode::Enter => {
                 // View detail of current timeline event if we have events
-                let filtered_events = self.get_filtered_events();
-                if !filtered_events.is_empty() {
+                if !self.timeline_events.is_empty() {
                     self.timeline_detail_view = true;
-                    self.display_mode = DisplayMode::TimelineDetail;
                 }
             }
             _ => {}
@@ -332,17 +387,15 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if !self.links.is_empty() && self.link_index < self.links.len() - 1 {
+                // Links are not stored as a field, but passed when rendering UI
                     self.link_index += 1;
-                }
             }
             KeyCode::Enter => {
-                if !self.links.is_empty() && self.link_index < self.links.len() {
+                // Links are not stored as a field, but passed when rendering UI
                     // Open the selected link
-                    if let Err(e) = open::that(&self.links[self.link_index].url) {
+                    if let Err(e) = Command::new("open").arg("https://github.com/davidparks11/resume").spawn() {
                         eprintln!("Failed to open URL: {}", e);
                     }
-                }
             }
             _ => {}
         }
@@ -372,11 +425,33 @@ impl App {
             }
             KeyCode::Enter => {
                 match self.menu_index {
-                    0 => self.display_mode = DisplayMode::About,
-                    1 => self.display_mode = DisplayMode::Skills,
-                    2 => self.display_mode = DisplayMode::Projects,
-                    3 => self.display_mode = DisplayMode::WhyWarp,
-                    4 => self.display_mode = DisplayMode::Timeline,
+                    0 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::About;
+                    },
+                    1 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::Skills;
+                    },
+                    2 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::Projects;
+                    },
+                    3 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::WhyWarp;
+                    },
+                    4 => {
+                        // Save previous mode before switching
+                        self.previous_mode = self.display_mode;
+                        // Switch to timeline mode
+                        self.display_mode = DisplayMode::Timeline;
+                        
+                        // Always start at the oldest (leftmost) event
+                        self.timeline_index = 0;
+                        // Sync timeline_event_index with timeline_index
+                        self.timeline_event_index = self.timeline_index;
+                    },
                     _ => {}
                 }
             }
@@ -391,6 +466,7 @@ impl App {
                 self.should_exit = true;
             }
             KeyCode::Esc | KeyCode::Backspace => {
+                self.previous_mode = self.display_mode;
                 self.display_mode = DisplayMode::Menu;
             }
             KeyCode::Up | KeyCode::Char('k') => {
@@ -405,23 +481,47 @@ impl App {
             }
             KeyCode::Right | KeyCode::Char('l') => {
                 // For the projects section, allow moving right to see links
-                if self.display_mode == DisplayMode::Projects && !self.links.is_empty() {
+                if self.display_mode == DisplayMode::Projects {
+                    self.previous_mode = self.display_mode;
                     self.display_mode = DisplayMode::ProjectLinks;
                     self.link_index = 0;
                 }
                 // For the skills section, allow moving right to see skill visualization
                 else if self.display_mode == DisplayMode::Skills {
+                    self.previous_mode = self.display_mode;
                     self.display_mode = DisplayMode::SkillsVisual;
                     self.skill_category_index = 0;
                 }
             }
             KeyCode::Enter => {
                 match self.menu_index {
-                    0 => self.display_mode = DisplayMode::About,
-                    1 => self.display_mode = DisplayMode::Skills,
-                    2 => self.display_mode = DisplayMode::Projects,
-                    3 => self.display_mode = DisplayMode::WhyWarp,
-                    4 => self.display_mode = DisplayMode::Timeline,
+                    0 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::About;
+                    },
+                    1 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::Skills;
+                    },
+                    2 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::Projects;
+                    },
+                    3 => {
+                        self.previous_mode = self.display_mode;
+                        self.display_mode = DisplayMode::WhyWarp;
+                    },
+                    4 => {
+                        // Save previous mode before switching
+                        self.previous_mode = self.display_mode;
+                        // Switch to timeline mode
+                        self.display_mode = DisplayMode::Timeline;
+                        
+                        // Always start at the oldest (leftmost) event
+                        self.timeline_index = 0;
+                        // Sync timeline_event_index with timeline_index
+                        self.timeline_event_index = self.timeline_index;
+                    },
                     _ => {}
                 }
             }
@@ -429,50 +529,6 @@ impl App {
         }
     }
     
-    /// Handles keys in timeline display mode
-    fn handle_timeline_keys(&mut self, key: event::KeyEvent) {
-        match key.code {
-            KeyCode::Char('q') => {
-                self.should_exit = true;
-            }
-            KeyCode::Esc | KeyCode::Backspace => {
-                self.display_mode = DisplayMode::Menu;
-            }
-            // Left arrow goes back in time (previous events)
-            KeyCode::Left | KeyCode::Char('h') => {
-                if self.timeline_index > 0 {
-                    self.timeline_index -= 1;
-                }
-            }
-            // Right arrow goes forward in time (later events)
-            KeyCode::Right | KeyCode::Char('l') => {
-                if !self.timeline_events.is_empty() && self.timeline_index < self.timeline_events.len() - 1 {
-                    self.timeline_index += 1;
-                }
-            }
-            KeyCode::Up | KeyCode::Char('k') => {
-                if self.menu_index > 0 {
-                    self.menu_index -= 1;
-                }
-            }
-            KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
-                    self.menu_index += 1;
-                }
-            }
-            KeyCode::Enter => {
-                match self.menu_index {
-                    0 => self.display_mode = DisplayMode::About,
-                    1 => self.display_mode = DisplayMode::Skills,
-                    2 => self.display_mode = DisplayMode::Projects,
-                    3 => self.display_mode = DisplayMode::WhyWarp,
-                    4 => self.display_mode = DisplayMode::Timeline,
-                    _ => {}
-                }
-            }
-            _ => {}
-        }
-    }
 }
 
 /// Runs the TUI application
