@@ -30,6 +30,35 @@ impl App {
             _ => self.handle_content_keys(key),
         }
     }
+    
+    fn switch_to_selected_screen(&mut self) {
+        match self.menu_index {
+            0 => {
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::About;
+            },
+            1 => {
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::Skills;
+            },
+            2 => {
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::Projects;
+            },
+            3 => {
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::WhyWarp;
+            },
+            4 => {
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::Timeline;
+                
+                self.timeline_index = 0;
+                self.timeline_event_index = self.timeline_index;
+            },
+            _ => {}
+        }
+    }
 
     fn handle_timeline_detail_keys(&mut self, key: event::KeyEvent) {
         match key.code {
@@ -155,40 +184,17 @@ impl App {
             KeyCode::Up | KeyCode::Char('k') => {
                 if self.menu_index > 0 {
                     self.menu_index -= 1;
+                    self.switch_to_selected_screen();
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
                 if self.menu_index < 4 {
                     self.menu_index += 1;
+                    self.switch_to_selected_screen();
                 }
             }
             KeyCode::Enter => {
-                match self.menu_index {
-                    0 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::About;
-                    },
-                    1 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::Skills;
-                    },
-                    2 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::Projects;
-                    },
-                    3 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::WhyWarp;
-                    },
-                    4 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::Timeline;
-                        
-                        self.timeline_index = 0;
-                        self.timeline_event_index = self.timeline_index;
-                    },
-                    _ => {}
-                }
+                self.switch_to_selected_screen();
             }
             _ => {}
         }
@@ -206,11 +212,13 @@ impl App {
             KeyCode::Up | KeyCode::Char('k') => {
                 if self.menu_index > 0 {
                     self.menu_index -= 1;
+                    self.switch_to_selected_screen();
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
                 if self.menu_index < 4 {
                     self.menu_index += 1;
+                    self.switch_to_selected_screen();
                 }
             }
             KeyCode::Right | KeyCode::Char('l') => {
@@ -226,32 +234,7 @@ impl App {
                 }
             }
             KeyCode::Enter => {
-                match self.menu_index {
-                    0 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::About;
-                    },
-                    1 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::Skills;
-                    },
-                    2 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::Projects;
-                    },
-                    3 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::WhyWarp;
-                    },
-                    4 => {
-                        self.previous_mode = self.display_mode;
-                        self.display_mode = DisplayMode::Timeline;
-                        
-                        self.timeline_index = 0;
-                        self.timeline_event_index = self.timeline_index;
-                    },
-                    _ => {}
-                }
+                self.switch_to_selected_screen();
             }
             _ => {}
         }

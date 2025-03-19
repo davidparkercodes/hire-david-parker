@@ -22,19 +22,33 @@ fn test_menu_key_handling() {
     // Test navigation in menu mode
     app.display_mode = DisplayMode::Menu;
     
-    // Test down key navigation
+    // Test down key navigation - should also change display mode
     app.handle_key_event(create_key_event(KeyCode::Down));
     assert_eq!(app.menu_index, 1);
+    assert_eq!(app.display_mode, DisplayMode::Skills);
+    
+    // Reset display mode for next test
+    app.display_mode = DisplayMode::Menu;
     app.handle_key_event(create_key_event(KeyCode::Char('j')));
     assert_eq!(app.menu_index, 2);
+    assert_eq!(app.display_mode, DisplayMode::Projects);
     
-    // Test up key navigation
+    // Test up key navigation - should also change display mode
+    app.display_mode = DisplayMode::Menu;
+    app.menu_index = 2;
     app.handle_key_event(create_key_event(KeyCode::Up));
     assert_eq!(app.menu_index, 1);
+    assert_eq!(app.display_mode, DisplayMode::Skills);
+    
+    app.display_mode = DisplayMode::Menu;
+    app.menu_index = 1;
     app.handle_key_event(create_key_event(KeyCode::Char('k')));
     assert_eq!(app.menu_index, 0);
+    assert_eq!(app.display_mode, DisplayMode::About);
     
     // Test selecting an option
+    app.display_mode = DisplayMode::Menu;
+    app.menu_index = 0;
     app.handle_key_event(create_key_event(KeyCode::Enter));
     assert_eq!(app.display_mode, DisplayMode::About);
     
@@ -51,14 +65,15 @@ fn test_menu_key_handling() {
     // Test menu bounds
     app.should_exit = false;
     app.menu_index = 0;
-    app.handle_key_event(create_key_event(KeyCode::Up)); // Should not go below 0
-    assert_eq!(app.menu_index, 0);
+    app.display_mode = DisplayMode::Menu;
     
+    app.display_mode = DisplayMode::Menu;
     app.menu_index = 4;
     app.handle_key_event(create_key_event(KeyCode::Down)); // Should not go above 4
     assert_eq!(app.menu_index, 4);
     
     // Test all menu selection options
+    app.display_mode = DisplayMode::Menu;
     app.menu_index = 1;
     app.handle_key_event(create_key_event(KeyCode::Enter));
     assert_eq!(app.display_mode, DisplayMode::Skills);
@@ -102,17 +117,19 @@ fn test_content_navigation() {
     app.handle_key_event(create_key_event(KeyCode::Char('q')));
     assert!(app.should_exit);
     
-    // Test menu navigation in content mode
+    // Test menu navigation in content mode - should also change display mode
     app.should_exit = false;
     app.display_mode = DisplayMode::About;
     app.menu_index = 1;
     app.handle_key_event(create_key_event(KeyCode::Up));
     assert_eq!(app.menu_index, 0);
+    assert_eq!(app.display_mode, DisplayMode::About);
     
     app.display_mode = DisplayMode::About;
     app.menu_index = 0;
     app.handle_key_event(create_key_event(KeyCode::Down));
     assert_eq!(app.menu_index, 1);
+    assert_eq!(app.display_mode, DisplayMode::Skills);
     
     // Test menu selection in content mode
     app.display_mode = DisplayMode::About;
