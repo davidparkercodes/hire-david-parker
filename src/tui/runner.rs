@@ -1,4 +1,4 @@
-use crossterm::{event, execute, terminal};
+use crossterm::{execute, terminal};
 use ratatui::prelude::*;
 use std::{error::Error, io, time::Duration};
 use super::{ui, event::{Event as AppEvent, EventHandler}, state::App};
@@ -6,7 +6,7 @@ use super::{ui, event::{Event as AppEvent, EventHandler}, state::App};
 pub fn run() -> Result<(), Box<dyn Error>> {
     terminal::enable_raw_mode()?;
     let mut stdout = io::stdout();
-    execute!(stdout, terminal::EnterAlternateScreen, event::EnableMouseCapture)?;
+    execute!(stdout, terminal::EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
@@ -22,9 +22,6 @@ pub fn run() -> Result<(), Box<dyn Error>> {
                 AppEvent::Key(key) => {
                     app.handle_key_event(key);
                 }
-                AppEvent::Mouse(mouse) => {
-                    app.handle_mouse_event(mouse);
-                }
                 AppEvent::Tick => {}
                 _ => {}
             }
@@ -38,8 +35,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     terminal::disable_raw_mode()?;
     execute!(
         terminal.backend_mut(),
-        terminal::LeaveAlternateScreen,
-        event::DisableMouseCapture
+        terminal::LeaveAlternateScreen
     )?;
     terminal.show_cursor()?;
 

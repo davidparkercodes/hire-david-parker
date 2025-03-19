@@ -1,4 +1,4 @@
-use crossterm::event::{self, Event as CrosstermEvent, KeyEvent, MouseEvent};
+use crossterm::event::{self, Event as CrosstermEvent, KeyEvent};
 use std::{
     sync::mpsc,
     thread,
@@ -12,8 +12,6 @@ pub enum Event {
     Tick,
     /// Key press.
     Key(KeyEvent),
-    /// Mouse click/scroll.
-    Mouse(MouseEvent),
     /// Terminal resize.
     Resize(u16, u16),
 }
@@ -43,11 +41,6 @@ impl EventHandler {
                         match event::read().expect("failed to read event") {
                             CrosstermEvent::Key(e) => {
                                 if sender.send(Event::Key(e)).is_err() {
-                                    return;
-                                }
-                            }
-                            CrosstermEvent::Mouse(e) => {
-                                if sender.send(Event::Mouse(e)).is_err() {
                                     return;
                                 }
                             }
