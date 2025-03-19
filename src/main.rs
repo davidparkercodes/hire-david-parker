@@ -25,11 +25,15 @@ pub fn process_args(args: &[String]) -> Result<String, Box<dyn Error>> {
 
     match cli.command {
         Some(Commands::Run) => {
+            // In test mode, we don't actually want to run the TUI
+            #[cfg(not(test))]
             run_tui()?;
             Ok(String::new())  // TUI handles its own output
         },
         Some(Commands::About) => Ok(about()),
         None => {
+            // In test mode, we don't actually want to run the TUI
+            #[cfg(not(test))]
             run_tui()?;
             Ok(String::new())  // TUI handles its own output
         },
@@ -74,6 +78,30 @@ mod tests {
         // The about content should contain specific text
         assert!(!result.is_empty());
         assert!(result.contains("About David Parker") || result.contains("Warp team"));
+        
+        Ok(())
+    }
+    
+    #[test]
+    fn test_process_args_run() -> Result<(), Box<dyn Error>> {
+        // When using the "run" command, process_args should return empty string
+        let args = vec![String::from("app"), String::from("run")];
+        let result = process_args(&args)?;
+        
+        // Result should be empty (TUI handles output)
+        assert!(result.is_empty());
+        
+        Ok(())
+    }
+    
+    #[test]
+    fn test_process_args_no_command() -> Result<(), Box<dyn Error>> {
+        // When no command is provided, it defaults to running the TUI
+        let args = vec![String::from("app")];
+        let result = process_args(&args)?;
+        
+        // Result should be empty (TUI handles output)
+        assert!(result.is_empty());
         
         Ok(())
     }

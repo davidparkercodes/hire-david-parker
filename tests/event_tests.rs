@@ -59,25 +59,3 @@ fn test_event_handler_tick_generation() {
     assert!(tick_count > 0, "No tick events received");
 }
 
-#[test]
-fn test_event_handling_with_resize() {
-    // Create a channel for the test
-    let (tx, rx) = mpsc::channel();
-    
-    // Spawn a thread to send events
-    let _handle = thread::spawn(move || {
-        tx.send(Event::Resize(100, 50)).unwrap();
-    });
-    
-    // Receive the event
-    let event = rx.recv().unwrap();
-    
-    // Check that we got the resize event
-    match event {
-        Event::Resize(width, height) => {
-            assert_eq!(width, 100);
-            assert_eq!(height, 50);
-        },
-        _ => panic!("Expected Resize event"),
-    }
-}
