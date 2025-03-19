@@ -48,6 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::error::Error;
 
     #[test]
     fn test_cli_parser() {
@@ -62,5 +63,57 @@ mod tests {
         // Test the parser with no command
         let cli = Cli::parse_from(vec!["app"]);
         assert_eq!(cli.command, None);
+    }
+
+    #[test]
+    fn test_process_args_about() -> Result<(), Box<dyn Error>> {
+        // When using the "about" command, process_args should return the about content
+        let args = vec![String::from("app"), String::from("about")];
+        let result = process_args(&args)?;
+        
+        // The about content should contain specific text
+        assert!(!result.is_empty());
+        assert!(result.contains("About David Parker") || result.contains("Warp team"));
+        
+        Ok(())
+    }
+    
+    #[test]
+    fn test_debug_for_commands() {
+        // Test that Commands enum implements Debug
+        let run_cmd = Commands::Run;
+        let about_cmd = Commands::About;
+        
+        assert_eq!(format!("{:?}", run_cmd), "Run");
+        assert_eq!(format!("{:?}", about_cmd), "About");
+    }
+    
+    #[test]
+    fn test_commands_eq() {
+        // Test PartialEq implementation for Commands
+        assert_eq!(Commands::Run, Commands::Run);
+        assert_eq!(Commands::About, Commands::About);
+        assert_ne!(Commands::Run, Commands::About);
+    }
+    
+    #[test]
+    fn test_cli_debug() {
+        // Test Debug implementation for Cli
+        let cli = Cli { command: Some(Commands::Run) };
+        let debug_str = format!("{:?}", cli);
+        
+        assert!(debug_str.contains("Run"));
+        assert!(debug_str.contains("command"));
+    }
+    
+    #[test]
+    fn test_cli_eq() {
+        // Test PartialEq implementation for Cli
+        let cli1 = Cli { command: Some(Commands::Run) };
+        let cli2 = Cli { command: Some(Commands::Run) };
+        let cli3 = Cli { command: Some(Commands::About) };
+        
+        assert_eq!(cli1, cli2);
+        assert_ne!(cli1, cli3);
     }
 }
