@@ -108,4 +108,60 @@ mod tests {
         assert!(about_content.contains("About David Parker"));
         assert!(about_content.contains("Warp team"));
     }
+
+    #[test]
+    fn test_skills_content() {
+        let skills_content = skills();
+        assert!(!skills_content.is_empty());
+        assert!(!skills_content.contains("Error: Failed to load content from 'skills.md'"));
+    }
+
+    #[test]
+    fn test_projects_content() {
+        let projects_content = projects();
+        assert!(!projects_content.is_empty());
+        assert!(!projects_content.contains("Error: Failed to load content from 'projects.md'"));
+    }
+
+    #[test]
+    fn test_why_warp_content() {
+        let why_warp_content = why_warp();
+        assert!(!why_warp_content.is_empty());
+        assert!(!why_warp_content.contains("Error: Failed to load content from 'why_warp.md'"));
+    }
+
+    #[test]
+    fn test_welcome_content() {
+        let welcome_content = welcome();
+        assert!(!welcome_content.is_empty());
+        assert!(!welcome_content.contains("Error: Failed to load content from 'welcome.md'"));
+    }
+
+    #[test]
+    fn test_timeline_content() {
+        let timeline_content = timeline();
+        assert!(!timeline_content.is_empty());
+        assert!(!timeline_content.contains("Error: Failed to load content from 'timeline.md'"));
+    }
+
+    #[test]
+    fn test_load_timeline_data() {
+        let result = load_timeline_data();
+        assert!(result.is_ok());
+        
+        let timeline_events = result.unwrap();
+        assert!(!timeline_events.is_empty());
+        
+        let first_event = &timeline_events[0];
+        assert!(first_event.year > 0);
+        assert!(!first_event.title.is_empty());
+        assert!(!first_event.organization.is_empty());
+        assert!(!first_event.description.is_empty());
+    }
+
+    #[test]
+    fn test_load_content_error_handling() {
+        let content = load_content("nonexistent_file.md");
+        assert!(content.contains("Error: Failed to load content from 'nonexistent_file.md'"));
+    }
 }

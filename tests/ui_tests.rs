@@ -97,6 +97,7 @@ fn test_ui_timeline_rendering() {
     if app.timeline_events.is_empty() {
         app.timeline_events.push(TimelineEvent {
             year: 2022,
+            event_type: hiredavidparker::tui::models::TimelineType::Career,
             title: "Test Title".to_string(),
             organization: "Test Org".to_string(),
             description: "Test Description".to_string(),
@@ -159,7 +160,8 @@ fn buffer_to_string(buffer: &Buffer) -> String {
     let mut result = String::new();
     for row in 0..buffer.area.height {
         for col in 0..buffer.area.width {
-            result.push(buffer.get(col, row).symbol.chars().next().unwrap_or(' '));
+            // Use [] operator instead of get method (which is deprecated)
+            result.push(buffer[(col, row)].symbol().chars().next().unwrap_or(' '));
         }
         result.push('\n');
     }
