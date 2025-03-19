@@ -12,4 +12,3 @@ Cargo.lock
 *.dylib
 *.swp
 .DS_Store
-CLAUDE.md

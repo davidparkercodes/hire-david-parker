@@ -1,0 +1,50 @@
+[
+  {
+    "year": 2023,
+    "title": "Senior Software Engineer",
+    "organization": "Acme Corp",
+    "description": "Led development of cloud-native microservices architecture",
+    "highlights": [
+      "Architected and implemented a distributed system using Rust and gRPC",
+      "Reduced infrastructure costs by 35% through optimization",
+      "Mentored junior engineers on Rust best practices and design patterns"
+    ],
+    "technologies": ["Rust", "AWS", "Kubernetes", "gRPC", "CI/CD"]
+  },
+  {
+    "year": 2021,
+    "title": "Software Engineer",
+    "organization": "Tech Innovators Inc",
+    "description": "Developed backend services for high-throughput data processing",
+    "highlights": [
+      "Built robust APIs handling 10M+ daily requests",
+      "Implemented real-time analytics pipeline",
+      "Contributed to open-source Rust libraries"
+    ],
+    "technologies": ["Rust", "TypeScript", "PostgreSQL", "Redis", "Docker"]
+  },
+  {
+    "year": 2019,
+    "title": "Software Developer",
+    "organization": "StartupXYZ",
+    "description": "Full-stack engineer for early-stage startup",
+    "highlights": [
+      "Designed and implemented user authentication system",
+      "Built responsive web application with React",
+      "Developed RESTful backend services"
+    ],
+    "technologies": ["JavaScript", "Node.js", "React", "MongoDB", "Git"]
+  },
+  {
+    "year": 2017,
+    "title": "Junior Developer",
+    "organization": "CodeCrafters LLC",
+    "description": "Entry-level position focused on web development",
+    "highlights": [
+      "Contributed to frontend components using React",
+      "Fixed bugs and improved performance of legacy systems",
+      "Participated in agile development process"
+    ],
+    "technologies": ["HTML/CSS", "JavaScript", "Python", "SQL"]
+  }
+]
