@@ -48,6 +48,23 @@ This project follows specific development guidelines. Please refer to the UPDATE
 cargo test
 ```
 
+### Test Coverage
+
+We use cargo-tarpaulin for test coverage reporting:
+
+```bash
+# Install cargo-tarpaulin (if not already installed)
+cargo install cargo-tarpaulin
+
+# Run the coverage script
+./scripts/coverage.sh
+
+# Or run tarpaulin directly
+cargo tarpaulin --verbose --workspace --skip-clean --out Html --output-dir coverage
+```
+
+The HTML coverage report will be generated in the `coverage` directory.
+
 ## Technologies
 
 - [Rust](https://www.rust-lang.org/)
