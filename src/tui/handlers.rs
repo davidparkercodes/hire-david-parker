@@ -56,6 +56,10 @@ impl App {
                 self.timeline_index = 0;
                 self.timeline_event_index = self.timeline_index;
             },
+            5 => {
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::Contact;
+            },
             _ => {}
         }
     }
@@ -96,6 +100,22 @@ impl App {
                 self.menu_index = 4;
                 self.display_mode = DisplayMode::Menu;
                 self.timeline_detail_view = false;
+            }
+            KeyCode::Up | KeyCode::Char('k') => {
+                if self.menu_index > 0 {
+                    self.menu_index -= 1;
+                    self.previous_mode = DisplayMode::Timeline;
+                    self.display_mode = DisplayMode::Menu;
+                    self.switch_to_selected_screen();
+                }
+            }
+            KeyCode::Down | KeyCode::Char('j') => {
+                if self.menu_index < 5 {
+                    self.menu_index += 1;
+                    self.previous_mode = DisplayMode::Timeline;
+                    self.display_mode = DisplayMode::Menu;
+                    self.switch_to_selected_screen();
+                }
             }
             KeyCode::Left | KeyCode::Char('h') => {
                 if self.timeline_index > 0 {
@@ -188,7 +208,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                     self.switch_to_selected_screen();
                 }
@@ -216,7 +236,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 4 {
+                if self.menu_index < 5 {
                     self.menu_index += 1;
                     self.switch_to_selected_screen();
                 }

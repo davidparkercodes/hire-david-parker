@@ -34,6 +34,7 @@ fn test_ui_menu_sidebar_rendering() {
     assert!(buffer_content.contains("Skills"));
     assert!(buffer_content.contains("Projects"));
     assert!(buffer_content.contains("Timeline"));
+    assert!(buffer_content.contains("Contact"));
 }
 
 #[test]
@@ -250,6 +251,29 @@ fn test_ui_why_warp_rendering() {
     // Check that the why warp content is rendered
     let buffer_content = buffer_to_string(&buffer);
     assert!(buffer_content.contains("Why Warp?"));
+}
+
+#[test]
+fn test_ui_contact_rendering() {
+    // Setup test terminal
+    let backend = TestBackend::new(80, 30);
+    let mut terminal = Terminal::new(backend).unwrap();
+    let mut app = App::new();
+    
+    // Set contact mode
+    app.display_mode = DisplayMode::Contact;
+    
+    // Basic test to ensure UI rendering doesn't panic
+    terminal.draw(|f| {
+        ui::render(f, &mut app);
+    }).unwrap();
+    
+    // Get the buffer to check contents
+    let buffer = terminal.backend().buffer().clone();
+    
+    // Check that the contact content is rendered
+    let buffer_content = buffer_to_string(&buffer);
+    assert!(buffer_content.contains("Contact Information"));
 }
 
 #[test]

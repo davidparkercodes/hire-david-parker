@@ -71,6 +71,7 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::ProjectLinks => render_project_links(f, app, content_chunks[1]),
         DisplayMode::WhyWarp => render_why_warp(f, app, content_chunks[1]),
         DisplayMode::Timeline => render_timeline(f, app, content_chunks[1]),
+        DisplayMode::Contact => render_contact(f, app, content_chunks[1]),
     }
 }
 
@@ -82,6 +83,7 @@ fn render_menu_sidebar(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect
         "Projects",
         "Why Warp?",
         "Timeline",
+        "Contact",
     ];
 
     let items: Vec<ListItem> = menu_items
@@ -242,6 +244,16 @@ fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let (text, _links) = parse_markdown(&app.why_warp_content);
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
+        .wrap(Wrap { trim: true });
+    
+    f.render_widget(paragraph, area);
+}
+
+/// Renders the Contact Information section
+fn render_contact(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
+    let (text, _links) = parse_markdown(&app.contact_content);
+    let paragraph = Paragraph::new(text)
+        .block(Block::default().title("Contact Information").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
     
     f.render_widget(paragraph, area);

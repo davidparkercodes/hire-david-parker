@@ -81,4 +81,5 @@ pub enum DisplayMode {
     ProjectLinks,
     WhyWarp,
     Timeline,
+    Contact,
 }
