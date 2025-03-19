@@ -1,50 +1,84 @@
 [
   {
-    "year": 2023,
-    "title": "Senior Software Engineer",
-    "organization": "Acme Corp",
-    "description": "Led development of cloud-native microservices architecture",
+    "year": 2024,
+    "title": "Software Architect & Multi-Team Lead",
+    "organization": "Groundworks | Virginia Beach, VA",
+    "description": "Lead architect focused on optimizing software performance and streamlining technical processes across the organization.",
     "highlights": [
-      "Architected and implemented a distributed system using Rust and gRPC",
-      "Reduced infrastructure costs by 35% through optimization",
-      "Mentored junior engineers on Rust best practices and design patterns"
+      "Spearheaded key AI initiatives, including developing an AI-powered chatbot and automated call transcript analysis tool",
+      "Implemented Retrieval-Augmented Generation (RAG) systems to support dynamic content generation for SEO",
+      "Collaborate with design and product teams to build service-oriented architecture (SOA) AI-powered features",
+      "Setting strategic direction for the company's data and AI initiatives"
     ],
-    "technologies": ["Rust", "AWS", "Kubernetes", "gRPC", "CI/CD"]
+    "technologies": ["AI", "Machine Learning", "RAG", "Python", "TypeScript", "C#", "React"]
+  },
+  {
+    "year": 2022,
+    "title": "Senior Full Stack Web Developer & Team Lead",
+    "organization": "Groundworks | Virginia Beach, VA",
+    "description": "Developed and maintained full-stack applications using a variety of languages and frameworks.",
+    "highlights": [
+      "Enhanced user interfaces and back-end systems, focusing on responsive and user-friendly experiences",
+      "Analyzed customer interactions and business data to improve product functionality",
+      "Provided mentorship to junior developers and refined team development processes",
+      "Worked with Python, C#, TypeScript, PHP, and React.js"
+    ],
+    "technologies": ["Python", "C#", "TypeScript", "PHP", "React", "Full Stack"]
   },
   {
     "year": 2021,
-    "title": "Software Engineer",
-    "organization": "Tech Innovators Inc",
-    "description": "Developed backend services for high-throughput data processing",
+    "title": "Full Stack Web Developer",
+    "organization": "Groundworks | Virginia Beach, VA",
+    "description": "Designed and implemented dynamic, responsive web interfaces using JavaScript and React.js.",
     "highlights": [
-      "Built robust APIs handling 10M+ daily requests",
-      "Implemented real-time analytics pipeline",
-      "Contributed to open-source Rust libraries"
+      "Worked closely with back-end developers to integrate front-end elements with server-side logic",
+      "Ensured seamless functionality across the application stack"
     ],
-    "technologies": ["Rust", "TypeScript", "PostgreSQL", "Redis", "Docker"]
+    "technologies": ["JavaScript", "React.js", "Front-end", "Back-end"]
+  },
+  {
+    "year": 2009,
+    "title": "Owner and Full Stack Developer",
+    "organization": "Red Key.io | Norfolk, VA",
+    "description": "Founded and managed a successful freelance business, overseeing all aspects of project management and software development.",
+    "highlights": [
+      "Developed and maintained e-commerce websites that processed millions of dollars in transactions annually",
+      "Implemented secure online payment systems, optimizing client resources and enhancing customer experience",
+      "Led a major migration project, transitioning a 15,000-page Drupal website to WordPress in under six weeks"
+    ],
+    "technologies": ["PHP", "JavaScript", "Drupal", "WordPress", "E-commerce", "Payment Systems"]
+  },
+  {
+    "year": 2011,
+    "title": "Full Stack Developer",
+    "organization": "Vectec Solutions | Norfolk, VA",
+    "description": "Developed web applications and software solutions, specializing in on-time project delivery and customer satisfaction.",
+    "highlights": [
+      "Focused on software deployment and web development to meet client-specific requirements",
+      "Delivered business solutions aligned with business objectives"
+    ],
+    "technologies": ["Web Development", "Software Solutions", "Project Delivery"]
   },
   {
     "year": 2019,
-    "title": "Software Developer",
-    "organization": "StartupXYZ",
-    "description": "Full-stack engineer for early-stage startup",
+    "title": "Website Designer (Volunteer)",
+    "organization": "Duwara Consciousness Foundation | San Diego, CA",
+    "description": "Designed and hosted a website to support the foundation's mission of providing food and mobile showers for the homeless.",
     "highlights": [
-      "Designed and implemented user authentication system",
-      "Built responsive web application with React",
-      "Developed RESTful backend services"
+      "Created user-friendly website to support organizational mission",
+      "Provided ongoing maintenance and updates"
     ],
-    "technologies": ["JavaScript", "Node.js", "React", "MongoDB", "Git"]
+    "technologies": ["Web Design", "Hosting", "CMS"]
   },
   {
-    "year": 2017,
-    "title": "Junior Developer",
-    "organization": "CodeCrafters LLC",
-    "description": "Entry-level position focused on web development",
+    "year": 2012,
+    "title": "Web Designer (Volunteer)",
+    "organization": "Hannah's Homeless | St. Petersburg, FL",
+    "description": "Created and maintained a website to assist the organization in its efforts to support the homeless community.",
     "highlights": [
-      "Contributed to frontend components using React",
-      "Fixed bugs and improved performance of legacy systems",
-      "Participated in agile development process"
+      "Designed website to enhance organization's outreach capabilities",
+      "Provided technical support on an ongoing basis"
     ],
-    "technologies": ["HTML/CSS", "JavaScript", "Python", "SQL"]
+    "technologies": ["Web Design", "CMS", "Support"]
   }
 ]
