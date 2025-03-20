@@ -321,6 +321,7 @@ fn test_timeline_navigation() {
     app.handle_key_event(create_key_event(KeyCode::Left));
     assert_eq!(app.display_mode, DisplayMode::Menu);
     assert_eq!(app.menu_index, 4); // Ensure we're on the Timeline menu item
+    assert!(app.skip_auto_switch); // Verify flag is set to prevent auto-switching
     
     // Test right key navigation in timeline
     app.display_mode = DisplayMode::Timeline;
@@ -476,6 +477,7 @@ fn test_leftmost_timeline_navigation() {
     app.handle_key_event(create_key_event(KeyCode::Left));
     assert_eq!(app.display_mode, DisplayMode::Menu);
     assert_eq!(app.menu_index, 4); // Should focus on Timeline menu item
+    assert!(app.skip_auto_switch); // Verify flag is set to prevent auto-switching
     
     // Set up timeline mode at the leftmost entry again
     app.display_mode = DisplayMode::Timeline;
@@ -486,4 +488,5 @@ fn test_leftmost_timeline_navigation() {
     app.handle_key_event(create_key_event(KeyCode::Char('h')));
     assert_eq!(app.display_mode, DisplayMode::Menu);
     assert_eq!(app.menu_index, 4); // Should focus on Timeline menu item
+    assert!(app.skip_auto_switch); // Verify flag is set to prevent auto-switching
 }

@@ -16,6 +16,9 @@ impl App {
             }
         }
 
+        // If we just came from timeline with leftmost entry, and we're now in the menu,
+        // we want to stay in the menu. This is handled in handle_menu_keys.
+        
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
             DisplayMode::Timeline => {
@@ -124,16 +127,13 @@ impl App {
                     self.timeline_index -= 1;
                     self.timeline_event_index = self.timeline_index; 
                 } else {
-                    // Force menu display instead of automatically going to About
-                    let prev_display_mode = self.display_mode;
+                    // When at leftmost entry, go back to menu but don't auto-switch
                     self.menu_index = 4; // Set to Timeline menu item
-                    self.previous_mode = prev_display_mode;
+                    self.previous_mode = DisplayMode::Timeline;
                     self.display_mode = DisplayMode::Menu;
                     self.timeline_detail_view = false;
-                    
-                    // Important: Early return to bypass any post-handler logic that
-                    // might cause automatic menu selection (switching to About)
-                    return;
+                    // Set flag to prevent auto-switching back to a content screen
+                    self.skip_auto_switch = true;
                 }
             }
             KeyCode::Right | KeyCode::Char('l') => {
@@ -235,6 +235,35 @@ impl App {
     
 
     fn handle_menu_keys(&mut self, key: event::KeyEvent) {
+        // First check if we should override auto-switching
+        if self.skip_auto_switch {
+            // We've entered the menu but want to stay there
+            self.skip_auto_switch = false; // Reset the flag for future actions
+            
+            // Only handle navigation within menu, not auto-switching
+            match key.code {
+                KeyCode::Char('q') | KeyCode::Esc => {
+                    self.should_exit = true;
+                }
+                KeyCode::Up | KeyCode::Char('k') => {
+                    if self.menu_index > 0 {
+                        self.menu_index -= 1;
+                    }
+                }
+                KeyCode::Down | KeyCode::Char('j') => {
+                    if self.menu_index < 5 {
+                        self.menu_index += 1;
+                    }
+                }
+                KeyCode::Enter => {
+                    self.switch_to_selected_screen();
+                }
+                _ => {}
+            }
+            return;
+        }
+        
+        // Normal menu behavior
         match key.code {
             KeyCode::Char('q') | KeyCode::Esc => {
                 self.should_exit = true;
