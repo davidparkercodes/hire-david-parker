@@ -27,6 +27,7 @@ ratatui = "0.29.0"
 pulldown-cmark = "0.9.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+signal-hook = "0.3.17"
 
 [package.metadata.commands]
 cov = "./scripts/coverage.sh"

@@ -1,7 +1,7 @@
 mod common;
 
-use hiredavidparker::tui::state::App;
-use hiredavidparker::tui::models::{DisplayMode, TimelineFilter};
+use hire_david_parker::tui::state::App;
+use hire_david_parker::tui::models::{DisplayMode, TimelineFilter};
 
 #[test]
 fn test_app_initialization() {

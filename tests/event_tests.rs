@@ -4,7 +4,7 @@ use std::time::Duration;
 use std::thread;
 use std::sync::mpsc;
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use hiredavidparker::tui::event::{Event, EventHandler};
+use hire_david_parker::tui::event::{Event, EventHandler};
 
 #[test]
 fn test_event_handler_creation() {
