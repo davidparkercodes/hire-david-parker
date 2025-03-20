@@ -39,7 +39,9 @@ impl App {
             },
             1 => {
                 self.previous_mode = self.display_mode;
-                self.display_mode = DisplayMode::Skills;
+                self.display_mode = DisplayMode::SkillsVisual;
+                self.skill_category_index = 0;
+                self.skills_page = 0;
             },
             2 => {
                 self.previous_mode = self.display_mode;
@@ -149,22 +151,52 @@ impl App {
                 self.should_exit = true;
             }
             KeyCode::Esc => {
-                self.display_mode = DisplayMode::Skills;
+                // Return to menu and set Menu index to skills (1)
+                self.previous_mode = self.display_mode;
+                self.display_mode = DisplayMode::Menu;
+                self.menu_index = 1; // Set to Skills menu item
                 self.skill_category_index = 0;
+                self.skills_page = 0;
             }
-            KeyCode::Left | KeyCode::Char('h') => {
-                if self.skill_category_index == 0 {
-                    self.display_mode = DisplayMode::Skills;
-                } else {
+            KeyCode::Up | KeyCode::Char('k') => {
+                // First try to navigate categories up
+                if self.skill_category_index > 0 {
                     self.skill_category_index -= 1;
+                    self.skills_page = 0; // Reset page when changing categories
+                } else {
+                    // If at first category, go to the About menu item (0) and activate it
+                    self.previous_mode = self.display_mode;
+                    self.display_mode = DisplayMode::About;
+                    self.menu_index = 0; // Set to About menu item
                 }
             }
-            KeyCode::Right | KeyCode::Char('l') => {
+            KeyCode::Down | KeyCode::Char('j') => {
+                // First try to navigate categories down
                 if !self.skills_data.categories.is_empty() && 
                    self.skill_category_index < self.skills_data.categories.len() - 1 {
                     self.skill_category_index += 1;
+                    self.skills_page = 0; // Reset page when changing categories
+                } else {
+                    // If at last category, go to Projects menu item (2) and activate it
+                    self.previous_mode = self.display_mode;
+                    self.display_mode = DisplayMode::Projects;
+                    self.menu_index = 2; // Set to Projects menu item
                 }
             }
+            KeyCode::Left | KeyCode::Char('h') => {
+                if self.skills_page > 0 {
+                    self.skills_page -= 1;
+                }
+            }
+            KeyCode::Right | KeyCode::Char('l') => {
+                // Let the UI rendering handle the upper bound check since
+                // it depends on the screen size and number of skills
+                if !self.skills_data.categories.is_empty() {
+                    self.skills_page += 1;
+                    // The UI will validate and adjust if this is too high
+                }
+            }
+            // Page navigation now only handled by left/right keys
             _ => {}
         }
     }
@@ -247,11 +279,8 @@ impl App {
                     self.display_mode = DisplayMode::ProjectLinks;
                     self.link_index = 0;
                 }
-                else if self.display_mode == DisplayMode::Skills {
-                    self.previous_mode = self.display_mode;
-                    self.display_mode = DisplayMode::SkillsVisual;
-                    self.skill_category_index = 0;
-                }
+                // Skills text mode should no longer be accessible directly, 
+                // but leaving handler in case of future changes
             }
             KeyCode::Enter => {
                 self.switch_to_selected_screen();

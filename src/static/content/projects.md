@@ -1,22 +1,13 @@
-## Notable Projects
-Press the right arrow (→) to browse and open project links!
+->Press the right arrow (→) to browse and open project links!<-
 
-### Terminal Dashboard (Rust)
-A system monitoring dashboard with real-time stats, built with Rust and Ratatui.
-[GitHub Repository](https://github.com/davidparker/terminal-dashboard)
+### Interactive Terminal Resume (Rust)
 
-### CLI Task Manager (Rust)
-A fast, feature-rich task manager that works from the terminal.
-[GitHub Repository](https://github.com/davidparker/cli-taskmanager)
+A terminal resume to standout from most othe resumes, that also shows that I understand the terminal and can build apps in Rust.
 
-### Code Snippet Manager (TypeScript)
-VS Code extension for managing code snippets with 10k+ downloads.
-[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=davidparker.code-snippets)
+### Warp Theme Creator (Python)
 
-### Terminal File Explorer (Rust)
-A modern file explorer with vim-like keybindings and search capabilities.
-[GitHub Repository](https://github.com/davidparker/terminal-explorer)
+A simple Python app that helps create Warp themes. Key feature is it will take a screenshot of a website and use that to build a theme. Also has a --prefer-light and --prefer-dark flag.
 
-### Weather CLI (Rust)
-A simple weather app for the terminal with colorful output and forecast data.
-[GitHub Repository](https://github.com/davidparker/weather-cli)
+### Warp Commands Checker (TypeScript/Next.js)
+
+A full stack app that first scrapes the commands.dev website, and then allows users to
