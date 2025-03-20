@@ -1,20 +1,12 @@
-# Contact Information
+Thanks for checking out my interactive resume!
 
-## David Parker
+I'm located in Virginia Beach, VA (EST), and I'd love to connect! Please feel free to reach out using whatever method works best for you:
 
-**Email**: david.parker@example.com  
-**Phone**: (555) 123-4567  
-**LinkedIn**: [linkedin.com/in/davidparker](https://linkedin.com/in/davidparker)  
-**GitHub**: [github.com/davidparker](https://github.com/davidparker)  
-**Twitter**: [@davidparker](https://twitter.com/davidparker)  
+-   **Email:** david@redkey.io
+-   **Phone:** (757) 230-3795
+-   **LinkedIn:** [linkedin.com/in/david-parker-codes](https://linkedin.com/in/david-parker-codes)
+-   **GitHub:** [github.com/davidparkercodes](https://github.com/davidparkercodes)
 
-### Preferred Contact Methods
+Thanks again for exploring -- I hope to chat soon!
 
-I'm most responsive via email and LinkedIn messages. Feel free to reach out about:
-
-- Job opportunities
-- Collaboration on open source projects
-- Technical discussions about Rust, terminal applications, or software architecture
-- Speaking engagements
-
-I'm currently based in San Francisco, CA and am open to remote and local opportunities.
+**David Parker** 🤘
