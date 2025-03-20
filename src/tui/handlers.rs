@@ -9,16 +9,19 @@ impl App {
             return;
         }
 
+        // Save the current state before handling the key event
+        let was_timeline = self.display_mode == DisplayMode::Timeline;
+        let was_at_leftmost = self.timeline_index == 0;
+        let was_left_key = key.code == KeyCode::Left || key.code == KeyCode::Char('h');
+
         if self.display_mode == DisplayMode::Timeline {
             let filtered_events = self.get_filtered_events();
             if !filtered_events.is_empty() && self.timeline_event_index >= filtered_events.len() {
                 self.timeline_event_index = 0;
             }
         }
-
-        // If we just came from timeline with leftmost entry, and we're now in the menu,
-        // we want to stay in the menu. This is handled in handle_menu_keys.
         
+        // Handle the key event
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
             DisplayMode::Timeline => {
@@ -31,6 +34,17 @@ impl App {
             DisplayMode::SkillsVisual => self.handle_skills_visual_keys(key),
             DisplayMode::ProjectLinks => self.handle_project_links_keys(key),
             _ => self.handle_content_keys(key),
+        }
+        
+        // Check if we were in timeline mode at the leftmost position and 
+        // pressed left, but somehow ended up in About mode. If so,
+        // force back to Menu mode.
+        if was_timeline && was_at_leftmost && was_left_key && 
+           self.display_mode == DisplayMode::About {
+            // Force us back to Menu mode with Timeline selected
+            self.display_mode = DisplayMode::Menu;
+            self.menu_index = 4; // Timeline menu index
+            self.timeline_detail_view = false;
         }
     }
     
@@ -127,13 +141,10 @@ impl App {
                     self.timeline_index -= 1;
                     self.timeline_event_index = self.timeline_index; 
                 } else {
-                    // When at leftmost entry, go back to menu but don't auto-switch
-                    self.menu_index = 4; // Set to Timeline menu item
-                    self.previous_mode = DisplayMode::Timeline;
-                    self.display_mode = DisplayMode::Menu;
-                    self.timeline_detail_view = false;
-                    // Set flag to prevent auto-switching back to a content screen
-                    self.skip_auto_switch = true;
+                    // When at leftmost entry, NEVER leave timeline mode
+                    // Instead, just stay at the leftmost entry and do nothing
+                    // This is the simplest possible fix
+                    return;
                 }
             }
             KeyCode::Right | KeyCode::Char('l') => {

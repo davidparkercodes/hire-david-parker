@@ -316,12 +316,11 @@ fn test_timeline_navigation() {
     app.handle_key_event(create_key_event(KeyCode::Char('h')));
     assert_eq!(app.timeline_index, 0);
     
-    // Test left at first item returns to menu
+    // Test left at first item now just stays on the first timeline entry
     app.timeline_index = 0;
     app.handle_key_event(create_key_event(KeyCode::Left));
-    assert_eq!(app.display_mode, DisplayMode::Menu);
-    assert_eq!(app.menu_index, 4); // Ensure we're on the Timeline menu item
-    assert!(app.skip_auto_switch); // Verify flag is set to prevent auto-switching
+    assert_eq!(app.display_mode, DisplayMode::Timeline);
+    assert_eq!(app.timeline_index, 0); // Still at leftmost entry
     
     // Test right key navigation in timeline
     app.display_mode = DisplayMode::Timeline;
@@ -473,20 +472,18 @@ fn test_leftmost_timeline_navigation() {
     app.timeline_index = 0;
     app.timeline_detail_view = false;
     
-    // Test left at first item returns to menu and stays in menu
+    // Test left at first item now stays in timeline
     app.handle_key_event(create_key_event(KeyCode::Left));
-    assert_eq!(app.display_mode, DisplayMode::Menu);
-    assert_eq!(app.menu_index, 4); // Should focus on Timeline menu item
-    assert!(app.skip_auto_switch); // Verify flag is set to prevent auto-switching
+    assert_eq!(app.display_mode, DisplayMode::Timeline);
+    assert_eq!(app.timeline_index, 0); // Should stay at leftmost entry
     
     // Set up timeline mode at the leftmost entry again
     app.display_mode = DisplayMode::Timeline;
     app.timeline_index = 0;
     app.timeline_detail_view = false;
     
-    // Test h key (same as left) at first item returns to menu and stays in menu
+    // Test h key (same as left) at first item stays in timeline
     app.handle_key_event(create_key_event(KeyCode::Char('h')));
-    assert_eq!(app.display_mode, DisplayMode::Menu);
-    assert_eq!(app.menu_index, 4); // Should focus on Timeline menu item
-    assert!(app.skip_auto_switch); // Verify flag is set to prevent auto-switching
+    assert_eq!(app.display_mode, DisplayMode::Timeline);
+    assert_eq!(app.timeline_index, 0); // Should stay at leftmost entry
 }
