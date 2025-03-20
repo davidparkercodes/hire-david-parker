@@ -1,8 +1,8 @@
 mod common;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
-use hiredavidparker::tui::state::App;
-use hiredavidparker::tui::models::DisplayMode;
+use hire_david_parker::tui::state::App;
+use hire_david_parker::tui::models::DisplayMode;
 
 // Helper function to create a keyboard event
 fn create_key_event(code: KeyCode) -> KeyEvent {

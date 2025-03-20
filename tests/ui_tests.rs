@@ -1,13 +1,13 @@
 mod common;
 
-use hiredavidparker::tui::state::App;
-use hiredavidparker::tui::models::{DisplayMode, TimelineEvent, SkillCategory, Skill, Link};
+use hire_david_parker::tui::state::App;
+use hire_david_parker::tui::models::{DisplayMode, TimelineEvent, TimelineType, SkillCategory, Skill, Link};
 use ratatui::{
     backend::TestBackend,
     buffer::Buffer,
     Terminal,
 };
-use hiredavidparker::tui::ui;
+use hire_david_parker::tui::ui;
 
 #[test]
 fn test_ui_menu_sidebar_rendering() {
@@ -98,7 +98,7 @@ fn test_ui_timeline_rendering() {
     if app.timeline_events.is_empty() {
         app.timeline_events.push(TimelineEvent {
             year: 2022,
-            event_type: hiredavidparker::tui::models::TimelineType::Career,
+            event_type: TimelineType::Career,
             title: "Test Title".to_string(),
             organization: "Test Org".to_string(),
             description: "Test Description".to_string(),
@@ -290,7 +290,7 @@ fn test_ui_timeline_details_rendering() {
     if app.timeline_events.is_empty() {
         app.timeline_events.push(TimelineEvent {
             year: 2021,
-            event_type: hiredavidparker::tui::models::TimelineType::Career,
+            event_type: TimelineType::Career,
             title: "Test Title 1".to_string(),
             organization: "Test Org 1".to_string(),
             description: "Test Description 1".to_string(),
@@ -300,7 +300,7 @@ fn test_ui_timeline_details_rendering() {
         
         app.timeline_events.push(TimelineEvent {
             year: 2022,
-            event_type: hiredavidparker::tui::models::TimelineType::Career,
+            event_type: TimelineType::Career,
             title: "Test Title 2".to_string(),
             organization: "Test Org 2".to_string(),
             description: "Test Description 2".to_string(),

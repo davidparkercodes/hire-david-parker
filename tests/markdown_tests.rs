@@ -1,6 +1,6 @@
 mod common;
 
-use hiredavidparker::tui::markdown::parse_markdown;
+use hire_david_parker::tui::markdown::parse_markdown;
 use ratatui::style::Modifier;
 
 #[test]
