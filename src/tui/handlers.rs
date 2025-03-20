@@ -124,10 +124,16 @@ impl App {
                     self.timeline_index -= 1;
                     self.timeline_event_index = self.timeline_index; 
                 } else {
-                    self.previous_mode = DisplayMode::Timeline;
-                    self.menu_index = 4;
+                    // Force menu display instead of automatically going to About
+                    let prev_display_mode = self.display_mode;
+                    self.menu_index = 4; // Set to Timeline menu item
+                    self.previous_mode = prev_display_mode;
                     self.display_mode = DisplayMode::Menu;
                     self.timeline_detail_view = false;
+                    
+                    // Important: Early return to bypass any post-handler logic that
+                    // might cause automatic menu selection (switching to About)
+                    return;
                 }
             }
             KeyCode::Right | KeyCode::Char('l') => {
