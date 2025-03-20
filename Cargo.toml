@@ -1,5 +1,5 @@
 [package]
-name = "hiredavidparker"
+name = "hire-david-parker"
 version = "0.1.0"
 edition = "2021"
 description = "Interactive terminal-based resume application with a TUI interface"
