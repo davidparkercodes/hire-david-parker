@@ -36,6 +36,28 @@ pub fn render(f: &mut Frame, app: &mut App) {
     let footer_text = match app.display_mode {
         DisplayMode::Menu => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select",
         DisplayMode::Timeline => "q: Quit | ←/h: Previous | →/l: Next | Esc: Return to Menu",
+        DisplayMode::SkillsVisual => {
+            // Check if the current category has multiple pages
+            let has_multiple_pages = if !app.skills_data.categories.is_empty() {
+                let category_index = app.skill_category_index.min(app.skills_data.categories.len() - 1);
+                let category = &app.skills_data.categories[category_index];
+                
+                // Calculate skills per page based on app area height (approximation)
+                let skills_per_page = 5; // Reasonable default
+                let total_skills = category.skills.len();
+                
+                // Calculate if we need more than one page
+                total_skills > skills_per_page
+            } else {
+                false
+            };
+            
+            if has_multiple_pages {
+                "q: Quit | ↑/↓: Categories | ←/→: Pages | Esc: Return to Menu"
+            } else {
+                "q: Quit | ↑/↓: Categories | Esc: Return to Menu"
+            }
+        },
         _ => "q: Quit | ↑/k: Up | ↓/j: Down | Enter: Select | Esc: Return to Menu",
     };
     let footer = Paragraph::new(footer_text)
@@ -55,14 +77,8 @@ pub fn render(f: &mut Frame, app: &mut App) {
     // Render the appropriate content on the right side
     match app.display_mode {
         DisplayMode::Menu => {
-            // Show different content based on where the user came from
-            if app.menu_index == 4 && app.previous_mode == DisplayMode::Timeline {
-                // If we just came from Timeline view, continue showing the Timeline content
-                render_timeline(f, app, content_chunks[1])
-            } else {
-                // Otherwise show the welcome content
-                render_welcome(f, app, content_chunks[1])
-            }
+            // Instead of welcome screen, show About content by default
+            render_about(f, app, content_chunks[1])
         },
         DisplayMode::About => render_about(f, app, content_chunks[1]),
         DisplayMode::Skills => render_skills(f, app, content_chunks[1]),
@@ -106,19 +122,45 @@ fn render_menu_sidebar(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect
 
     f.render_widget(menu, area);
 }
-/// Renders the welcome screen
-fn render_welcome(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, _links) = parse_markdown(&app.welcome_content);
-    let instructions = Paragraph::new(text)
-        .block(Block::default().title("Instructions").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
-        .wrap(Wrap { trim: true });
-
-    f.render_widget(instructions, area);
-}
+// Welcome screen removed as no longer needed
 
 /// Renders the about section
 fn render_about(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, _links) = parse_markdown(&app.about_content);
+    let (mut text, _links) = parse_markdown(&app.about_content);
+    
+    // Check if any lines need to be centered
+    for line in &mut text.lines {
+        // Extract the line content as a string
+        let line_content = line.spans.iter()
+            .map(|span| span.content.to_string())
+            .collect::<String>();
+        
+        // Check if the line starts with -> and ends with <-
+        if line_content.starts_with("->") && line_content.ends_with("<-") {
+            // Set the alignment for this line to Center
+            *line = line.clone().alignment(ratatui::layout::Alignment::Center);
+            
+            // Remove the -> and <- markers from the first and last spans
+            if !line.spans.is_empty() {
+                // Fix the first span
+                if let Some(first_span) = line.spans.first_mut() {
+                    if first_span.content.starts_with("->") {
+                        let new_content = first_span.content.to_string();
+                        first_span.content = new_content[2..].to_string().into();
+                    }
+                }
+                
+                // Fix the last span
+                if let Some(last_span) = line.spans.last_mut() {
+                    if last_span.content.ends_with("<-") {
+                        let new_content = last_span.content.to_string();
+                        last_span.content = new_content[..new_content.len()-2].to_string().into();
+                    }
+                }
+            }
+        }
+    }
+    
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("About Me").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
@@ -128,7 +170,41 @@ fn render_about(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 
 /// Renders the skills section
 fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, _links) = parse_markdown(&app.skills_content);
+    let (mut text, _links) = parse_markdown(&app.skills_content);
+    
+    // Check if any lines need to be centered
+    for line in &mut text.lines {
+        // Extract the line content as a string
+        let line_content = line.spans.iter()
+            .map(|span| span.content.to_string())
+            .collect::<String>();
+        
+        // Check if the line starts with -> and ends with <-
+        if line_content.starts_with("->") && line_content.ends_with("<-") {
+            // Set the alignment for this line to Center
+            *line = line.clone().alignment(ratatui::layout::Alignment::Center);
+            
+            // Remove the -> and <- markers from the first and last spans
+            if !line.spans.is_empty() {
+                // Fix the first span
+                if let Some(first_span) = line.spans.first_mut() {
+                    if first_span.content.starts_with("->") {
+                        let new_content = first_span.content.to_string();
+                        first_span.content = new_content[2..].to_string().into();
+                    }
+                }
+                
+                // Fix the last span
+                if let Some(last_span) = line.spans.last_mut() {
+                    if last_span.content.ends_with("<-") {
+                        let new_content = last_span.content.to_string();
+                        last_span.content = new_content[..new_content.len()-2].to_string().into();
+                    }
+                }
+            }
+        }
+    }
+    
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Skills (→ for bar graphs)").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
@@ -138,7 +214,40 @@ fn render_skills(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 
 /// Renders the projects section
 fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, _links) = parse_markdown(&app.projects_content);
+    let (mut text, _links) = parse_markdown(&app.projects_content);
+    
+    // Check if any lines need to be centered
+    for line in &mut text.lines {
+        // Extract the line content as a string
+        let line_content = line.spans.iter()
+            .map(|span| span.content.to_string())
+            .collect::<String>();
+        
+        // Check if the line starts with -> and ends with <-
+        if line_content.starts_with("->") && line_content.ends_with("<-") {
+            // Set the alignment for this line to Center
+            *line = line.clone().alignment(ratatui::layout::Alignment::Center);
+            
+            // Remove the -> and <- markers from the first and last spans
+            if !line.spans.is_empty() {
+                // Fix the first span
+                if let Some(first_span) = line.spans.first_mut() {
+                    if first_span.content.starts_with("->") {
+                        let new_content = first_span.content.to_string();
+                        first_span.content = new_content[2..].to_string().into();
+                    }
+                }
+                
+                // Fix the last span
+                if let Some(last_span) = line.spans.last_mut() {
+                    if last_span.content.ends_with("<-") {
+                        let new_content = last_span.content.to_string();
+                        last_span.content = new_content[..new_content.len()-2].to_string().into();
+                    }
+                }
+            }
+        }
+    }
     
     let title = "Projects (→ for links)";
     
@@ -199,9 +308,8 @@ fn render_skills_visual(f: &mut Frame, app: &mut App, area: ratatui::layout::Rec
     let category = &app.skills_data.categories[category_index];
     
     // Create a title block
-    let title = format!("Skills: {} (←/→ to navigate categories)", category.name);
     let block = Block::default()
-        .title(title)
+        .title(format!("Skills: {}", category.name))
         .borders(Borders::ALL)
         .border_style(Style::default().fg(Color::Blue));
     
@@ -210,38 +318,144 @@ fn render_skills_visual(f: &mut Frame, app: &mut App, area: ratatui::layout::Rec
     // Calculate inner area
     let inner_area = block.inner(area);
     
-    // Create a layout for skill bars
-    let mut constraints = Vec::new();
-    for _ in 0..category.skills.len() {
-        constraints.push(Constraint::Length(2));
+    // Create a layout for header, skills bars, and footer
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(2),  // Header for info message
+            Constraint::Min(4),     // Skills bars area
+        ].as_ref())
+        .split(inner_area);
+    
+    // Create information header
+    let mut header_text = vec![Span::styled(
+        "Skills are shown in their original order.", 
+        Style::default().fg(Color::Gray)
+    )];
+    
+    // Calculate how many skills we can fit on the screen
+    // Each skill needs 3 rows (1 for title, 1 for bar, 1 for spacing)
+    let skills_area_height = chunks[1].height.saturating_sub(2); // Subtract 2 for margins
+    let skills_per_page = (skills_area_height / 3) as usize;
+    
+    // Ensure we show at least one skill
+    let skills_per_page = skills_per_page.max(1);
+    
+    // Calculate total pages needed
+    let total_pages = (category.skills.len() + skills_per_page - 1) / skills_per_page;
+    
+    // Ensure current page is valid
+    if app.skills_page >= total_pages && total_pages > 0 {
+        app.skills_page = total_pages - 1;
     }
-    constraints.push(Constraint::Min(1)); // Add extra space at bottom
+    
+    // Add pagination info to header
+    if total_pages > 1 {
+        header_text.push(Span::raw(" "));
+        header_text.push(Span::styled(
+            format!("Page {}/{}. Use ←/→ to navigate pages.", app.skills_page + 1, total_pages),
+            Style::default().fg(Color::Gray)
+        ));
+    }
+    
+    // Render the header with information
+    let header = Paragraph::new(Line::from(header_text))
+        .alignment(Alignment::Center);
+    f.render_widget(header, chunks[0]);
+    
+    // Calculate start and end index for skills to display
+    let start_index = app.skills_page * skills_per_page;
+    let end_index = (start_index + skills_per_page).min(category.skills.len());
+    
+    // Use skills in their original order from the JSON file
+    let skills_to_display = &category.skills[start_index..end_index];
+    
+    // Create a layout for each skill bar with spacing between them
+    let mut bar_constraints = Vec::new();
+    for _ in start_index..end_index {
+        bar_constraints.push(Constraint::Length(1)); // Skill name
+        bar_constraints.push(Constraint::Length(1)); // Bar
+        bar_constraints.push(Constraint::Length(1)); // Spacing
+    }
+    
+    // Make sure we have at least one constraint
+    if bar_constraints.is_empty() {
+        bar_constraints.push(Constraint::Min(1));
+    }
     
     let skill_chunks = Layout::default()
         .direction(Direction::Vertical)
-        .constraints(constraints)
+        .constraints(bar_constraints)
         .margin(1)
-        .split(inner_area);
+        .split(chunks[1]);
     
     // Render each skill as a gauge
-    for (i, skill) in category.skills.iter().enumerate() {
-        // Calculate percentage (0-100)
-        let percentage = skill.level;
+    // Skills are already in the original order from the JSON file
+    
+    for (display_idx, skill) in skills_to_display.iter().enumerate() {
+        // Calculate the base index for this skill in the layout
+        let chunk_base_idx = display_idx * 3;
         
-        // Create a gauge for this skill
-        let gauge = Gauge::default()
-            .block(Block::default().title(format!("{}", skill.name)))
-            .gauge_style(Style::default().fg(Color::Yellow))
-            .ratio(percentage as f64 / 100.0)
-            .label(format!("{}%", percentage));
+        // Render skill name
+        let name_paragraph = Paragraph::new(skill.name.as_str())
+            .style(Style::default().fg(Color::Gray));
         
-        f.render_widget(gauge, skill_chunks[i]);
+        // Only render if we have enough space
+        if chunk_base_idx < skill_chunks.len() {
+            f.render_widget(name_paragraph, skill_chunks[chunk_base_idx]);
+        }
+        
+        // Render gauge for the skill
+        if chunk_base_idx + 1 < skill_chunks.len() {
+            let gauge = Gauge::default()
+                .gauge_style(Style::default().fg(Color::Green))
+                .ratio(skill.level as f64 / 100.0)
+                .label(format!("{}%", skill.level));
+            
+            f.render_widget(gauge, skill_chunks[chunk_base_idx + 1]);
+        }
+        
+        // The third chunk is spacing, we don't render anything there
     }
 }
 
 /// Renders the "Why Warp?" section
 fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (text, _links) = parse_markdown(&app.why_warp_content);
+    let (mut text, _links) = parse_markdown(&app.why_warp_content);
+    
+    // Check if any lines need to be centered
+    for line in &mut text.lines {
+        // Extract the line content as a string
+        let line_content = line.spans.iter()
+            .map(|span| span.content.to_string())
+            .collect::<String>();
+        
+        // Check if the line starts with -> and ends with <-
+        if line_content.starts_with("->") && line_content.ends_with("<-") {
+            // Set the alignment for this line to Center
+            *line = line.clone().alignment(ratatui::layout::Alignment::Center);
+            
+            // Remove the -> and <- markers from the first and last spans
+            if !line.spans.is_empty() {
+                // Fix the first span
+                if let Some(first_span) = line.spans.first_mut() {
+                    if first_span.content.starts_with("->") {
+                        let new_content = first_span.content.to_string();
+                        first_span.content = new_content[2..].to_string().into();
+                    }
+                }
+                
+                // Fix the last span
+                if let Some(last_span) = line.spans.last_mut() {
+                    if last_span.content.ends_with("<-") {
+                        let new_content = last_span.content.to_string();
+                        last_span.content = new_content[..new_content.len()-2].to_string().into();
+                    }
+                }
+            }
+        }
+    }
+    
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
@@ -251,7 +465,41 @@ fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 
 /// Renders the Contact Information section
 fn render_contact(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let (text, _links) = parse_markdown(&app.contact_content);
+    let (mut text, _links) = parse_markdown(&app.contact_content);
+    
+    // Check if any lines need to be centered
+    for line in &mut text.lines {
+        // Extract the line content as a string
+        let line_content = line.spans.iter()
+            .map(|span| span.content.to_string())
+            .collect::<String>();
+        
+        // Check if the line starts with -> and ends with <-
+        if line_content.starts_with("->") && line_content.ends_with("<-") {
+            // Set the alignment for this line to Center
+            *line = line.clone().alignment(ratatui::layout::Alignment::Center);
+            
+            // Remove the -> and <- markers from the first and last spans
+            if !line.spans.is_empty() {
+                // Fix the first span
+                if let Some(first_span) = line.spans.first_mut() {
+                    if first_span.content.starts_with("->") {
+                        let new_content = first_span.content.to_string();
+                        first_span.content = new_content[2..].to_string().into();
+                    }
+                }
+                
+                // Fix the last span
+                if let Some(last_span) = line.spans.last_mut() {
+                    if last_span.content.ends_with("<-") {
+                        let new_content = last_span.content.to_string();
+                        last_span.content = new_content[..new_content.len()-2].to_string().into();
+                    }
+                }
+            }
+        }
+    }
+    
     let paragraph = Paragraph::new(text)
         .block(Block::default().title("Contact Information").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
@@ -275,7 +523,41 @@ fn render_timeline(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         .split(area);
     
     // Render instructions at the top
-    let (text, _) = parse_markdown(&app.timeline_content);
+    let (mut text, _) = parse_markdown(&app.timeline_content);
+    
+    // Check if any lines need to be centered
+    for line in &mut text.lines {
+        // Extract the line content as a string
+        let line_content = line.spans.iter()
+            .map(|span| span.content.to_string())
+            .collect::<String>();
+        
+        // Check if the line starts with -> and ends with <-
+        if line_content.starts_with("->") && line_content.ends_with("<-") {
+            // Set the alignment for this line to Center
+            *line = line.clone().alignment(ratatui::layout::Alignment::Center);
+            
+            // Remove the -> and <- markers from the first and last spans
+            if !line.spans.is_empty() {
+                // Fix the first span
+                if let Some(first_span) = line.spans.first_mut() {
+                    if first_span.content.starts_with("->") {
+                        let new_content = first_span.content.to_string();
+                        first_span.content = new_content[2..].to_string().into();
+                    }
+                }
+                
+                // Fix the last span
+                if let Some(last_span) = line.spans.last_mut() {
+                    if last_span.content.ends_with("<-") {
+                        let new_content = last_span.content.to_string();
+                        last_span.content = new_content[..new_content.len()-2].to_string().into();
+                    }
+                }
+            }
+        }
+    }
+    
     let instructions = Paragraph::new(text)
         .block(Block::default().title("Career Timeline").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
         .wrap(Wrap { trim: true });
