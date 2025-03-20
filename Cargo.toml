@@ -1,23 +1,23 @@
 [package]
 name = "hire-david-parker"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Interactive terminal-based resume application with a TUI interface"
 authors = ["David Parker"]
 license = "MIT"
 repository = "https://github.com/davidparkercodes/hire-david-parker"
 homepage = "https://github.com/davidparkercodes/hire-david-parker"
-documentation = "https://docs.rs/hiredavidparker"
+documentation = "https://docs.rs/hire-david-parker"
 keywords = ["resume", "tui", "terminal", "interactive", "cli"]
 categories = ["command-line-utilities"]
 readme = "README.md"
 
 [lib]
-name = "hiredavidparker"
+name = "hire_david_parker"
 path = "src/lib.rs"
 
 [[bin]]
-name = "hiredavidparker"
+name = "hire-david-parker"
 path = "src/main.rs"
 
 [dependencies]
