@@ -11,6 +11,15 @@ An interactive terminal-based resume application built with Rust.
 
 ## Installation
 
+### From crates.io
+
+```bash
+# Install directly from crates.io
+cargo install hiredavidparker
+```
+
+### From Source
+
 ```bash
 # Clone the repository
 git clone <repository-url>
@@ -24,18 +33,47 @@ cargo build --release
 
 ## Usage
 
+### As a CLI Application
+
 Run the application in interactive TUI mode:
 
 ```bash
-./target/release/hiredavidparker
+hiredavidparker
 # or
-./target/release/hiredavidparker run
+hiredavidparker run
 ```
 
 Show the about information:
 
 ```bash
-./target/release/hiredavidparker about
+hiredavidparker about
+```
+
+### As a Library
+
+Add to your Cargo.toml:
+
+```toml
+[dependencies]
+hiredavidparker = "0.1.0"
+```
+
+Example usage:
+
+```rust
+use hiredavidparker::{about, skills, projects};
+
+fn main() {
+    // Get content from various sections
+    println!("{}", about());
+    
+    // Load timeline data
+    if let Ok(timeline_events) = hiredavidparker::load_timeline_data() {
+        for event in timeline_events {
+            println!("{}: {} at {}", event.year, event.title, event.organization);
+        }
+    }
+}
 ```
 
 ## Development
