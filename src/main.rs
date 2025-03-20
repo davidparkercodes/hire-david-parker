@@ -1,5 +1,5 @@
 use clap::Parser;
-use hire_david_parker::{about, run_tui};
+use hire_david_parker::about;
 use std::error::Error;
 
 #[derive(Parser, Debug, PartialEq)]
