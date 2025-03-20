@@ -37,7 +37,7 @@ impl App {
             menu_index: 0,
             link_index: 0,
             skill_category_index: 0,
-            display_mode: DisplayMode::Menu,
+            display_mode: DisplayMode::About,
             previous_mode: DisplayMode::Menu,
             timeline_filter: TimelineFilter::All,
             timeline_event_index: 0,
