@@ -12,7 +12,7 @@ fn test_app_initialization() {
     assert_eq!(app.menu_index, 0);
     assert_eq!(app.link_index, 0);
     assert_eq!(app.skill_category_index, 0);
-    assert_eq!(app.display_mode, DisplayMode::Menu);
+    assert_eq!(app.display_mode, DisplayMode::About);
     assert_eq!(app.previous_mode, DisplayMode::Menu);
     assert_eq!(app.timeline_filter, TimelineFilter::All);
     assert_eq!(app.timeline_event_index, 0);

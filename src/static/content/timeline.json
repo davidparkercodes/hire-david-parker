@@ -1,50 +1,65 @@
 [
   {
-    "year": 2023,
-    "title": "Senior Software Engineer",
-    "organization": "Acme Corp",
-    "description": "Led development of cloud-native microservices architecture",
+    "year": 2024,
+    "title": "Software Architect & Multi-Team Lead",
+    "organization": "Groundworks",
+    "description": "Lead architect focused on optimizing software performance and AI initiatives",
     "highlights": [
-      "Architected and implemented a distributed system using Rust and gRPC",
-      "Reduced infrastructure costs by 35% through optimization",
-      "Mentored junior engineers on Rust best practices and design patterns"
+      "Spearheaded key AI initiatives including chatbot and automated call transcript analysis",
+      "Implemented Retrieval-Augmented Generation (RAG) systems to support dynamic content generation",
+      "Collaborate with design and product teams to build service-oriented architecture (SOA) AI-powered features",
+      "Set strategic direction for the company's data and AI initiatives"
     ],
-    "technologies": ["Rust", "AWS", "Kubernetes", "gRPC", "CI/CD"]
+    "technologies": ["Python", "C#", "TypeScript", "AI/ML", "RAG", "SOA"]
+  },
+  {
+    "year": 2022,
+    "title": "Senior Full Stack Web Developer & Team Lead",
+    "organization": "Groundworks",
+    "description": "Developed and maintained full-stack applications with multiple technologies",
+    "highlights": [
+      "Enhanced user interfaces and back-end systems for responsive, user-friendly experiences",
+      "Analyzed customer interactions and business data to improve product functionality",
+      "Provided mentorship to junior developers and refined team development processes",
+      "Worked with Python, C#, TypeScript, PHP, and React.js"
+    ],
+    "technologies": ["Python", "C#", "TypeScript", "PHP", "React.js"]
   },
   {
     "year": 2021,
-    "title": "Software Engineer",
-    "organization": "Tech Innovators Inc",
-    "description": "Developed backend services for high-throughput data processing",
+    "title": "Full Stack Web Developer",
+    "organization": "Groundworks",
+    "description": "Designed and implemented dynamic, responsive web interfaces",
     "highlights": [
-      "Built robust APIs handling 10M+ daily requests",
-      "Implemented real-time analytics pipeline",
-      "Contributed to open-source Rust libraries"
+      "Built interfaces using JavaScript and React.js",
+      "Integrated front-end elements with server-side logic",
+      "Ensured seamless functionality across applications"
     ],
-    "technologies": ["Rust", "TypeScript", "PostgreSQL", "Redis", "Docker"]
+    "technologies": ["JavaScript", "React.js", "Web Development"]
   },
   {
-    "year": 2019,
-    "title": "Software Developer",
-    "organization": "StartupXYZ",
-    "description": "Full-stack engineer for early-stage startup",
+    "year": 2009,
+    "title": "Owner and Full Stack Developer",
+    "organization": "Red Key.io",
+    "description": "Founded and managed a successful freelance business",
     "highlights": [
-      "Designed and implemented user authentication system",
-      "Built responsive web application with React",
-      "Developed RESTful backend services"
+      "Developed e-commerce websites processing millions in annual transactions",
+      "Implemented secure online payment systems optimizing client resources",
+      "Led migration of 15,000-page Drupal website to WordPress in under six weeks",
+      "Managed all aspects of project management and software development"
     ],
-    "technologies": ["JavaScript", "Node.js", "React", "MongoDB", "Git"]
+    "technologies": ["E-commerce", "Drupal", "WordPress", "Payment Systems"]
   },
   {
-    "year": 2017,
-    "title": "Junior Developer",
-    "organization": "CodeCrafters LLC",
-    "description": "Entry-level position focused on web development",
+    "year": 2011,
+    "title": "Full Stack Developer",
+    "organization": "Vectec Solutions",
+    "description": "Developed web applications and software solutions",
     "highlights": [
-      "Contributed to frontend components using React",
-      "Fixed bugs and improved performance of legacy systems",
-      "Participated in agile development process"
+      "Specialized in on-time project delivery and customer satisfaction",
+      "Focused on software deployment and web development",
+      "Met client-specific requirements and business objectives"
     ],
-    "technologies": ["HTML/CSS", "JavaScript", "Python", "SQL"]
+    "technologies": ["Web Development", "Software Deployment"]
   }
 ]
