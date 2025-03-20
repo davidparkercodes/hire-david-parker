@@ -1,6 +1,6 @@
 use crossterm::{execute, terminal};
 use ratatui::prelude::*;
-use std::{error::Error, io, sync::mpsc, panic};
+use std::{error::Error, io, sync::mpsc, panic, time::Duration};
 use super::{ui, event::{Event as AppEvent, EventHandler}, state::App};
 
 // Define a trait for event handlers to allow for mocking in tests
