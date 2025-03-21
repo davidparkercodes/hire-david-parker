@@ -18,7 +18,7 @@ An interactive terminal-based resume application built with Rust, showcasing pro
 
 ```bash
 # Install directly from crates.io
-cargo install hiredavidparker
+cargo install hire-david-parker
 ```
 
 ### From Source
@@ -31,7 +31,7 @@ cd hire-david-parker
 # Build the application
 cargo build --release
 
-# The binary will be located at ./target/release/hiredavidparker
+# The binary will be located at ./target/release/hire-david-parker
 ```
 
 ## Usage
@@ -41,15 +41,15 @@ cargo build --release
 Run the application in interactive TUI mode:
 
 ```bash
-hiredavidparker
+hire-david-parker
 # or
-hiredavidparker run
+hire-david-parker run
 ```
 
 Show the about information:
 
 ```bash
-hiredavidparker about
+hire-david-parker about
 ```
 
 ### Navigation in TUI Mode
@@ -68,27 +68,27 @@ Add to your Cargo.toml:
 
 ```toml
 [dependencies]
-hiredavidparker = "0.1.0"
+hire-david-parker = "0.1.0"
 ```
 
 Example usage:
 
 ```rust
-use hiredavidparker::{about, skills, projects};
+use hire_david_parker::{about, skills, projects};
 
 fn main() {
     // Get content from various sections
     println!("{}", about());
     
     // Load timeline data
-    if let Ok(timeline_events) = hiredavidparker::load_timeline_data() {
+    if let Ok(timeline_events) = hire_david_parker::load_timeline_data() {
         for event in timeline_events {
             println!("{}: {} at {}", event.year, event.title, event.organization);
         }
     }
     
     // Load project links
-    if let Ok(project_links) = hiredavidparker::load_project_links() {
+    if let Ok(project_links) = hire_david_parker::load_project_links() {
         for link in project_links.links {
             println!("{}: {}", link.text, link.url);
         }
