@@ -31,7 +31,7 @@ cd hire-david-parker
 # Build the application
 cargo build --release
 
-# The binary will be located at ./target/release/hiredavidparker
+# The binary will be located at ./target/release/hire-david-parker
 ```
 
 ## Usage
@@ -41,15 +41,7 @@ cargo build --release
 Run the application in interactive TUI mode:
 
 ```bash
-hiredavidparker
-# or
-hiredavidparker run
-```
-
-Show the about information:
-
-```bash
-hiredavidparker about
+hire-david-parker
 ```
 
 ### Navigation in TUI Mode
@@ -61,44 +53,6 @@ When using the interactive TUI mode, you can navigate with the following keys:
 -   `Left` / `Right` / `Up` / `Down`: Navigate within content (especially in Timeline view)
 -   `Esc` / `q`: Quit the application
 -   `Home`: Return to the main menu from any section
-
-### As a Library
-
-Add to your Cargo.toml:
-
-```toml
-[dependencies]
-hiredavidparker = "0.1.0"
-```
-
-Example usage:
-
-```rust
-use hiredavidparker::{about, skills, projects};
-
-fn main() {
-    // Get content from various sections
-    println!("{}", about());
-
-    // Load timeline data
-    if let Ok(timeline_events) = hiredavidparker::load_timeline_data() {
-        for event in timeline_events {
-            println!("{}: {} at {}", event.year, event.title, event.organization);
-        }
-    }
-
-    // Load project links
-    if let Ok(project_links) = hiredavidparker::load_project_links() {
-        for link in project_links.links {
-            println!("{}: {}", link.text, link.url);
-        }
-    }
-}
-```
-
-## Development
-
-This project follows specific development guidelines. Please refer to the docs/UPDATE_RULES.md file for more information.
 
 ### Running Tests
 
@@ -130,16 +84,6 @@ The HTML coverage report will be generated in the `coverage` directory.
 -   [Ratatui](https://github.com/ratatui-org/ratatui) - Terminal UI library
 -   [Crossterm](https://github.com/crossterm-rs/crossterm) - Terminal manipulation library
 -   [Serde](https://serde.rs/) - Serialization/deserialization framework
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## License
 
