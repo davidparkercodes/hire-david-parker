@@ -1,6 +1,6 @@
 [package]
 name = "hire-david-parker"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 description = "Interactive terminal-based resume application with a TUI interface"
 authors = ["David Parker"]
