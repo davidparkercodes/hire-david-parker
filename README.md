@@ -123,14 +123,6 @@ cargo tarpaulin --verbose --workspace --skip-clean --out Html --output-dir cover
 
 The HTML coverage report will be generated in the `coverage` directory.
 
-## Screenshots
-
-![Timeline View](https://example.com/timeline-screenshot.png)
-*Timeline view showing professional experience*
-
-![Skills View](https://example.com/skills-screenshot.png)
-*Skills visualization with ratings*
-
 ## Technologies
 
 - [Rust](https://www.rust-lang.org/) - Systems programming language
