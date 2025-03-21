@@ -98,7 +98,7 @@ fn main() {
 
 ## Development
 
-This project follows specific development guidelines. Please refer to the UPDATERULES.md file for more information.
+This project follows specific development guidelines. Please refer to the docs/UPDATE_RULES.md file for more information.
 
 ### Running Tests
 

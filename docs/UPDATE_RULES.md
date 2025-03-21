@@ -1,4 +1,4 @@
-# Development Rules for hiredavidparker
+# Development Rules for hire-david-parker
 
 ## Workflow
 
