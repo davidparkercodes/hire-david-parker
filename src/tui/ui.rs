@@ -85,7 +85,6 @@ pub fn render(f: &mut Frame, app: &mut App) {
         DisplayMode::SkillsVisual => render_skills_visual(f, app, content_chunks[1]),
         DisplayMode::Projects => render_projects(f, app, content_chunks[1]),
         DisplayMode::ProjectLinks => render_project_links(f, app, content_chunks[1]),
-        DisplayMode::WhyWarp => render_why_warp(f, app, content_chunks[1]),
         DisplayMode::Timeline => render_timeline(f, app, content_chunks[1]),
         DisplayMode::Contact => render_contact(f, app, content_chunks[1]),
     }
@@ -97,7 +96,6 @@ fn render_menu_sidebar(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect
         "About Me",
         "Skills",
         "Projects",
-        "Why Warp?",
         "Timeline",
         "Contact",
     ];
@@ -419,49 +417,6 @@ fn render_skills_visual(f: &mut Frame, app: &mut App, area: ratatui::layout::Rec
     }
 }
 
-/// Renders the "Why Warp?" section
-fn render_why_warp(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (mut text, _links) = parse_markdown(&app.why_warp_content);
-    
-    // Check if any lines need to be centered
-    for line in &mut text.lines {
-        // Extract the line content as a string
-        let line_content = line.spans.iter()
-            .map(|span| span.content.to_string())
-            .collect::<String>();
-        
-        // Check if the line starts with -> and ends with <-
-        if line_content.starts_with("->") && line_content.ends_with("<-") {
-            // Set the alignment for this line to Center
-            *line = line.clone().alignment(ratatui::layout::Alignment::Center);
-            
-            // Remove the -> and <- markers from the first and last spans
-            if !line.spans.is_empty() {
-                // Fix the first span
-                if let Some(first_span) = line.spans.first_mut() {
-                    if first_span.content.starts_with("->") {
-                        let new_content = first_span.content.to_string();
-                        first_span.content = new_content[2..].to_string().into();
-                    }
-                }
-                
-                // Fix the last span
-                if let Some(last_span) = line.spans.last_mut() {
-                    if last_span.content.ends_with("<-") {
-                        let new_content = last_span.content.to_string();
-                        last_span.content = new_content[..new_content.len()-2].to_string().into();
-                    }
-                }
-            }
-        }
-    }
-    
-    let paragraph = Paragraph::new(text)
-        .block(Block::default().title("Why Warp?").borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
-        .wrap(Wrap { trim: true });
-    
-    f.render_widget(paragraph, area);
-}
 
 /// Renders the Contact Information section
 fn render_contact(f: &mut Frame, app: &App, area: ratatui::layout::Rect) {
@@ -697,8 +652,8 @@ fn render_timeline_details(f: &mut Frame, app: &App, area: ratatui::layout::Rect
         .constraints(
             [
                 Constraint::Length(3),  // Title
-                Constraint::Min(3),     // Description
-                Constraint::Length(5),  // Highlights
+                Constraint::Length(3),  // Description - smaller
+                Constraint::Min(5),     // Highlights - bigger
                 Constraint::Length(3),  // Technologies
             ]
             .as_ref(),
