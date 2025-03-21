@@ -67,6 +67,32 @@ pub fn load_timeline_data() -> Result<Vec<TimelineEvent>, Box<dyn Error>> {
     Ok(timeline_events)
 }
 
+/// Project link structure
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+pub struct ProjectLink {
+    pub text: String,
+    pub url: String,
+}
+
+/// Project links data structure
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+pub struct ProjectLinks {
+    pub links: Vec<ProjectLink>,
+}
+
+/// Loads project links data from JSON file
+pub fn load_project_links() -> Result<ProjectLinks, Box<dyn Error>> {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("src")
+        .join("static")
+        .join("content")
+        .join("projects.json");
+    
+    let content = fs::read_to_string(&path)?;
+    let project_links: ProjectLinks = serde_json::from_str(&content)?;
+    Ok(project_links)
+}
+
 /// Represents a timeline event
 #[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct TimelineEvent {

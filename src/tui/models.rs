@@ -70,6 +70,13 @@ pub struct Link {
     pub end_column: usize,
 }
 
+/// Project link information
+#[derive(Debug, Clone)]
+pub struct ProjectLink {
+    pub text: String,
+    pub url: String,
+}
+
 /// Display modes for the application
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DisplayMode {

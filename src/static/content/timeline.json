@@ -2,7 +2,7 @@
 	{
 		"year": 2001,
 		"title": "Learned HTML",
-		"organization": "N/A",
+		"organization": "Personal",
 		"description": "Learned HTML for the first time",
 		"highlights": [
 			"Built super basic websites in Geocities, Angelfire, and Expage",
@@ -13,7 +13,7 @@
 	{
 		"year": 2004,
 		"title": "Started Learning PHP",
-		"organization": "N/A",
+		"organization": "Personal",
 		"description": "Very basic PHP, but started my journey of learning how to code",
 		"highlights": [
 			"Helped build and run a Starcraft League website that used vBulletin",
@@ -25,7 +25,7 @@
 	{
 		"year": 2005,
 		"title": "First Paying Client",
-		"organization": "N/A",
+		"organization": "Personal",
 		"description": "I had my first paying client as a sophomore in high school",
 		"highlights": [
 			"$400 for a website for a construction company",
@@ -36,7 +36,7 @@
 	{
 		"year": 2009,
 		"title": "Owner and Full Stack Web Developer",
-		"organization": "Red Key.io",
+		"organization": "Red Key Designs",
 		"description": "Founded and managed a successful freelance business",
 		"highlights": [
 			"Developed e-commerce websites processing millions in annual transactions",
@@ -44,19 +44,43 @@
 			"Led migration of 15,000-page Drupal website to WordPress in under six weeks",
 			"Managed all aspects of project management and software development"
 		],
-		"technologies": ["E-commerce", "Drupal", "WordPress", "Payment Systems"]
+		"technologies": [
+			"HTML/CSS",
+			"WordPress",
+			"Client Relations",
+			"PHP",
+			"Payment Systems"
+		]
 	},
 	{
 		"year": 2011,
 		"title": "Full Stack Web Developer (Contractor)",
 		"organization": "Vectec Solutions",
-		"description": "Developed web applications and software solutions",
+		"description": "Built many websites and spoke at conferences",
 		"highlights": [
 			"Specialized in on-time project delivery and customer satisfaction",
 			"Focused on software deployment and web development",
-			"Met client-specific requirements and business objectives"
+			"Met client-specific requirements and business objectives",
+			"Gave presentations at conferences on web design and development"
 		],
-		"technologies": ["Web Development", "Software Deployment"]
+		"technologies": [
+			"Web Development",
+			"Software Deployment",
+			"Public Speaking"
+		]
+	},
+	{
+		"year": 2015,
+		"title": "Full Stack Developer",
+		"organization": "Red Key.io",
+		"description": "Developed web applications and software",
+		"highlights": [
+			"Started to code full-fledged web applications",
+			"Michigan Movers E-Tarriff Estimate System",
+			"Temp Job Agency Onboarding System",
+			"Moving Calculator"
+		],
+		"technologies": ["PHP", "JavsScript", "React.js"]
 	},
 	{
 		"year": 2021,
@@ -79,7 +103,7 @@
 			"Enhanced user interfaces and back-end systems for responsive, user-friendly experiences",
 			"Analyzed customer interactions and business data to improve product functionality",
 			"Provided mentorship to junior developers and refined team development processes",
-			"Worked with Python, C#, TypeScript, PHP, and React.js"
+			"Helped greatly with coming up with and building systems to manage our many websites at scale"
 		],
 		"technologies": ["Python", "C#", "TypeScript", "PHP", "React.js"]
 	},
@@ -89,11 +113,17 @@
 		"organization": "Groundworks",
 		"description": "Lead architect focused on optimizing software performance and AI initiatives",
 		"highlights": [
-			"Spearheaded key AI initiatives including chatbot and automated call transcript analysis",
-			"Implemented Retrieval-Augmented Generation (RAG) systems to support dynamic content generation",
-			"Collaborate with design and product teams to build service-oriented architecture (SOA) AI-powered features",
-			"Set strategic direction for the company's data and AI initiatives"
+			"Spearheaded key AI initiatives including Chatbot, Automated Call Transcript,",
+			"    AI Funnel Analyzer, and Dynamic Service Areas",
+			"Implemented basic Retrieval-Augmented Generation (RAG) systems to support dynamic",
+			"    content generation and funnel analysis",
+			"Working closely with Stakeholders and Developers and everyone in between",
+			"Team Lead roll across multiple teams"
 		],
-		"technologies": ["Python", "C#", "TypeScript", "AI/ML", "RAG", "SOA"]
+		"technologies": [
+			"Software Architecture",
+			"Solutions Architecture",
+			"Clean Architecture"
+		]
 	}
 ]

@@ -229,11 +229,19 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                self.link_index += 1;
+                if !self.project_links.is_empty() {
+                    self.link_index = (self.link_index + 1).min(self.project_links.len() - 1);
+                }
             }
             KeyCode::Enter => {
-                if let Err(e) = Command::new("open").arg("https://github.com/davidparks11/resume").spawn() {
-                    eprintln!("Failed to open URL: {}", e);
+                if !self.project_links.is_empty() {
+                    // Get link ensuring index is in bounds
+                    let link_index = self.link_index.min(self.project_links.len() - 1);
+                    let url = &self.project_links[link_index].url;
+                    
+                    if let Err(e) = Command::new("open").arg(url).spawn() {
+                        eprintln!("Failed to open URL: {}", e);
+                    }
                 }
             }
             _ => {}
