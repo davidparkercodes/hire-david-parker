@@ -12,7 +12,6 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
     
     let parser = Parser::new_ext(content, options);
     
-    // Remove unused spans vector
     let mut lines: Vec<Line> = Vec::new();
     let mut current_line: Vec<Span> = Vec::new();
     let mut active_styles = Vec::new();
@@ -26,11 +25,9 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
             Event::Start(tag) => {
                 match tag {
                     Tag::Heading(_level, ..) => {
-                        // Only apply bold modifier without color for maximum theme compatibility
                         active_styles.push(Style::default()
                             .add_modifier(Modifier::BOLD));
                             
-                        // Add a blank line before headings (except at the very start)
                         if !current_line.is_empty() || !lines.is_empty() {
                             if !current_line.is_empty() {
                                 lines.push(Line::from(current_line.clone()));
@@ -86,7 +83,7 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                         lines.push(Line::from(current_line.clone()));
                         current_line.clear();
                         current_line_idx += 1;
-                        lines.push(Line::from(Vec::new())); // Add blank line after heading
+                        lines.push(Line::from(Vec::new()));
                         current_line_idx += 1;
                         active_styles.pop();
                     },
@@ -97,7 +94,7 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                             current_line_idx += 1;
                             current_column = 0;
                         }
-                        lines.push(Line::from(Vec::new())); // Add blank line after paragraph
+                        lines.push(Line::from(Vec::new()));
                         current_line_idx += 1;
                     },
                     Tag::List(_) => {
@@ -107,7 +104,7 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                             current_line_idx += 1;
                             current_column = 0;
                         }
-                        lines.push(Line::from(Vec::new())); // Add blank line after list
+                        lines.push(Line::from(Vec::new()));
                         current_line_idx += 1;
                     },
                     Tag::Link(_, _, _) => {
@@ -136,9 +133,7 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                 let start_column = current_column;
                 let end_column = start_column + text_str.len();
                 
-                // If we're inside a link, store the link information
                 if let Some(url) = &active_link_url {
-                    // Add all link URLs for processing
                     links.push(Link {
                         text: text_str.clone(),
                         url: url.clone(),
@@ -162,7 +157,6 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
                 current_column = 0;
             },
             Event::Code(text) => {
-                // Use only styling without color for inline code
                 let style = Style::default()
                     .add_modifier(Modifier::BOLD);
                 
@@ -177,7 +171,6 @@ pub fn parse_markdown(content: &str) -> (Text<'static>, Vec<Link>) {
         }
     }
     
-    // Add any remaining content
     if !current_line.is_empty() {
         lines.push(Line::from(current_line));
     }
