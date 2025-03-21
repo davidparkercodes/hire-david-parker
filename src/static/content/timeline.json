@@ -1,65 +1,99 @@
 [
-  {
-    "year": 2024,
-    "title": "Software Architect & Multi-Team Lead",
-    "organization": "Groundworks",
-    "description": "Lead architect focused on optimizing software performance and AI initiatives",
-    "highlights": [
-      "Spearheaded key AI initiatives including chatbot and automated call transcript analysis",
-      "Implemented Retrieval-Augmented Generation (RAG) systems to support dynamic content generation",
-      "Collaborate with design and product teams to build service-oriented architecture (SOA) AI-powered features",
-      "Set strategic direction for the company's data and AI initiatives"
-    ],
-    "technologies": ["Python", "C#", "TypeScript", "AI/ML", "RAG", "SOA"]
-  },
-  {
-    "year": 2022,
-    "title": "Senior Full Stack Web Developer & Team Lead",
-    "organization": "Groundworks",
-    "description": "Developed and maintained full-stack applications with multiple technologies",
-    "highlights": [
-      "Enhanced user interfaces and back-end systems for responsive, user-friendly experiences",
-      "Analyzed customer interactions and business data to improve product functionality",
-      "Provided mentorship to junior developers and refined team development processes",
-      "Worked with Python, C#, TypeScript, PHP, and React.js"
-    ],
-    "technologies": ["Python", "C#", "TypeScript", "PHP", "React.js"]
-  },
-  {
-    "year": 2021,
-    "title": "Full Stack Web Developer",
-    "organization": "Groundworks",
-    "description": "Designed and implemented dynamic, responsive web interfaces",
-    "highlights": [
-      "Built interfaces using JavaScript and React.js",
-      "Integrated front-end elements with server-side logic",
-      "Ensured seamless functionality across applications"
-    ],
-    "technologies": ["JavaScript", "React.js", "Web Development"]
-  },
-  {
-    "year": 2009,
-    "title": "Owner and Full Stack Developer",
-    "organization": "Red Key.io",
-    "description": "Founded and managed a successful freelance business",
-    "highlights": [
-      "Developed e-commerce websites processing millions in annual transactions",
-      "Implemented secure online payment systems optimizing client resources",
-      "Led migration of 15,000-page Drupal website to WordPress in under six weeks",
-      "Managed all aspects of project management and software development"
-    ],
-    "technologies": ["E-commerce", "Drupal", "WordPress", "Payment Systems"]
-  },
-  {
-    "year": 2011,
-    "title": "Full Stack Developer",
-    "organization": "Vectec Solutions",
-    "description": "Developed web applications and software solutions",
-    "highlights": [
-      "Specialized in on-time project delivery and customer satisfaction",
-      "Focused on software deployment and web development",
-      "Met client-specific requirements and business objectives"
-    ],
-    "technologies": ["Web Development", "Software Deployment"]
-  }
+	{
+		"year": 2001,
+		"title": "Learned HTML",
+		"organization": "N/A",
+		"description": "Learned HTML for the first time",
+		"highlights": [
+			"Built super basic websites in Geocities, Angelfire, and Expage",
+			"Used it in an online chatroom to make my messages stand out"
+		],
+		"technologies": ["HTML"]
+	},
+	{
+		"year": 2004,
+		"title": "Started Learning PHP",
+		"organization": "N/A",
+		"description": "Very basic PHP, but started my journey of learning how to code",
+		"highlights": [
+			"Helped build and run a Starcraft League website that used vBulletin",
+			"Only really went in to edit code, but learned by doing",
+			"Not a lot of ressources at the time"
+		],
+		"technologies": ["PHP"]
+	},
+	{
+		"year": 2005,
+		"title": "First Paying Client",
+		"organization": "N/A",
+		"description": "I had my first paying client as a sophomore in high school",
+		"highlights": [
+			"$400 for a website for a construction company",
+			"Used it to by my first cell phone"
+		],
+		"technologies": ["HTML", "CSS", "Photoshop"]
+	},
+	{
+		"year": 2009,
+		"title": "Owner and Full Stack Web Developer",
+		"organization": "Red Key.io",
+		"description": "Founded and managed a successful freelance business",
+		"highlights": [
+			"Developed e-commerce websites processing millions in annual transactions",
+			"Implemented secure online payment systems optimizing client resources",
+			"Led migration of 15,000-page Drupal website to WordPress in under six weeks",
+			"Managed all aspects of project management and software development"
+		],
+		"technologies": ["E-commerce", "Drupal", "WordPress", "Payment Systems"]
+	},
+	{
+		"year": 2011,
+		"title": "Full Stack Web Developer (Contractor)",
+		"organization": "Vectec Solutions",
+		"description": "Developed web applications and software solutions",
+		"highlights": [
+			"Specialized in on-time project delivery and customer satisfaction",
+			"Focused on software deployment and web development",
+			"Met client-specific requirements and business objectives"
+		],
+		"technologies": ["Web Development", "Software Deployment"]
+	},
+	{
+		"year": 2021,
+		"title": "Full Stack Web Developer",
+		"organization": "Groundworks",
+		"description": "Designed and implemented dynamic, responsive web interfaces",
+		"highlights": [
+			"Built interfaces using JavaScript and React.js",
+			"Integrated front-end elements with server-side logic",
+			"Ensured seamless functionality across applications"
+		],
+		"technologies": ["JavaScript", "React.js", "Web Development"]
+	},
+	{
+		"year": 2022,
+		"title": "Senior Full Stack Web Developer & Team Lead",
+		"organization": "Groundworks",
+		"description": "Developed and maintained full-stack applications with multiple technologies",
+		"highlights": [
+			"Enhanced user interfaces and back-end systems for responsive, user-friendly experiences",
+			"Analyzed customer interactions and business data to improve product functionality",
+			"Provided mentorship to junior developers and refined team development processes",
+			"Worked with Python, C#, TypeScript, PHP, and React.js"
+		],
+		"technologies": ["Python", "C#", "TypeScript", "PHP", "React.js"]
+	},
+	{
+		"year": 2024,
+		"title": "Software Architect & Multi-Team Lead",
+		"organization": "Groundworks",
+		"description": "Lead architect focused on optimizing software performance and AI initiatives",
+		"highlights": [
+			"Spearheaded key AI initiatives including chatbot and automated call transcript analysis",
+			"Implemented Retrieval-Augmented Generation (RAG) systems to support dynamic content generation",
+			"Collaborate with design and product teams to build service-oriented architecture (SOA) AI-powered features",
+			"Set strategic direction for the company's data and AI initiatives"
+		],
+		"technologies": ["Python", "C#", "TypeScript", "AI/ML", "RAG", "SOA"]
+	}
 ]

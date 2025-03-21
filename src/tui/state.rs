@@ -24,6 +24,8 @@ pub struct App {
     pub timeline_events: Vec<TimelineEvent>,
     pub timeline_index: usize,
     pub should_exit: bool,
+    // Flag to prevent automatic screen switching when entering menu
+    pub skip_auto_switch: bool,
 }
 
 impl App {
@@ -69,6 +71,7 @@ impl App {
             }).collect(),
             timeline_index,
             should_exit: false,
+            skip_auto_switch: false,
         }
     }
     
