@@ -1,4 +1,4 @@
-Press the right arrow (→) to browse and open project links!
+The below apps were specifically built for this application.
 
 ### Interactive Terminal Resume (Rust)
 
@@ -12,6 +12,6 @@ A command line tool that analyzers code and codebases, leveraging Rust's speed a
 
 A simple Python app that helps create Warp themes. Key feature is it will take a screenshot of a website and use that to build a theme. Also has a --prefer-light and --prefer-dark flag.
 
-### Warp Commands Checker (TypeScript/Next.js)
+### Warp Commands Navigator (TypeScript/Node.js/Next.js)
 
-A full stack app that first scrapes the commands.dev website, and then allows users to
+I had started this full stack app, that scrapes the commands.dev website and builds out another way to navigate and find Warp Workflows, but I did not get it to a point where I was happy with it to send to you all. I didn't want to delay sending my application any longer.

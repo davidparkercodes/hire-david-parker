@@ -258,14 +258,21 @@ fn render_projects(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
 
 /// Renders the project links for navigation
 fn render_project_links(f: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    // Get links from projects content
-    let (_, links) = parse_markdown(&app.projects_content);
-    
-    if links.is_empty() {
+    // Use project links from JSON file
+    if app.project_links.is_empty() {
+        // If no links, show a message
+        let message = Paragraph::new("No project links found.")
+            .alignment(Alignment::Center)
+            .block(Block::default()
+                .title("Project Links")
+                .borders(Borders::ALL)
+                .border_style(Style::default().fg(Color::Blue)));
+        
+        f.render_widget(message, area);
         return;
     }
     
-    let items: Vec<ListItem> = links
+    let items: Vec<ListItem> = app.project_links
         .iter()
         .enumerate()
         .map(|(i, link)| {
@@ -652,8 +659,8 @@ fn render_timeline_details(f: &mut Frame, app: &App, area: ratatui::layout::Rect
         .constraints(
             [
                 Constraint::Length(3),  // Title
-                Constraint::Length(3),  // Description - smaller
-                Constraint::Min(5),     // Highlights - bigger
+                Constraint::Length(5),  // Description - increased by 2 lines
+                Constraint::Min(3),     // Highlights - decreased by 2 lines
                 Constraint::Length(3),  // Technologies
             ]
             .as_ref(),
