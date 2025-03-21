@@ -24,7 +24,6 @@ pub struct App {
     pub timeline_events: Vec<TimelineEvent>,
     pub timeline_index: usize,
     pub should_exit: bool,
-    // Flag to prevent automatic screen switching when entering menu
     pub skip_auto_switch: bool,
 }
 
@@ -36,7 +35,6 @@ impl App {
         
         let timeline_index = 0;
         
-        // Load project links
         let project_links = load_project_links()
             .map(|pl| pl.links)
             .unwrap_or_default();
@@ -45,7 +43,7 @@ impl App {
             menu_index: 0,
             link_index: 0,
             skill_category_index: 0,
-            display_mode: DisplayMode::About, // Start with About screen
+            display_mode: DisplayMode::About,
             previous_mode: DisplayMode::Menu,
             timeline_filter: TimelineFilter::All,
             timeline_event_index: 0,

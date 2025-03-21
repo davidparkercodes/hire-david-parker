@@ -9,7 +9,6 @@ impl App {
             return;
         }
 
-        // Save the current state before handling the key event
         let was_timeline = self.display_mode == DisplayMode::Timeline;
         let was_at_leftmost = self.timeline_index == 0;
         let was_left_key = key.code == KeyCode::Left || key.code == KeyCode::Char('h');
@@ -21,7 +20,6 @@ impl App {
             }
         }
         
-        // Handle the key event
         match self.display_mode {
             DisplayMode::Menu => self.handle_menu_keys(key),
             DisplayMode::Timeline => {
@@ -36,14 +34,10 @@ impl App {
             _ => self.handle_content_keys(key),
         }
         
-        // Check if we were in timeline mode at the leftmost position and 
-        // pressed left, but somehow ended up in About mode. If so,
-        // force back to Menu mode.
         if was_timeline && was_at_leftmost && was_left_key && 
            self.display_mode == DisplayMode::About {
-            // Force us back to Menu mode with Timeline selected
             self.display_mode = DisplayMode::Menu;
-            self.menu_index = 3; // Timeline menu index
+            self.menu_index = 3;
             self.timeline_detail_view = false;
         }
     }
@@ -137,9 +131,6 @@ impl App {
                     self.timeline_index -= 1;
                     self.timeline_event_index = self.timeline_index; 
                 } else {
-                    // When at leftmost entry, NEVER leave timeline mode
-                    // Instead, just stay at the leftmost entry and do nothing
-                    // This is the simplest possible fix
                     return;
                 }
             }
@@ -164,36 +155,31 @@ impl App {
                 self.should_exit = true;
             }
             KeyCode::Esc => {
-                // Return to menu and set Menu index to skills (1)
                 self.previous_mode = self.display_mode;
                 self.display_mode = DisplayMode::Menu;
-                self.menu_index = 1; // Set to Skills menu item
+                self.menu_index = 1;
                 self.skill_category_index = 0;
                 self.skills_page = 0;
             }
             KeyCode::Up | KeyCode::Char('k') => {
-                // First try to navigate categories up
                 if self.skill_category_index > 0 {
                     self.skill_category_index -= 1;
-                    self.skills_page = 0; // Reset page when changing categories
+                    self.skills_page = 0;
                 } else {
-                    // If at first category, go to the About menu item (0) and activate it
                     self.previous_mode = self.display_mode;
                     self.display_mode = DisplayMode::About;
-                    self.menu_index = 0; // Set to About menu item
+                    self.menu_index = 0;
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                // First try to navigate categories down
                 if !self.skills_data.categories.is_empty() && 
                    self.skill_category_index < self.skills_data.categories.len() - 1 {
                     self.skill_category_index += 1;
-                    self.skills_page = 0; // Reset page when changing categories
+                    self.skills_page = 0;
                 } else {
-                    // If at last category, go to Projects menu item (2) and activate it
                     self.previous_mode = self.display_mode;
                     self.display_mode = DisplayMode::Projects;
-                    self.menu_index = 2; // Set to Projects menu item
+                    self.menu_index = 2;
                 }
             }
             KeyCode::Left | KeyCode::Char('h') => {
@@ -202,14 +188,10 @@ impl App {
                 }
             }
             KeyCode::Right | KeyCode::Char('l') => {
-                // Let the UI rendering handle the upper bound check since
-                // it depends on the screen size and number of skills
                 if !self.skills_data.categories.is_empty() {
                     self.skills_page += 1;
-                    // The UI will validate and adjust if this is too high
                 }
             }
-            // Page navigation now only handled by left/right keys
             _ => {}
         }
     }
@@ -235,7 +217,6 @@ impl App {
             }
             KeyCode::Enter => {
                 if !self.project_links.is_empty() {
-                    // Get link ensuring index is in bounds
                     let link_index = self.link_index.min(self.project_links.len() - 1);
                     let url = &self.project_links[link_index].url;
                     
@@ -250,12 +231,9 @@ impl App {
     
 
     fn handle_menu_keys(&mut self, key: event::KeyEvent) {
-        // First check if we should override auto-switching
         if self.skip_auto_switch {
-            // We've entered the menu but want to stay there
-            self.skip_auto_switch = false; // Reset the flag for future actions
+            self.skip_auto_switch = false;
             
-            // Only handle navigation within menu, not auto-switching
             match key.code {
                 KeyCode::Char('q') | KeyCode::Esc => {
                     self.should_exit = true;
@@ -278,7 +256,6 @@ impl App {
             return;
         }
         
-        // Normal menu behavior
         match key.code {
             KeyCode::Char('q') | KeyCode::Esc => {
                 self.should_exit = true;
@@ -329,8 +306,6 @@ impl App {
                     self.display_mode = DisplayMode::ProjectLinks;
                     self.link_index = 0;
                 }
-                // Skills text mode should no longer be accessible directly, 
-                // but leaving handler in case of future changes
             }
             KeyCode::Enter => {
                 self.switch_to_selected_screen();
