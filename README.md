@@ -4,13 +4,13 @@ An interactive terminal-based resume application built with Rust, showcasing pro
 
 ## Features
 
-- Interactive TUI (Terminal User Interface) for exploring resume content
-- Multiple sections: About, Skills, Projects, Timeline, Contact
-- Always-visible menu sidebar with navigation capabilities
-- Clean command-line interface with standard commands
-- Smooth transitions between different sections
-- Project links and detailed timeline events
-- Skills visualization with ratings
+-   Interactive TUI (Terminal User Interface) for exploring resume content
+-   Multiple sections: About, Skills, Projects, Timeline, Contact
+-   Always-visible menu sidebar with navigation capabilities
+-   Clean command-line interface with standard commands
+-   Smooth transitions between different sections
+-   Project links and detailed timeline events
+-   Skills visualization with ratings
 
 ## Installation
 
@@ -18,7 +18,7 @@ An interactive terminal-based resume application built with Rust, showcasing pro
 
 ```bash
 # Install directly from crates.io
-cargo install hiredavidparker
+cargo install hire-david-parker
 ```
 
 ### From Source
@@ -56,11 +56,11 @@ hiredavidparker about
 
 When using the interactive TUI mode, you can navigate with the following keys:
 
-- `Tab` / `Shift+Tab`: Navigate between menu items
-- `Enter`: Select a menu item
-- `Left` / `Right` / `Up` / `Down`: Navigate within content (especially in Timeline view)
-- `Esc` / `q`: Quit the application
-- `Home`: Return to the main menu from any section
+-   `Tab` / `Shift+Tab`: Navigate between menu items
+-   `Enter`: Select a menu item
+-   `Left` / `Right` / `Up` / `Down`: Navigate within content (especially in Timeline view)
+-   `Esc` / `q`: Quit the application
+-   `Home`: Return to the main menu from any section
 
 ### As a Library
 
@@ -79,14 +79,14 @@ use hiredavidparker::{about, skills, projects};
 fn main() {
     // Get content from various sections
     println!("{}", about());
-    
+
     // Load timeline data
     if let Ok(timeline_events) = hiredavidparker::load_timeline_data() {
         for event in timeline_events {
             println!("{}: {} at {}", event.year, event.title, event.organization);
         }
     }
-    
+
     // Load project links
     if let Ok(project_links) = hiredavidparker::load_project_links() {
         for link in project_links.links {
@@ -125,11 +125,11 @@ The HTML coverage report will be generated in the `coverage` directory.
 
 ## Technologies
 
-- [Rust](https://www.rust-lang.org/) - Systems programming language
-- [Clap](https://github.com/clap-rs/clap) - Command line argument parsing
-- [Ratatui](https://github.com/ratatui-org/ratatui) - Terminal UI library
-- [Crossterm](https://github.com/crossterm-rs/crossterm) - Terminal manipulation library
-- [Serde](https://serde.rs/) - Serialization/deserialization framework
+-   [Rust](https://www.rust-lang.org/) - Systems programming language
+-   [Clap](https://github.com/clap-rs/clap) - Command line argument parsing
+-   [Ratatui](https://github.com/ratatui-org/ratatui) - Terminal UI library
+-   [Crossterm](https://github.com/crossterm-rs/crossterm) - Terminal manipulation library
+-   [Serde](https://serde.rs/) - Serialization/deserialization framework
 
 ## Contributing
 
