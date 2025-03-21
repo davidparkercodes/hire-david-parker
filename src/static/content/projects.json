@@ -11,6 +11,10 @@
 		{
 			"text": "Warp Theme Creator",
 			"url": "https://github.com/davidparkercodes/warp-theme-creator"
+		},
+		{
+			"text": "Warp Commands Navigator",
+			"url": "https://github.com/davidparkercodes/warp-commands-checker"
 		}
 	]
 }
