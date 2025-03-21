@@ -114,7 +114,6 @@ pub fn run_tui() -> Result<(), Box<dyn Error>> {
 /// Test version of run_tui that doesn't actually launch the TUI
 #[cfg(test)]
 pub fn run_tui() -> Result<(), Box<dyn Error>> {
-    // In test mode, just return OK without running the TUI
     Ok(())
 }
 
@@ -193,7 +192,6 @@ mod tests {
     
     #[test]
     fn test_run_tui() {
-        // In test mode, run_tui() should just return Ok without actually running the TUI
         let result = run_tui();
         assert!(result.is_ok());
     }

@@ -6,5 +6,4 @@ pub mod runner;
 pub mod state;
 pub mod ui;
 
-// Re-export for crate usage
 pub use runner::run;
