@@ -79,7 +79,6 @@ pub enum DisplayMode {
     SkillsVisual,
     Projects,
     ProjectLinks,
-    WhyWarp,
     Timeline,
     Contact,
 }

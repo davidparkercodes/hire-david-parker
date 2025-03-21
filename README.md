@@ -5,7 +5,7 @@ An interactive terminal-based resume application built with Rust.
 ## Features
 
 - Interactive TUI (Terminal User Interface) for exploring resume content
-- Multiple sections: About, Skills, Projects, Why Warp
+- Multiple sections: About, Skills, Projects, Timeline, Contact
 - Always-visible menu sidebar with navigation capabilities
 - Clean command-line interface with standard commands
 

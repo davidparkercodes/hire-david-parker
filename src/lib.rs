@@ -38,10 +38,6 @@ pub fn projects() -> String {
     load_content("projects.md")
 }
 
-/// Returns the why Warp content
-pub fn why_warp() -> String {
-    load_content("why_warp.md")
-}
 
 /// Returns the welcome content
 pub fn welcome() -> String {
@@ -136,12 +132,6 @@ mod tests {
         assert!(!projects_content.contains("Error: Failed to load content from 'projects.md'"));
     }
 
-    #[test]
-    fn test_why_warp_content() {
-        let why_warp_content = why_warp();
-        assert!(!why_warp_content.is_empty());
-        assert!(!why_warp_content.contains("Error: Failed to load content from 'why_warp.md'"));
-    }
 
     #[test]
     fn test_welcome_content() {

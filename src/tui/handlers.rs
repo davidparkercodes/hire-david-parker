@@ -43,7 +43,7 @@ impl App {
            self.display_mode == DisplayMode::About {
             // Force us back to Menu mode with Timeline selected
             self.display_mode = DisplayMode::Menu;
-            self.menu_index = 4; // Timeline menu index
+            self.menu_index = 3; // Timeline menu index
             self.timeline_detail_view = false;
         }
     }
@@ -66,16 +66,12 @@ impl App {
             },
             3 => {
                 self.previous_mode = self.display_mode;
-                self.display_mode = DisplayMode::WhyWarp;
-            },
-            4 => {
-                self.previous_mode = self.display_mode;
                 self.display_mode = DisplayMode::Timeline;
                 
                 self.timeline_index = 0;
                 self.timeline_event_index = self.timeline_index;
             },
-            5 => {
+            4 => {
                 self.previous_mode = self.display_mode;
                 self.display_mode = DisplayMode::Contact;
             },
@@ -116,7 +112,7 @@ impl App {
             }
             KeyCode::Esc | KeyCode::Backspace => {
                 self.previous_mode = DisplayMode::Timeline;
-                self.menu_index = 4;
+                self.menu_index = 3;
                 self.display_mode = DisplayMode::Menu;
                 self.timeline_detail_view = false;
             }
@@ -262,7 +258,7 @@ impl App {
                     }
                 }
                 KeyCode::Down | KeyCode::Char('j') => {
-                    if self.menu_index < 5 {
+                    if self.menu_index < 4 {
                         self.menu_index += 1;
                     }
                 }
@@ -286,7 +282,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 5 {
+                if self.menu_index < 4 {
                     self.menu_index += 1;
                     self.switch_to_selected_screen();
                 }
@@ -314,7 +310,7 @@ impl App {
                 }
             }
             KeyCode::Down | KeyCode::Char('j') => {
-                if self.menu_index < 5 {
+                if self.menu_index < 4 {
                     self.menu_index += 1;
                     self.switch_to_selected_screen();
                 }

@@ -1,5 +1,5 @@
 use super::models::{DisplayMode, SkillsData, TimelineEvent, TimelineFilter, TimelineType};
-use crate::{about, skills, projects, why_warp, welcome, timeline, contact, load_timeline_data};
+use crate::{about, skills, projects, welcome, timeline, contact, load_timeline_data};
 use std::error::Error;
 use std::path::Path;
 
@@ -17,7 +17,6 @@ pub struct App {
     pub skills_data: SkillsData,
     pub skills_page: usize,
     pub projects_content: String,
-    pub why_warp_content: String,
     pub welcome_content: String,
     pub timeline_content: String,
     pub contact_content: String,
@@ -50,7 +49,6 @@ impl App {
             skills_data: load_skills_data().unwrap_or_default(),
             skills_page: 0,
             projects_content: projects(),
-            why_warp_content: why_warp(),
             welcome_content: welcome(),
             timeline_content: timeline(),
             contact_content: contact(),
