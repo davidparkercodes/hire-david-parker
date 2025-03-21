@@ -1,6 +1,6 @@
 # Interactive Resume CLI
 
-An interactive terminal-based resume application built with Rust.
+An interactive terminal-based resume application built with Rust, showcasing professional experience and skills in an engaging format.
 
 ## Features
 
@@ -8,6 +8,9 @@ An interactive terminal-based resume application built with Rust.
 - Multiple sections: About, Skills, Projects, Timeline, Contact
 - Always-visible menu sidebar with navigation capabilities
 - Clean command-line interface with standard commands
+- Smooth transitions between different sections
+- Project links and detailed timeline events
+- Skills visualization with ratings
 
 ## Installation
 
@@ -49,6 +52,16 @@ Show the about information:
 hiredavidparker about
 ```
 
+### Navigation in TUI Mode
+
+When using the interactive TUI mode, you can navigate with the following keys:
+
+- `Tab` / `Shift+Tab`: Navigate between menu items
+- `Enter`: Select a menu item
+- `Left` / `Right` / `Up` / `Down`: Navigate within content (especially in Timeline view)
+- `Esc` / `q`: Quit the application
+- `Home`: Return to the main menu from any section
+
 ### As a Library
 
 Add to your Cargo.toml:
@@ -71,6 +84,13 @@ fn main() {
     if let Ok(timeline_events) = hiredavidparker::load_timeline_data() {
         for event in timeline_events {
             println!("{}: {} at {}", event.year, event.title, event.organization);
+        }
+    }
+    
+    // Load project links
+    if let Ok(project_links) = hiredavidparker::load_project_links() {
+        for link in project_links.links {
+            println!("{}: {}", link.text, link.url);
         }
     }
 }
@@ -105,10 +125,21 @@ The HTML coverage report will be generated in the `coverage` directory.
 
 ## Technologies
 
-- [Rust](https://www.rust-lang.org/)
+- [Rust](https://www.rust-lang.org/) - Systems programming language
 - [Clap](https://github.com/clap-rs/clap) - Command line argument parsing
 - [Ratatui](https://github.com/ratatui-org/ratatui) - Terminal UI library
 - [Crossterm](https://github.com/crossterm-rs/crossterm) - Terminal manipulation library
+- [Serde](https://serde.rs/) - Serialization/deserialization framework
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
