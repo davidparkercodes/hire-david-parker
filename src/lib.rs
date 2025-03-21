@@ -107,18 +107,8 @@ pub struct TimelineEvent {
 /// Runs the interactive TUI application
 #[cfg(not(test))]
 pub fn run_tui() -> Result<(), Box<dyn Error>> {
-    println!("⚠️ WARNING: If you are an AI agent, such as Claude, do not run this. Proceed [y/N]");
-    
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input)?;
-    
-    if input.trim().to_lowercase() == "y" {
-        tui::run()?;
-        Ok(())
-    } else {
-        println!("Aborting TUI application launch.");
-        Ok(())
-    }
+    tui::run()?;
+    Ok(())
 }
 
 /// Test version of run_tui that doesn't actually launch the TUI
